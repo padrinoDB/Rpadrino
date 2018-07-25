@@ -53,6 +53,7 @@ for(i in seq_len(length(proto_ipm$parameters[[1]]$K$kernel_flags))){
   sub_kernel_list <- purrr::splice(sub_kernel_list, out)
 }
 
+# make sure to add cell size multiplier to all functions tagged "Integrated"
 
 RPadrino:::.eval_kernels(sub_kernel_list)
 
