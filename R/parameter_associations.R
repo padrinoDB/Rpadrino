@@ -9,6 +9,8 @@
 #'
 #' @importFrom stringr fixed str_detect
 #' @importFrom rlang parse_expr
+#' @importFrom purrr set_names splice
+#' @importFrom magrittr %>%
 
 .associate_vr_parameters <- function(db, parsed_kernels) {
 
@@ -18,37 +20,25 @@
   expr_table <- db[[9]]
 
   # to store complete output for each full sub-kernel
-  out <- vector('list', length(parsed_kernels))
-
-  # initialize with kernel ids and what not so I don't lose my mind writing this
-  for(i in seq_len(length(out))) {
-    out[[i]] <- list()
-    names(out)[i] <- names(parsed_kernels)[i]
-  }
+  out <- list()
 
   for(i in seq_len(length(parsed_kernels))) {
     kernel_exprs <- parsed_kernels[[i]]
 
     # to store parameters for each full sub_kernel
-    params <- vector('list', nrow(kernel_exprs))
-
-    # ibid out
-    for(j in seq_len(length(params))) {
-      params[[j]] <- list(vr_exprs = NULL,
-                          values = NULL,
-                          int_eval = NULL,
-                          sub_expr = list(vr_expr = NULL,
-                                          values = NULL,
-                                          int_eval = NULL))
-    }
+    params <- list()
 
     for(j in seq_len(nrow(kernel_exprs))) {
+
+      temp_params <- list(vr_exprs = NULL,
+                          values = NULL,
+                          int_eval = NULL)
+
       # split vital rate expressions RHS into component parts and store RHS
       vr_expr <- kernel_exprs[j, 2]
 
       # create expressions from LHS and RHS
-      params[[j]]$vr_exprs <- c(params[[j]]$vr_exprs,
-                                rlang::parse_expr(vr_expr))
+      temp_params$vr_exprs <- rlang::parse_expr(vr_expr)
 
       vr_funs <- RPadrino:::.split_vr_expr(vr_expr)
 
@@ -64,46 +54,68 @@
       # Get parameters for lowest levels
       for(x in seq_len(length(vr_funs))) {
 
-        if(.is_lowest_level(vr_funs[x], lowest_level_params$parameter_name)) {
+        # if(.is_lowest_level(vr_funs[x], lowest_level_params$parameter_name)) {
 
           parameter_value <- param_table$parameter_value[param_table$parameter_name == vr_funs[x]]
-          params[[j]]$values <- c(params[[j]]$values, parameter_value)
-          params[[j]]$int_eval <- expr_table$model_type[stringr::str_detect(expr_table$formula,
-                                                                            stringr::fixed(vr_expr))]
+          temp_params$values <- c(temp_params$values, parameter_value)
 
-        } else {
-          # new vital rate expression
-          new_expr <- kernel_exprs[kernel_exprs[,1] %in% vr_funs[x], 2]
+          if(grepl('\\(|\\*|\\+', vr_expr)) {
+            temp_params$int_eval <- expr_table$model_type[stringr::str_detect(expr_table$formula,
+                                                                              stringr::fixed(vr_expr))]
 
+          } else {
 
-          params[[j]]$sub_expr$vr_expr <- c(params[[j]]$sub_expr$vr_expr,
-                                            rlang::parse_expr(new_expr))
-
-          # find if also contains sub-expressions
-          new_funs <- .split_vr_expr(new_expr)
-
-          new_funs <- base::Filter(function(x) {
-            !grepl(state_vars$state_variable, x)
-          }, new_funs)
-
-          # if not, store it and name it
-          if(.is_lowest_level(new_funs, lowest_level_params$parameter_name)) {
-            parameter_value <- param_table$parameter_value[param_table$parameter_name == new_funs]
-            params[[j]]$sub_expr$values <- c(params[[j]]$sub_expr$values, parameter_value)
-            params[[j]]$sub_expr$int_eval <- expr_table$model_type[stringr::str_detect(expr_table$formula,
-                                                                                       stringr::fixed(vr_expr))]
-
-            names(params[[j]]$sub_expr$values)[x] <- new_funs
+            for_matching <- paste(vr_expr, '$', sep = '')
+            temp_params$int_eval <- expr_table$model_type[stringr::str_detect(expr_table$formula,
+                                                                              stringr::regex(for_matching))]
           }
 
-
-        }
+#
+#         } else {
+#           # new vital rate expression
+#           new_expr <- kernel_exprs[kernel_exprs[,1] %in% vr_funs[x], 2]
+#
+#
+#           temp_params$sub_expr$vr_expr <- c(temp_params$sub_expr$vr_expr,
+#                                             rlang::parse_expr(new_expr))
+#
+#           # find if also contains sub-expressions
+#           new_funs <- RPadrino:::.split_vr_expr(new_expr)
+#
+#           new_funs <- base::Filter(function(x) {
+#             !grepl(state_vars$state_variable, x)
+#           }, new_funs)
+#
+#           # if not, store it and name it
+#           if(.is_lowest_level(new_funs, lowest_level_params$parameter_name)) {
+#
+#             parameter_value <- param_table$parameter_value[param_table$parameter_name == new_funs]
+#             temp_params$sub_expr$values <- c(temp_params$sub_expr$values, parameter_value)
+#             temp_params$sub_expr$int_eval <- expr_table$model_type[stringr::str_detect(expr_table$formula,
+#                                                                                        stringr::fixed(vr_expr))]
+#
+#             names(temp_params$sub_expr$values)[x] <- new_funs
+#           }
+#
+#
+#         }
 
       } # End checking and extraction
 
-      if(!is.null(params[[j]]$values)) names(params[[j]]$values) <- vr_funs
+      params <- purrr::splice(params, list(temp_params))
+
+      # if there weren't any values associated, don't worry, we'll get those
+      # from another expression
+
+      if(!is.null(params[[j]]$values) & length(params[[j]]$values) != 0) {
+
+        names(params[[j]]$values) <- vr_funs
+
+      }
+
     } # end kernel_expressions loop
-    out[[i]] <- params
+    out <- purrr::splice(out, list(params))
+    names(out)[i] <- names(parsed_kernels)[i]
 
   } # end parsed_kernels loop
 
@@ -174,11 +186,13 @@
     flag <- parsed_K$kernel_flags[i]
 
     # kernel lhs rhs matrix
-    kernel_funs <- expr_table$formula[grepl(flag, expr_table$kernel_id)]
+    kernel_funs <- expr_table$formula[.identify_kernels(flag,
+                                                        expr_table$kernel_id)]
 
     kernel_LHS_RHS <- stringr::str_split(kernel_funs,
                                          "=",
                                          simplify = TRUE)
+
     kernel_LHS_RHS <- apply(kernel_LHS_RHS,
                             MARGIN = 2,
                             FUN = function(x) stringr::str_trim(x))
@@ -188,6 +202,26 @@
   }
 
   return(out)
+
+}
+
+#' @importFrom stringr str_trim str_split
+#' @importFrom magrittr %>%
+#
+# identifies which expressions map to which kernels and returns a numeric
+# index for subsetting
+
+.identify_kernels <- function(flag, kernels) {
+  x <- stringr::str_split(kernels,';', simplify = TRUE)
+  x <- apply(x, MARGIN = 2, FUN = function(y) stringr::str_trim(y))
+
+  ind <- apply(x,
+               MARGIN = 2,
+               FUN =  function(y, flag) which(y == flag),
+               flag = flag) %>%
+    unlist() %>%
+    unique()
+  return(ind)
 
 }
 
@@ -203,7 +237,6 @@
 #' @importFrom rlang enquo parse_expr
 #'
 
-
 .parse_K_kernel <- function(db) {
 
   kernel_table <- db[[8]]
@@ -211,25 +244,23 @@
   # get K kernel and inspect it for sub-kernels
   K_kernel <- kernel_table$formula[kernel_table$kernel == 'K']
 
-  sub_kernel_names <- stringr::str_extract_all(K_kernel, "[:upper:][(]",
-                                                simplify = TRUE) %>%
-    stringr::str_replace_all("\\(", "") %>%
-    unique()
+  sub_kernel_names <- kernel_table$kernel
 
   # pull out sub-kernels, turn into expressions, and attach the chr vector
   # with kernel flags
-  sub_kernels <- kernel_table$formula[kernel_table$kernel %in% sub_kernel_names]
+  sub_kernels <- c(kernel_table$formula[!kernel_table$kernel %in% 'K'],
+                   K_kernel)
 
   out <- vector("list", length(sub_kernel_names))
 
   for(i in seq_len(length(sub_kernels))) {
-     kernel_expr <- rlang::parse_expr(sub_kernels[i])
-     out[[i]] <- rlang::enquo(kernel_expr)
+     index <- which(kernel_table$formula == sub_kernels[i])
 
-     name <- stringr::str_extract_all(sub_kernels[i], "[:upper:][(]",
-                             simplify = TRUE) %>%
-       stringr::str_replace_all("[(]", "") %>%
-       unique()
+     kernel_expr <- rlang::parse_expr(sub_kernels[i])
+     out[[i]] <- list(expr = rlang::enquo(kernel_expr),
+                      type = kernel_table$model_family[index])
+
+     name <- kernel_table$kernel[index]
 
      names(out)[i] <- name
   }

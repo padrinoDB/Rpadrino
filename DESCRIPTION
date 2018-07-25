@@ -1,15 +1,24 @@
 Package: RPadrino
 Title: Interact with the PADRINO and MADRINA IPM Data Bases
 Version: 0.0.0.9000
-Authors@R: person("Sam", "Levin", email = "levisc8@gmail.com", role = c("aut", "cre"))
+Authors@R: c(
+    person("Levin", "Sam", email = "levisc8@gmail.com", role = c("aut", "cre")),
+    person("Childs", "Dylan", email = "d.childs@sheffield.ac.uk", role = c("aut")),
+    person("Salguero-Gomez", "Roberto", email = "rob.salguero@zoo.ox.ac.uk", role = c("aut")))
 Description: PADRINO and MADRINA house textual representations of
     Integral Projection Models which can be converted from their 
     "elemental" forms into full kernels to reproduce or extend an 
     already published analysis.
 Depends: R (>= 3.2.0)
 Imports:
-  DBI,
-  RPostgreSQL
+  DBI (>= 1.0.0),
+  dplyr (>= 0.7.0),
+  magrittr (>= 1.5),
+  purrr (>= 0.2.5),
+  readxl (>= 1.1.0),
+  rlang (>= 0.2.0),
+  RPostgreSQL (>= 0.6.2),
+  stringr (>= 1.3.1)
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
