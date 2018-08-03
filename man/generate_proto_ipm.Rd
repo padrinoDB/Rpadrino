@@ -13,6 +13,6 @@ generate_proto_ipm(db, ipms = NULL)
 \item{ipms}{The IPM IDs to build \code{proto_ipm} objects for}
 }
 \value{
-A \code{tibble} of \code{proto_ipm} objects. Each IPM will have its
-own row in the tibble
+A \code{tibble} of \code{proto_ipm} objects. Each IPM sub-kernel will
+ have its own row in the tibble
 }

@@ -10,7 +10,7 @@
 
 .generate_domain_env(domain)
 
-.kernel_vr_LHS_RHS_mat(db, parsed_K)
+.kernel_vr_LHS_RHS_mat(db, parsed_K, name)
 }
 \arguments{
 \item{proto_ipm}{An object of class \code{proto_ipm}. This can come from either
