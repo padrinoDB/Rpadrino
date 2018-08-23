@@ -145,12 +145,31 @@ build_ipm <- function(proto_ipm,
                            !!! kernel_list[[i]]$quos,
                            .eval_env = kernel_list[[i]]$sub_kernel_env)
 
-      force(kernel_list[[i]]$quos)
+      suppressMessages(
+        kernel_list[[i]]$sub_kernel_env <- .force_kernel_syms(
+          kernel_list[[i]]$sub_kernel_env
+        )
+      )
     }
 
   } # end kernel loop
 
   return(kernel_list)
+}
+
+.force_kernel_syms <- function(kernel_env) {
+  out <- tryCatch(eapply(kernel_env, FUN = force),
+                         error = function(e) e)
+
+  if(rlang::is_condition(out)) {
+
+    out <-  tryCatch(eapply(kernel_env, FUN = force),
+                     error = function(e) e)
+
+  }
+
+  rlang::env_bind(.env = kernel_env,
+                  !!! out)
 }
 
 #' @title Correct for eviction

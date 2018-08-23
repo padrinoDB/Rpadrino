@@ -34,7 +34,7 @@ Clones1 = subset(PopData, Stage2013 != 'gone')
 Clones2 = subset(Clones1, Stage2013 != 'SDL' & Stage2012 != 'SDL')
 Clones = subset(Clones2, Stage2012 == 'gone' & Quality2013 == 'good')
 
-PopDataRA1 = PopData[PopData$Stage2013 != 'RA',] 
+PopDataRA1 = PopData[PopData$Stage2013 != 'RA',]
 PopDataRA = PopDataRA1[PopDataRA1$Stage2013 != 'Boy',]
 PopDataSeeds = Ailanthus4R[Ailanthus4R$Stage2013 == 'RA' | Ailanthus4R$Stage2013 == 'girl',]
 
@@ -75,7 +75,7 @@ p.vec$surv.slope=coefficients(surv.reg)[2]
 growth.reg=lm(SizeNext~0+Size,data=PopData)
 summary(growth.reg)
 p.vec$growth.int=0  # If intercept is above one naturally, change to: coefficients(growth.reg)[1]
-p.vec$growth.slope=coefficients(growth.reg)[1]  # And change this to: coefficients(growth.reg)[2] 
+p.vec$growth.slope=coefficients(growth.reg)[1]  # And change this to: coefficients(growth.reg)[2]
 p.vec$growth.sd=sd(resid(growth.reg))
 
 # 3. Seeds: Divided into two parameters
@@ -90,8 +90,8 @@ seed.reg=glm(Seeds~SizeNext,data=PopDataSeeds,family=poisson())
 summary(seed.reg)
 p.vec$seed.int=coefficients(seed.reg)[1]
 p.vec$seed.slope=coefficients(seed.reg)[2]
- 
-# Mean and standard deviation of seedling size for use in a normal distribution. 
+
+# Mean and standard deviation of seedling size for use in a normal distribution.
 # Assume that offspring size is independent of maternal size,
 # so we only need to describe the distribution of offspring sizes in terms of its mean and variance.
 
@@ -110,7 +110,7 @@ g=mean(Germ$g)
 AASeedlings = read.csv("Ailanthus/IPM/Data/Copy of AA SDL Counts by plot.csv", header = TRUE)
 
 # Subset data
-SDL_NoBurn = AASeedlings[AASeedlings$Burn == 'N',] 
+SDL_NoBurn = AASeedlings[AASeedlings$Burn == 'N',]
 
 # Plot data
 SDL_no.reg=lm(SDL_no~Year,data=SDL_NoBurn)
@@ -126,10 +126,10 @@ p.vec$establishment.prob=v*g*e
 
 # 6.  Size distribution of clones
 p.vec$clonal.size.mean=mean(Clones$SizeNext, na.rm = TRUE)
-p.vec$clonal.size.sd=sd(Clones$SizeNext, na.rm = TRUE)*1.05
+p.vec$clonal.size.sd=sd(Clones$SizeNext, na.rm = TRUE)
 
 # 7. Probability of clonal growth
-# Estimated by dividing the number of new recruits (i.e., Clones) in 2013 
+# Estimated by dividing the number of new recruits (i.e., Clones) in 2013
 # by the number of NRA and RA (i.e., Nonclones) in 2012
 p.vec$clonal.prob=length(Clones$SizeNext)/length(Nonclones$Size)
 ContN_clonal.prob=length(Clones$SizeNext)/length(Nonclones$Size)
@@ -148,44 +148,48 @@ p.vec$germ.seedbank.prob=v*g*e
 
 # 1. Survival probability function
 s.x.CONTN=function(x,params) {
-  u=exp(params$surv.int+params$surv.slope*x)
-  return(u/(1+u))
+  u = exp(params$surv.int + params$surv.slope * x)
+  return(u / (1 + u))
 }
 
 # 2. Growth function
 g.yx.CONTN=function(xp,x,params) {
-  dnorm(xp,mean=params$growth.int+params$growth.slope*x,sd=params$growth.sd) 
+  dnorm(xp,
+        mean = params$growth.int + params$growth.slope * x,
+        sd = params$growth.sd)
 }
 
 # 3. Reproduction function
 p.repro.x.CONTN=function(x,params) {
-  u=exp(params$prob.repro.int+params$prob.repro.slope*x)
-  return(u/(1+u))
+  u = exp(params$prob.repro.int + params$prob.repro.slope * x)
+  return(u / (1 + u))
 }
 
-# Fecundity model while taking into account some seeds move into 
+# Fecundity model while taking into account some seeds move into
 # the discrete portion of the model (i.e., seedbank)
 f.yx.CONTN=function(xp,x,params) {
-  p.repro.x.CONTN(x,params)*
-    params$establishment.prob*
-    dnorm(xp,mean=params$recruit.size.mean,sd=params$recruit.size.sd)*
-    exp(params$seed.int+params$seed.slope*x)
+  p.repro.x.CONTN(x,params) *
+    params$establishment.prob *
+    dnorm(xp, mean = params$recruit.size.mean, sd = params$recruit.size.sd) *
+    exp(params$seed.int + params$seed.slope * x)
 }
 
 # 4. Seedling size distribution
 d.x.CONTN=function(xp,x,params) {
-  dnorm(xp, mean=p.vec$recruit.size.mean,sd=p.vec$recruit.size.sd)*p.vec$germ.seedbank.prob
+  dnorm(xp, mean = p.vec$recruit.size.mean, sd = p.vec$recruit.size.sd) * p.vec$germ.seedbank.prob
 }
 
 # 5. Seeds entering seedbank
 e.x.CONTN=function(xp,x,params) {
-  p.repro.x.CONTN(x,params)*exp(params$seed.int+params$seed.slope*x)*params$go.seedbank.prob
+  p.repro.x.CONTN(x,params) *
+    exp(params$seed.int + params$seed.slope * x) *
+    params$go.seedbank.prob
 }
 
 # 6. Clonal function
 c.yx.CONTN=function(xp,x,params) {
-    params$clonal.prob*
-    dnorm(xp,mean=params$clonal.size.mean,sd=params$clonal.size.sd)
+    params$clonal.prob *
+    dnorm(xp, mean = params$clonal.size.mean, sd = params$clonal.size.sd)
 }
 
 ### Combine vital rate functions to build the discretized IPM kernal (i.e., IPM matrix)
@@ -198,58 +202,71 @@ c.yx.CONTN=function(xp,x,params) {
 
 min.size=0.9*min(c(PopData$Size,PopData$SizeNext),na.rm=T)  # Use values slightly above and below limits
 max.size_ContN=1.1*max(c(PopData$Size,PopData$SizeNext),na.rm=T)
-n.size=50 # number of cells in the matrix 
+n.size=50 # number of cells in the matrix
 b=min.size+c(0:n.size)*(max.size_ContN-min.size)/n.size # boundary points
 y=0.5*(b[1:n.size]+b[2:(n.size+1)]) # mesh points
 h=y[2]-y[1] # step size
 
 ### Make IPM matrices ###
-# The function outer() evaluates the matrix at all pairwise combinations of the two 
-# vectors y and y and returns matrices representing the kernel components for growth 
-# and fecundity, respectively. For the numerical integration, we’re using the midpoint 
-# rule estimate the area under a curve. The midpoint rule assumes a rectangular 
-# approximation. The heights of the rectangles are given by the outer function and 
+# The function outer() evaluates the matrix at all pairwise combinations of the two
+# vectors y and y and returns matrices representing the kernel components for growth
+# and fecundity, respectively. For the numerical integration, we’re using the midpoint
+# rule estimate the area under a curve. The midpoint rule assumes a rectangular
+# approximation. The heights of the rectangles are given by the outer function and
 # the width of the rectangles is h.
 # The result is n.size x n.size cell discretization of the kernel, K.
 
+p.vec2 <- apply(p.vec, MARGIN = 2, function(x) round(x, 6))
+p.vec2 <- as.data.frame(t(p.vec2))
+
 # Growth matrix
 G_ContN = h * outer(y, y, g.yx.CONTN, params = p.vec)
-# Larger individuals are evicted (see Williams et al. 2012), so return the evicted individuals to the 
-# cells at the boundaries where they were evicted (i.e., rerout growth to sizes outside the allowed range 
-# to the extreme sizes avoiding eviction).
-for(i in 1:(n.size/2)) 
-  G_ContN[1, i]=G_ContN[1, i] + 1 - sum(G_ContN[ ,i])
+G_ContN2 = h * outer(y, y, g.yx.CONTN, params = p.vec2)
 
-for(i in (n.size/2+1):n.size) 
-  G_ContN[n.size, i] = G_ContN[n.size, i] + 1 - sum(G_ContN[ ,i])
+# Larger individuals are evicted (see Williams et al. 2012), so return the evicted individuals to the
+# cells at the boundaries where they were evicted (i.e., rerout growth to sizes outside the allowed range
+# to the extreme sizes avoiding eviction).
+for(i in 1:(n.size/2)){
+  G_ContN[1, i]=G_ContN[1, i] + 1 - sum(G_ContN[ , i])
+  G_ContN2[1, i]=G_ContN2[1, i] + 1 - sum(G_ContN2[ , i])
+}
 
 # Survival vector
-S_ContN = s.x.CONTN(y,params=p.vec) 
-SMatrix = array(0,dim=c(100,99))
-S_ContN1= cbind(S_ContN, SMatrix)          
+S_ContN = s.x.CONTN(y,params=p.vec)
+S_ContN2 = s.x.CONTN(y,params=p.vec2)
+
 
 # Fecundity martix
 F_ContN = array(0, dim = c(n.size, n.size))
 F_ContN[1:n.size, 1:n.size] = h*outer(y,y,f.yx.CONTN,params=p.vec)
+F_ContN2 = array(0, dim = c(n.size, n.size))
+F_ContN2[1:n.size, 1:n.size] = h*outer(y,y,f.yx.CONTN,params=p.vec2)
+
 
 # Survival/growth matrix
-P_ContN = array(0, dim=c(n.size, n.size))
+P_ContN2 <- P_ContN <- array(0, dim=c(n.size, n.size))
 
 # Build growth/survival matrix including discrete seedbank stage
-for(i in 1:n.size)
+for(i in 1:n.size){
   P_ContN[i, 1:n.size] = S_ContN * G_ContN[i, ]
+  P_ContN2[i, 1:n.size] = S_ContN2 * G_ContN2[i, ]
+}
 
-C_ContN = array(0, dim = c(n.size, n.size))
-C_ContN[1:n.size , 1:n.size] <- h*outer(y, y, c.yx.CONTN, params = p.vec) 
+C_ContN <- C_ContN2 <- array(0, dim = c(n.size, n.size))
+C_ContN[1:n.size , 1:n.size] <- h*outer(y, y, c.yx.CONTN, params = p.vec)
+C_ContN2[1:n.size , 1:n.size] <- h*outer(y, y, c.yx.CONTN, params = p.vec2)
 
 # Build complete matrix
 K_ContN = P_ContN + C_ContN + F_ContN
+K_ContN2 = P_ContN2 + C_ContN2 + F_ContN2
 
 ### Calculate eigenvalues and eigenvectors of the matrix ###
-# Right eigenvector gives the stable stage distribution and  
+# Right eigenvector gives the stable stage distribution and
 # left eigen vetor gives the reproductive value, when normalized.
 
 ContN_lambda <- target_2 <- Re(eigen(K_ContN)$values[1])
+ContN_lambda_2 <- target_2_2 <- Re(eigen(K_ContN2)$values[1])
+
 
 
 setwd(oldwd)

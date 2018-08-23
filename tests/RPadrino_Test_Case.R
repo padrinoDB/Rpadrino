@@ -221,8 +221,10 @@ for(i in (n.size/2+1):n.size) G_CompN[n.size,i]=G_CompN[n.size,i]+1-sum(G_CompN[
 
 # Survival vector
 S_CompN=s.x.CompN(y,params=p.vec)
+S_CompN2 <- round(s.x.CompN(y, p.vec), digits = 5)
 SMatrix = array(0,dim=c(100,99))
 S_CompN1= cbind(S_CompN, SMatrix)
+S_CompN2 <- cbind(S_CompN2, SMatrix)
 
 # Fecundity martix
 F_CompN = array(0,dim=c(n.size,n.size))
@@ -242,20 +244,23 @@ P_CompN1 = P_CompN
 # P_CompN[2:(1+n.size),1] = d.x.CompN(y,params=p.vec)
 
 # Build growth/survival matrix including discrete seedbank stage
-for(i in 1:n.size)
-  P_CompN[i,1:n.size] = S_CompN*G_CompN[i, ]
-
+for(i in 1:n.size){
+  P_CompN[i,1:n.size] = S_CompN * G_CompN[i, ]
+  # P_CompN1[i, 1:n.size] = S_CompN2 * G_CompN[i, ]
+}
 C_CompN = array(0,dim=c(n.size,n.size))
 C_CompN[1:n.size,1:n.size] = h*outer(y,y,c.yx.CompN,params=p.vec) # clonal growth matrix
 
 # Build complete matrix
 K_CompN=P_CompN+C_CompN+F_CompN
+K_CompN2 <- P_CompN1 + C_CompN + F_CompN
 
 ### Calculate eigenvalues and eigenvectors of the matrix ###
 # Right eigenvector gives the stable stage distribution and
 # left eigen vetor gives the reproductive value, when normalized.
 
 CompN_lambda <- target_1 <- Re(eigen(K_CompN)$values[1])
+CompN1_lambda <- Re(eigen(K_CompN2)$values[1])
 CompN_lambda
 
 setwd(oldwd)
