@@ -116,8 +116,8 @@ SDL_NoBurn = AASeedlings[AASeedlings$Burn == 'N',]
 SDL_no.reg=lm(SDL_no~Year,data=SDL_NoBurn)
 summary(SDL_no.reg)
 xx=seq(2012,2013,by=1)
-plot(SDL_NoBurn$Year,SDL_NoBurn$SDL_no,xlab="Year",ylab="Seedling density")
-lines(xx,predict(SDL_no.reg,data.frame(Year=xx)),col='red',lwd=3)
+#plot(SDL_NoBurn$Year,SDL_NoBurn$SDL_no,xlab="Year",ylab="Seedling density")
+#lines(xx,predict(SDL_no.reg,data.frame(Year=xx)),col='red',lwd=3)
 
 # For unburned plots
 e = 0.160585
@@ -216,57 +216,44 @@ h=y[2]-y[1] # step size
 # the width of the rectangles is h.
 # The result is n.size x n.size cell discretization of the kernel, K.
 
-p.vec2 <- apply(p.vec, MARGIN = 2, function(x) round(x, 6))
-p.vec2 <- as.data.frame(t(p.vec2))
 
 # Growth matrix
 G_ContN = h * outer(y, y, g.yx.CONTN, params = p.vec)
-G_ContN2 = h * outer(y, y, g.yx.CONTN, params = p.vec2)
 
 # Larger individuals are evicted (see Williams et al. 2012), so return the evicted individuals to the
 # cells at the boundaries where they were evicted (i.e., rerout growth to sizes outside the allowed range
 # to the extreme sizes avoiding eviction).
 for(i in 1:(n.size/2)){
   G_ContN[1, i]=G_ContN[1, i] + 1 - sum(G_ContN[ , i])
-  G_ContN2[1, i]=G_ContN2[1, i] + 1 - sum(G_ContN2[ , i])
 }
 
 # Survival vector
 S_ContN = s.x.CONTN(y,params=p.vec)
-S_ContN2 = s.x.CONTN(y,params=p.vec2)
 
 
 # Fecundity martix
 F_ContN = array(0, dim = c(n.size, n.size))
 F_ContN[1:n.size, 1:n.size] = h*outer(y,y,f.yx.CONTN,params=p.vec)
-F_ContN2 = array(0, dim = c(n.size, n.size))
-F_ContN2[1:n.size, 1:n.size] = h*outer(y,y,f.yx.CONTN,params=p.vec2)
-
 
 # Survival/growth matrix
-P_ContN2 <- P_ContN <- array(0, dim=c(n.size, n.size))
+P_ContN <- array(0, dim=c(n.size, n.size))
 
 # Build growth/survival matrix including discrete seedbank stage
 for(i in 1:n.size){
   P_ContN[i, 1:n.size] = S_ContN * G_ContN[i, ]
-  P_ContN2[i, 1:n.size] = S_ContN2 * G_ContN2[i, ]
 }
 
-C_ContN <- C_ContN2 <- array(0, dim = c(n.size, n.size))
+C_ContN <- array(0, dim = c(n.size, n.size))
 C_ContN[1:n.size , 1:n.size] <- h*outer(y, y, c.yx.CONTN, params = p.vec)
-C_ContN2[1:n.size , 1:n.size] <- h*outer(y, y, c.yx.CONTN, params = p.vec2)
 
 # Build complete matrix
 K_ContN = P_ContN + C_ContN + F_ContN
-K_ContN2 = P_ContN2 + C_ContN2 + F_ContN2
 
 ### Calculate eigenvalues and eigenvectors of the matrix ###
 # Right eigenvector gives the stable stage distribution and
 # left eigen vetor gives the reproductive value, when normalized.
 
 ContN_lambda <- target_2 <- Re(eigen(K_ContN)$values[1])
-ContN_lambda_2 <- target_2_2 <- Re(eigen(K_ContN2)$values[1])
-
 
 
 setwd(oldwd)

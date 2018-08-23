@@ -12,11 +12,11 @@ library(RPadrino)
 
 # source('R/unexported_utils.R')
 
-padrino <- RPadrino:::.read_all_sheets('../Padrino/metadata/Test_Padrino_methods.xlsx')
+padrino <- padrino_round <- RPadrino:::.read_all_sheets('../Padrino/metadata/Test_Padrino_methods.xlsx')
 
 # test if rounding error matters
 
-padrino[[10]]$parameter_value <- round(padrino[[10]]$parameter_value, 3)
+padrino_round[[10]]$parameter_value <- round(padrino_round[[10]]$parameter_value, 3)
 
 # generate_proto_ipm() wraps everything below except the padrino_filter call
 # db <- RPadrino:::padrino_filter(padrino, ipm_id == 'a2b3c1')
@@ -37,6 +37,12 @@ padrino[[10]]$parameter_value <- round(padrino[[10]]$parameter_value, 3)
 #
 proto_ipm <- generate_proto_ipm(padrino, ipms = c('a2b3c1'))
 proto_ipm_2 <- generate_proto_ipm(padrino, ipms = c('a2b1c1'))
+
+round_proto_ipm <- generate_proto_ipm(padrino_round,
+                                      ipms = c('a2b3c1'))
+round_proto_ipm_2 <- generate_proto_ipm(padrino_round,
+                                        ipms = c('a2b1c1'))
+
 
 # #
 # new_domains <- RPadrino:::.extract_domains(proto_ipm)
@@ -69,11 +75,14 @@ proto_ipm_2 <- generate_proto_ipm(padrino, ipms = c('a2b1c1'))
 test <- build_ipm(proto_ipm)
 test_2 <- build_ipm(proto_ipm_2)
 
+round_test <- build_ipm(round_proto_ipm)
+round_test_2 <- build_ipm(round_proto_ipm_2)
+
 v <- test$K$sub_kernel_env$v_s
 g <- test$K$sub_kernel_env$g_s
 q_a <- test$K$sub_kernel_env$q_a
 
-t_env <- .force_kernel_syms(test$F$sub_kernel_env)
+# t_env <- .force_kernel_syms(test$F$sub_kernel_env)
 
 K_1 <- test$P$sub_kernel_env$P +
   v*g*q_a*test$F$sub_kernel_env$F +
@@ -83,8 +92,18 @@ K_2 <- test_2$P$sub_kernel_env$P +
   v*g*q_a*test_2$F$sub_kernel_env$F +
   test_2$C$sub_kernel_env$C
 
+round_K_1 <- round_test$P$sub_kernel_env$P +
+  v*g*q_a*round_test$F$sub_kernel_env$F +
+  round_test$C$sub_kernel_env$C
+
+round_K_2 <- round_test_2$P$sub_kernel_env$P +
+  v*g*q_a*round_test_2$F$sub_kernel_env$F +
+  round_test_2$C$sub_kernel_env$C
+
 source('tests/RPadrino_Test_Case.R')
 source('tests/RPadrino_Test_Case_2.R')
+source('tests/RPadrino_Test_Case_Round.R')
+source('tests/RPadrino_Test_Case_Round_2.R')
 #
 # P_eig_padrino <- Re(eigen(test$P$sub_kernel_env$P)$values)[1]
 # P_eig_Rae <- Re(eigen(P_CompN)$values)[1]
@@ -102,11 +121,25 @@ source('tests/RPadrino_Test_Case_2.R')
 # (C_eig_Rae - C_eig_Padrino)/C_eig_Rae
 
 actual_1 <- Re(eigen(K_1)$values)[1]
-actual_2 <- Re(eigen(K_2)$values[1])
+actual_2 <- Re(eigen(K_2)$values)[1]
+
+round_actual_1 <- Re(eigen(round_K_1)$values)[1]
+round_actual_2 <- Re(eigen(round_K_2)$values)[1]
+
 
 (actual_1 - target_1)/target_1
 (actual_2 - target_2)/target_2
+(round_actual_1 - target_1)/target_1
+(round_actual_2 - target_2)/target_2
 
+# these values still aren't quite identical, but neither are the underlying
+# parameters
+(round_actual_1 - round_target_1)/round_target_1 -> round_diff_1
+(round_actual_2 - round_target_2)/round_target_2
+
+
+(round_target_1 - target_1)/target_1 # This makes me a little uneasy
+(round_target_2 - target_2)/target_2 # This seems a bit more reasonable
 
 # Apparently I have some bugs. Check for erroneous transpositions
 # UPDATE: Fixed, now need to figure out how to suppress warnings in build_ipm

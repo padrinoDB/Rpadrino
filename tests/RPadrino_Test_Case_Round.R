@@ -115,7 +115,7 @@ SDL_NoBurn = AASeedlings[AASeedlings$Burn == 'N',]
 SDL_no.reg=lm(SDL_no~Year,data=SDL_NoBurn)
 summary(SDL_no.reg)
 xx=seq(2012,2013,by=1)
-#plot(SDL_NoBurn$Year,SDL_NoBurn$SDL_no,xlab="Year",ylab="Seedling density")
+# plot(SDL_NoBurn$Year,SDL_NoBurn$SDL_no,xlab="Year",ylab="Seedling density")
 #lines(xx,predict(SDL_no.reg,data.frame(Year=xx)),col='red',lwd=3)
 
 # For unburned plots
@@ -211,6 +211,8 @@ h=y[2]-y[1] # step size
 # the width of the rectangles is h.
 # The result is n.size x n.size cell discretization of the kernel, K.
 
+p.vec <- round(p.vec, digits = 3)
+
 # Growth matrix
 G_CompN=h*outer(y,y,g.yx.CompN,params=p.vec)
 # Larger individuals are evicted (see Williams et al. 2012), so return the evicted individuals to the
@@ -221,10 +223,8 @@ for(i in (n.size/2+1):n.size) G_CompN[n.size,i]=G_CompN[n.size,i]+1-sum(G_CompN[
 
 # Survival vector
 S_CompN=s.x.CompN(y,params=p.vec)
-S_CompN2 <- round(s.x.CompN(y, p.vec), digits = 5)
 SMatrix = array(0,dim=c(100,99))
 S_CompN1= cbind(S_CompN, SMatrix)
-S_CompN2 <- cbind(S_CompN2, SMatrix)
 
 # Fecundity martix
 F_CompN = array(0,dim=c(n.size,n.size))
@@ -246,21 +246,18 @@ P_CompN1 = P_CompN
 # Build growth/survival matrix including discrete seedbank stage
 for(i in 1:n.size){
   P_CompN[i,1:n.size] = S_CompN * G_CompN[i, ]
-  # P_CompN1[i, 1:n.size] = S_CompN2 * G_CompN[i, ]
 }
 C_CompN = array(0,dim=c(n.size,n.size))
 C_CompN[1:n.size,1:n.size] = h*outer(y,y,c.yx.CompN,params=p.vec) # clonal growth matrix
 
 # Build complete matrix
 K_CompN=P_CompN+C_CompN+F_CompN
-K_CompN2 <- P_CompN1 + C_CompN + F_CompN
 
 ### Calculate eigenvalues and eigenvectors of the matrix ###
 # Right eigenvector gives the stable stage distribution and
 # left eigen vetor gives the reproductive value, when normalized.
 
-CompN_lambda <- target_1 <- Re(eigen(K_CompN)$values[1])
-CompN1_lambda <- Re(eigen(K_CompN2)$values[1])
+CompN_lambda <- round_target_1 <- Re(eigen(K_CompN)$values[1])
 CompN_lambda
 
 setwd(oldwd)

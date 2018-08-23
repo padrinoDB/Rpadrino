@@ -4,6 +4,7 @@ if(Sys.getenv("USERNAME") == 'sl13sise'){
   oldwd <- getwd()
   setwd('C:/Users/sl13sise/Dropbox/Thesis_SL/Invader_Demography')
 }
+
 Ailanthus4R = read.csv("Ailanthus/IPM/Data/Ailanthus4R.csv", header = TRUE)
 head(Ailanthus4R)
 
@@ -20,10 +21,10 @@ head(Ailanthus4R_Germ)
 
 ###########################################################################
 # Control without fire
-PopData1 = Ailanthus4R[Ailanthus4R$Trt == 'Comp' | Ailanthus4R$Trt == 'All',]
+PopData1 = Ailanthus4R[Ailanthus4R$Trt == 'Control' | Ailanthus4R$Trt == 'All',]
 PopData = PopData1[PopData1$Burn != 'Y',]
 
-PopDataSDL = Ailanthus4R[Ailanthus4R$Trt == 'Comp' & Ailanthus4R$Burn != 'Y' & Ailanthus4R$Stage2013 == 'SDL',]
+PopDataSDL = Ailanthus4R[Ailanthus4R$Trt == 'Control' & Ailanthus4R$Burn != 'Y' & Ailanthus4R$Stage2013 == 'SDL',]
 
 ##########################################################################
 # These subsets are used for all treatments
@@ -131,7 +132,7 @@ p.vec$clonal.size.sd=sd(Clones$SizeNext, na.rm = TRUE)
 # Estimated by dividing the number of new recruits (i.e., Clones) in 2013
 # by the number of NRA and RA (i.e., Nonclones) in 2012
 p.vec$clonal.prob=length(Clones$SizeNext)/length(Nonclones$Size)
-CompN_clonal.prob=length(Clones$SizeNext)/length(Nonclones$Size)
+ContN_clonal.prob=length(Clones$SizeNext)/length(Nonclones$Size)
 
 # 8.  Probabilities associated with discrete stage (i.e., seedbank)
 # Probability of staying in the seedbank
@@ -146,45 +147,49 @@ p.vec$germ.seedbank.prob=v*g*e
 ### Define functions to describe life history ###
 
 # 1. Survival probability function
-s.x.CompN=function(x,params) {
-  u=exp(params$surv.int+params$surv.slope*x)
-  return(u/(1+u))
+s.x.CONTN=function(x,params) {
+  u = exp(params$surv.int + params$surv.slope * x)
+  return(u / (1 + u))
 }
 
 # 2. Growth function
-g.yx.CompN=function(xp,x,params) {
-  dnorm(xp,mean=params$growth.int+params$growth.slope*x,sd=params$growth.sd)
+g.yx.CONTN=function(xp,x,params) {
+  dnorm(xp,
+        mean = params$growth.int + params$growth.slope * x,
+        sd = params$growth.sd)
 }
 
 # 3. Reproduction function
-p.repro.x.CompN=function(x,params) {
-  u=exp(params$prob.repro.int+params$prob.repro.slope*x)
-  return(u/(1+u))
+p.repro.x.CONTN=function(x,params) {
+  u = exp(params$prob.repro.int + params$prob.repro.slope * x)
+  return(u / (1 + u))
 }
 
 # Fecundity model while taking into account some seeds move into
 # the discrete portion of the model (i.e., seedbank)
-f.yx.CompN=function(xp,x,params) {
-  p.repro.x.CompN(x,params)*
-    params$establishment.prob*
-    dnorm(xp,mean=params$recruit.size.mean,sd=params$recruit.size.sd)*
-    exp(params$seed.int+params$seed.slope*x)
+f.yx.CONTN=function(xp,x,params) {
+  p.repro.x.CONTN(x,params) *
+    params$establishment.prob *
+    dnorm(xp, mean = params$recruit.size.mean, sd = params$recruit.size.sd) *
+    exp(params$seed.int + params$seed.slope * x)
 }
 
 # 4. Seedling size distribution
-d.x.CompN=function(xp,x,params) {
-  dnorm(xp, mean=p.vec$recruit.size.mean,sd=p.vec$recruit.size.sd)*p.vec$germ.seedbank.prob
+d.x.CONTN=function(xp,x,params) {
+  dnorm(xp, mean = p.vec$recruit.size.mean, sd = p.vec$recruit.size.sd) * p.vec$germ.seedbank.prob
 }
 
 # 5. Seeds entering seedbank
-e.x.CompN=function(xp,x,params) {
-  p.repro.x.CompN(x,params)*exp(params$seed.int+params$seed.slope*x)*params$go.seedbank.prob
+e.x.CONTN=function(xp,x,params) {
+  p.repro.x.CONTN(x,params) *
+    exp(params$seed.int + params$seed.slope * x) *
+    params$go.seedbank.prob
 }
 
 # 6. Clonal function
-c.yx.CompN=function(xp,x,params) {
-  params$clonal.prob*
-    dnorm(xp,mean=params$clonal.size.mean,sd=params$clonal.size.sd)
+c.yx.CONTN=function(xp,x,params) {
+    params$clonal.prob *
+    dnorm(xp, mean = params$clonal.size.mean, sd = params$clonal.size.sd)
 }
 
 ### Combine vital rate functions to build the discretized IPM kernal (i.e., IPM matrix)
@@ -193,14 +198,16 @@ c.yx.CompN=function(xp,x,params) {
 # mesh points (y; the centers of the cells defining the matrix and the points at which
 # the matrix is evaluated for the midpoint rule of numerical integration, and
 # step size (h; the widths of the cells)
-# The integration limits (min.size and max.size_CompN) span the range of sizes observed in the data set.
+# The integration limits (min.size and max.size_ContN) span the range of sizes observed in the data set.
 
 min.size=0.9*min(c(PopData$Size,PopData$SizeNext),na.rm=T)  # Use values slightly above and below limits
-max.size_CompN=1.1*max(c(PopData$Size,PopData$SizeNext),na.rm=T)
+max.size_ContN=1.1*max(c(PopData$Size,PopData$SizeNext),na.rm=T)
 n.size=50 # number of cells in the matrix
-b=min.size+c(0:n.size)*(max.size_CompN-min.size)/n.size # boundary points
+b=min.size+c(0:n.size)*(max.size_ContN-min.size)/n.size # boundary points
 y=0.5*(b[1:n.size]+b[2:(n.size+1)]) # mesh points
 h=y[2]-y[1] # step size
+
+p.vec <- round(p.vec, digits = 3)
 
 ### Make IPM matrices ###
 # The function outer() evaluates the matrix at all pairwise combinations of the two
@@ -211,56 +218,45 @@ h=y[2]-y[1] # step size
 # the width of the rectangles is h.
 # The result is n.size x n.size cell discretization of the kernel, K.
 
+
 # Growth matrix
-G_CompN=h*outer(y,y,g.yx.CompN,params=p.vec)
+G_ContN = h * outer(y, y, g.yx.CONTN, params = p.vec)
+
 # Larger individuals are evicted (see Williams et al. 2012), so return the evicted individuals to the
 # cells at the boundaries where they were evicted (i.e., rerout growth to sizes outside the allowed range
 # to the extreme sizes avoiding eviction).
-for(i in 1:(n.size/2)) G_CompN[1,i]=G_CompN[1,i]+1-sum(G_CompN[,i])
-for(i in (n.size/2+1):n.size) G_CompN[n.size,i]=G_CompN[n.size,i]+1-sum(G_CompN[,i])
+for(i in 1:(n.size/2)){
+  G_ContN[1, i]=G_ContN[1, i] + 1 - sum(G_ContN[ , i])
+}
 
 # Survival vector
-S_CompN=s.x.CompN(y,params=p.vec)
-S_CompN2 <- round(s.x.CompN(y, p.vec), digits = 5)
-SMatrix = array(0,dim=c(100,99))
-S_CompN1= cbind(S_CompN, SMatrix)
-S_CompN2 <- cbind(S_CompN2, SMatrix)
+S_ContN = s.x.CONTN(y,params=p.vec)
+
 
 # Fecundity martix
-F_CompN = array(0,dim=c(n.size,n.size))
-F_CompN = h*outer(y,y,f.yx.CompN,params=p.vec)
-# e.x.CompN tells seeds to go into the seedbank
-# F_CompN[1,2:(1+n.size)] = e.x.CompN(y,y,params=p.vec)
+F_ContN = array(0, dim = c(n.size, n.size))
+F_ContN[1:n.size, 1:n.size] = h*outer(y,y,f.yx.CONTN,params=p.vec)
+
 
 # Survival/growth matrix
-# The first row and column are seedbank transitions
-P_CompN = array(0,dim=c(n.size,n.size))
-
-# Add probability of staying in seedbank
-# P_CompN[1,1] = p.vec$stay.seedbank.prob
-P_CompN1 = P_CompN
-
-# Add probability of germinating and moving to continuous
-# P_CompN[2:(1+n.size),1] = d.x.CompN(y,params=p.vec)
+P_ContN <- array(0, dim=c(n.size, n.size))
 
 # Build growth/survival matrix including discrete seedbank stage
 for(i in 1:n.size){
-  P_CompN[i,1:n.size] = S_CompN * G_CompN[i, ]
-  # P_CompN1[i, 1:n.size] = S_CompN2 * G_CompN[i, ]
+  P_ContN[i, 1:n.size] = S_ContN * G_ContN[i, ]
 }
-C_CompN = array(0,dim=c(n.size,n.size))
-C_CompN[1:n.size,1:n.size] = h*outer(y,y,c.yx.CompN,params=p.vec) # clonal growth matrix
+
+C_ContN <- array(0, dim = c(n.size, n.size))
+C_ContN[1:n.size , 1:n.size] <- h*outer(y, y, c.yx.CONTN, params = p.vec)
 
 # Build complete matrix
-K_CompN=P_CompN+C_CompN+F_CompN
-K_CompN2 <- P_CompN1 + C_CompN + F_CompN
+K_ContN = P_ContN + C_ContN + F_ContN
 
 ### Calculate eigenvalues and eigenvectors of the matrix ###
 # Right eigenvector gives the stable stage distribution and
 # left eigen vetor gives the reproductive value, when normalized.
 
-CompN_lambda <- target_1 <- Re(eigen(K_CompN)$values[1])
-CompN1_lambda <- Re(eigen(K_CompN2)$values[1])
-CompN_lambda
+ContN_lambda <- round_target_2 <- Re(eigen(K_ContN)$values[1])
+
 
 setwd(oldwd)
