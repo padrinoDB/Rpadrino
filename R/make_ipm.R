@@ -28,7 +28,7 @@
 #' @export
 
 
-build_ipm <- function(proto_ipm,
+make_ipm <- function(proto_ipm,
                       domains = NULL,
                       mesh_points = NULL,
                       domain_lower = NULL,
@@ -146,7 +146,7 @@ build_ipm <- function(proto_ipm,
                            .eval_env = kernel_list[[i]]$sub_kernel_env)
 
       suppressMessages(
-        kernel_list[[i]]$sub_kernel_env <- .force_kernel_syms(
+        RPadrino:::.force_kernel_syms(
           kernel_list[[i]]$sub_kernel_env
         )
       )
@@ -154,6 +154,7 @@ build_ipm <- function(proto_ipm,
 
   } # end kernel loop
 
+  class(kernel_list) <- 'PadrinoIPM'
   return(kernel_list)
 }
 
@@ -161,7 +162,7 @@ build_ipm <- function(proto_ipm,
   out <- tryCatch(eapply(kernel_env, FUN = force),
                          error = function(e) e)
 
-  if(rlang::is_condition(out)) {
+  while(rlang::is_condition(out)) {
 
     out <-  tryCatch(eapply(kernel_env, FUN = force),
                      error = function(e) e)
@@ -226,6 +227,7 @@ discrete_extrema <- function(mat) {
 
   out <- .orient_operations(out, eval_env)
   out <- rlang::parse_expr(out)
+
   return(out)
 
 }

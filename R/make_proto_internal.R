@@ -99,14 +99,6 @@
   return(out)
 }
 
-.is_lowest_level <- function(text, params) {
-  if(any(grepl(text, params))) {
-    return(TRUE)
-  } else {
-    return(FALSE)
-  }
-}
-
 #' @title splits a vital rate expression and returns its components
 #'
 #' @param text a string with the vital rate expression

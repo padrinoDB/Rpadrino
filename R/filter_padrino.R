@@ -10,7 +10,7 @@
 #'
 #' @author Sam Levin
 #'
-#' @importFrom dplyr filter %>% select
+#' @importFrom dplyr filter select
 #' @importFrom rlang enquos !!!
 #'
 #' @export
@@ -21,8 +21,9 @@ padrino_filter <- function(db, ...) {
 
   conditions <- rlang::enquos(...)
 
-  output <- lapply(seq_len(length(db)), function(x){
-     dplyr::filter(db[[x]], !!! conditions)
+  output <- lapply(seq_len(length(db)),
+                   function(x){
+                     dplyr::filter(db[[x]], !!! conditions)
     }
   )
 

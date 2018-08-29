@@ -8,11 +8,11 @@
 #'  have its own row in the tibble
 #'
 #' @importFrom dplyr bind_rows tibble
-#' @importFrom rlang quo .data
+#' @importFrom rlang quo .data enquos !!!
 #' @export
 
 
-generate_proto_ipm <- function(db, ipms = NULL) {
+make_proto_ipm <- function(db, ipms = NULL) {
 
   out <- dplyr::tibble(ipm_id = NA,
                        kernel = NA,
@@ -26,9 +26,11 @@ generate_proto_ipm <- function(db, ipms = NULL) {
                        evict_type = NA,
                        parameters = NA)
 
+
   if(!is.null(ipms)) {
 
-    db <- padrino_filter(db, .data$ipm_id %in% ipms)
+    filter_logic <- rlang::enquos(ipms)
+    db <- padrino_filter(db, !!! filter_logic)
   }
 
   for(i in seq_len(length(unique(db[[1]]$ipm_id)))) {
