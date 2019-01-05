@@ -10,7 +10,7 @@
 #'
 #' @importFrom tibble tibble
 #' @importFrom rlang enquos is_empty
-#'
+#' @export
 
 make_proto_ipm <- function(db, ...) {
 

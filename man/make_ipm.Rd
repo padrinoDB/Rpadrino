@@ -8,7 +8,7 @@ make_ipm(proto_ipm, domains = NULL, mesh_points = NULL,
   domain_lower = NULL, domain_upper = NULL,
   eviction = c("discrete_extremes", "truncated_distributions"),
   truncated_bounds = NULL, quad_routine = c("midpoint", "trapezoid",
-  "Gauss-Legendre"))
+  "Gauss-Legendre"), return_all = TRUE)
 }
 \arguments{
 \item{proto_ipm}{An object of class \code{proto_ipm}. This can come from either
@@ -36,12 +36,17 @@ for each one called in the IPM creation.}
 (default), uses the upper and lower bounds for the domains associated with
 the probability density function.}
 
-\item{quad_routine}{The quadrature routin to use. Currently, \code{midpoint} is
+\item{quad_routine}{The integration type to use. Currently, \code{midpoint} is
 the default. Alternatives are \code{trapezoid} and \code{Gauss-Legendre}. Others
 may be added later.}
+
+\item{return_all}{Logical indicating whether to return the complete set of
+expressions and environments or just the results of kernel evaluation (e.g.
+the iteration matrices). Default is \code{TRUE}, but could cause large models
+to get clunky. Set to \code{FALSE} if this is happening.}
 }
 \value{
-An object of class \code{ipm}.
+An object of class \code{ipm_system}.
 }
 \description{
 Construct an IPM from the proto_IPM object
