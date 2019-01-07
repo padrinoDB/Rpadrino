@@ -2,7 +2,7 @@
 #' database
 #'
 #' @param db an object downloaded from the \code{Padrino} database
-#' @param ... logical conditions to subset the database. These are passed to
+#' @param condition logical conditions to subset the database. These are passed to
 #' \code{padrino_filter}. Useful for only building a subset of downloaded IPMs.
 #'
 #' @return A \code{tibble} of \code{proto_ipm} objects. Each IPM sub-kernel will

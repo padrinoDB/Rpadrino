@@ -10,7 +10,8 @@
 #'
 #' @author Sam Levin
 #'
-#' @importFrom rlang enquos !!! eval_tidy
+#' @importFrom rlang enquos !!!
+#' @importFrom dplyr filter
 #'
 #' @export
 #'
@@ -18,12 +19,11 @@
 
 padrino_filter <- function(db, ...) {
 
-  condition <- rlang::enquo(...)
+  cond <- rlang::enquos(...)
 
-  output <- lapply(seq_along(db),
+  output <- lapply(db,
                    function(x){
-                     sub <- rlang::eval_tidy(condition, data = db[[x]])
-                     db[[x]][sub, ]
+                     dplyr::filter(x, !!! cond)
     }
   )
 
