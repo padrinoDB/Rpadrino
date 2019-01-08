@@ -101,8 +101,8 @@ actual <- max(Re(eigen(oenethra_k)$values))
 actual - target
 
 
-target_ovis <- 1.023
-var_z_ovis <- 0.07855819
+target_ovis <- 1.020261
+var_z_ovis <- 0.08001151
 mean_z_ovis <- 20.57083
 
 ovis_proto <- make_proto_ipm(padrino, ipm_id == 'xxxxx2')
@@ -111,7 +111,7 @@ ovis_k <- make_k(ovis_kernels, ovis_proto)
 
 # Test lambda
 ovis_lam <- max(Re(eigen(ovis_k)$values))
-(ovis_lam - target_ovis)/target_ovis # Hm... not as good as above
+(ovis_lam - target_ovis)/target_ovis
 
 ovis_w <- Re(eigen(ovis_k)$vectors[ ,1])
 stab_ovis_w <- ovis_w/sum(ovis_w)
