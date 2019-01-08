@@ -29,7 +29,7 @@ padrino[[9]]$model_type <- gsub('Integrated', 'Substituted', padrino[[9]]$model_
 # padrino_round[[10]]$parameter_value <- round(padrino_round[[10]]$parameter_value, 3)
 cont_unburnd <- make_proto_ipm(padrino, ipm_id == 'a2b1c1')
 
-cr_unburnd <- proto_ipm <-  make_proto_ipm(padrino, ipm_id == c('a2b3c1'))
+cr_unburnd <- make_proto_ipm(padrino, ipm_id == c('a2b3c1'))
 #
 # round_proto_ipm <- make_proto_ipm(padrino_round,
 #                                       ipms = c('a2b3c1'))
@@ -37,7 +37,7 @@ cr_unburnd <- proto_ipm <-  make_proto_ipm(padrino, ipm_id == c('a2b3c1'))
 #                                         ipms = c('a2b1c1'))
 #
 #
-# #
+# # #
 # new_domains <- RPadrino:::.extract_domains(proto_ipm)
 #
 # # create environment to house domains separate from kernel evaluation
@@ -55,85 +55,74 @@ cr_unburnd <- proto_ipm <-  make_proto_ipm(padrino, ipm_id == c('a2b3c1'))
 #
 # kernel_list <- RPadrino:::.make_kernels(sub_kernel_list, proto_ipm)
 
+
 test <- make_ipm(cr_unburnd)
-test_2 <- make_ipm(cont_unburnd)
-
-testK <- make_K(test, proto_ipm)
-test2K <- make_K(test, proto_ipm)
+test_2 <- make_ipm(cont_unburnd, return_all = FALSE)
 
 
-source('tests/RPadrino_Test_Case_Round.R')
-source('tests/RPadrino_Test_Case_Round_2.R')
+# individual steps in make_k
 #
-# P_eig_padrino <- Re(eigen(test$P$sub_kernel_env$P)$values)[1]
-# P_eig_Rae <- Re(eigen(P_CompN)$values)[1]
+# data_envs <- test$data_envs
+# sub_kernels <- test$kernels
 #
-# F_eig_Padrino <- Re(eigen(test$F$sub_kernel_env$F * v*g*q_a)$values)[1]
-# F_eig_Rae <- Re(eigen(F_CompN)$values)[1]
+# domain_env <- RPadrino:::.make_domain_env(proto_ipm,
+#                                           domains = NULL,
+#                                           lower = NULL,
+#                                           upper = NULL,
+#                                           mesh_points = NULL)
 #
-# C_eig_Padrino <- Re(eigen(test$C$sub_kernel_env$C)$values)[1]
-# C_eig_Rae <- Re(eigen(C_CompN)$values)[1]
+# eval_envs <- RPadrino:::.generate_kernel_envs(proto_ipm,
+#                                               data_envs,
+#                                               sub_kernels,
+#                                               domain_env)
 #
-# (P_eig_Rae - P_eig_padrino)/P_eig_Rae
+# kernel_list <- RPadrino:::.prep_kernel_quos(proto_ipm, eval_envs, sub_kernels)
 #
-# (F_eig_Rae - F_eig_Padrino)/F_eig_Rae
+# .bind_kernel_quos(kernel_list)
 #
-# (C_eig_Rae - C_eig_Padrino)/C_eig_Rae
-
-actual_1 <- Re(eigen(K_1)$values)[1]
-actual_2 <- Re(eigen(K_2)$values)[1]
-
-# round_actual_1 <- Re(eigen(round_K_1)$values)[1]
-# round_actual_2 <- Re(eigen(round_K_2)$values)[1]
-
-
-(actual_1 - target_1)/target_1
-(actual_2 - target_2)/target_2
-(round_actual_1 - target_1)/target_1
-(round_actual_2 - target_2)/target_2
-
-# these values still aren't quite identical, but neither are the underlying
-# parameters
-(round_actual_1 - round_target_1)/round_target_1 -> round_diff_1
-(round_actual_2 - round_target_2)/round_target_2
-
-
-(round_target_1 - target_1)/target_1 # This makes me a little uneasy
-(round_target_2 - target_2)/target_2 # This seems a bit more reasonable
-
-# Apparently I have some bugs. Check for erroneous transpositions
-# UPDATE: Fixed, now need to figure out how to suppress warnings in build_ipm
+# last_steps <- .extract_high_level_kernels(kern_list)
 #
+# .bind_to_k_env(last_steps, list(k_all = kernel_list$K_all))
 #
-test_g <- test$P$sub_kernel_env$forced_g
-test_g_2 <- test_2$P$sub_kernel_env$forced_g
+# out <- .get_k_all(kernel_list$K_all$kern_env, 'K_all')
 
-s_1 <- test$P$sub_kernel_env$s
-s_2 <- test_2$P$sub_kernel_env$s
+testK <- make_k(test, cr_unburnd)
+test2K <- make_k(test_2, cont_unburnd)
 
-new_g <- discrete_extrema(test_g)
-new_g_2 <- discrete_extrema(test_g_2)
-new_P <- matrix(0, 50, 50)
-new_P_2 <- matrix(0, 50, 50)
+max(Re(eigen(testK)$values))
+max(Re(eigen(test2K)$values))
 
-for(i in 1:50) new_P[ ,i] <- s_1[i] * new_g[ ,i]
-for(i in 1:50) new_P_2[ ,i] <- s_2[i] * new_g_2[ ,i]
+oenethra_proto <- make_proto_ipm(padrino, ipm_id == 'xxxxx1')
+oenethra_kernels <- make_ipm(oenethra_proto)
+oenethra_k <- make_k(oenethra_kernels, oenethra_proto)
 
-Re(eigen(new_P)$values)[1]
-Re(eigen(new_P_2)$values)[1]
+target <- 1.059307 # Lambda from IPM_True in Chapter 2 of IPM book. The one above uses those params
+actual <- max(Re(eigen(oenethra_k)$values))
+actual - target
 
-new_K_1 <- new_P +
-  v * g * q_a * test$F$sub_kernel_env$expr +
-  test$C$sub_kernel_env$expr
 
-new_actual_1 <- Re(eigen(new_K_1)$values)[1]
+target_ovis <- 1.023
+var_z_ovis <- 0.07855819
+mean_z_ovis <- 20.57083
 
-new_K_2 <- new_P_2 +
-  v * g * q_a * test_2$F$sub_kernel_env$expr +
-  test_2$C$sub_kernel_env$expr
+ovis_proto <- make_proto_ipm(padrino, ipm_id == 'xxxxx2')
+ovis_kernels <- make_ipm(ovis_proto)
+ovis_k <- make_k(ovis_kernels, ovis_proto)
 
-new_actual_2 <- Re(eigen(new_K_2)$values)[1]
+# Test lambda
+ovis_lam <- max(Re(eigen(ovis_k)$values))
+(ovis_lam - target_ovis)/target_ovis # Hm... not as good as above
 
-(new_actual_1 - target_1)/target_1
+ovis_w <- Re(eigen(ovis_k)$vectors[ ,1])
+stab_ovis_w <- ovis_w/sum(ovis_w)
 
-(new_actual_2 - target_2)/target_2
+dom_env <- RPadrino:::.make_domain_env(ovis_proto, NULL,NULL,NULL,NULL)
+mesh_p <- dom_env$log_size_vec
+mean_ovis_z_w <- sum(stab_ovis_w * mesh_p)
+
+var_ovis_est <- sum(stab_ovis_w * mesh_p^2) - mean_ovis_z_w^2
+
+(var_ovis_est - var_z_ovis)/var_z_ovis
+
+mean_z_est <- sum(stab_ovis_w * exp(mesh_p))
+(mean_z_est - mean_z_ovis) / mean_z_ovis

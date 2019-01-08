@@ -10,7 +10,7 @@ make_proto_ipm(db, ...)
 \arguments{
 \item{db}{an object downloaded from the \code{Padrino} database}
 
-\item{...}{logical conditions to subset the database. These are passed to
+\item{condition}{logical conditions to subset the database. These are passed to
 \code{padrino_filter}. Useful for only building a subset of downloaded IPMs.}
 }
 \value{

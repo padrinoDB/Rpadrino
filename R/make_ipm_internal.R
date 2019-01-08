@@ -9,7 +9,9 @@
 
   for(i in seq_len(n_kernels)) {
     # K gets built later so this is skipped for now
-    if(grepl('K', proto_ipm$kernel[i])) next
+    if(proto_ipm$parameters[[i]]$family %in% c('IPM_Discrete',
+                                               'IPM_Full',
+                                               'IPM_Cont')) next
 
     kern_env <- rlang::child_env(.parent = domain_env)
     out_quos <- list()
@@ -20,7 +22,7 @@
 
     # still need an index for the total length
     ll <- length(kernel_param_tree)
-    RPadrino:::.bind_params(kernel_param_tree, kern_env, ll)
+    .bind_params(kernel_param_tree, kern_env, ll) # make_ipm_internal.R
     is_trunc <- grepl('truncated', proto_ipm$evict_type[i])
     out_quo_ind <- 1
 
@@ -41,15 +43,15 @@
                                   sub_eval,
                                   is_biv,
                                   is_trunc,
+                                  proto_ipm$parameters[[i]]$family,
                                   proto_ipm$state_variable[i],
                                   domain_env$n_meshp,
                                   proto_ipm$kernel[i])
 
       # ready to quote vital rate expressions, assign environments, and
       # store everything to prepare for evaluation
-      out_expr <- rlang::parse_expr(text_expr)
-      out_quo_j <- rlang::enquo(out_expr)
-      out_quo_j <- rlang::quo_set_env(out_quo_j, kern_env)
+
+      out_quo_j <- .prep_quo(text_expr, kern_env) # make_k_internal.R
       out_quos[[out_quo_ind]] <- out_quo_j
       names(out_quos)[out_quo_ind] <- names(kernel_param_tree)[j + 2]
       out_quo_ind <- out_quo_ind + 1
@@ -72,11 +74,23 @@
 #' @importFrom rlang env_get
 .get_kernels <- function(ipm_sys) {
 
-  kern_nm <- names(ipm_sys)
+  kerns <- list()
+  kern_it <- 1
 
-  out <- rlang::env_get(ipm_sys[[1]]$eval_env, kern_nm, default = NA_real_)
+  for(i in seq_along(ipm_sys)){
 
-  return(out)
+    # Higher level kernels (e.g. K or seed banks that are sums of IPM_CD/IPM_DD)
+    # need to be evaluated in their own special environments.
+    if(ipm_sys[[i]]$family %in% c('IPM_CC', 'IPM_DD', 'IPM_DC', 'IPM_CD')){
+
+      kerns[[kern_it]] <- rlang::env_get(ipm_sys[[i]]$eval_env,
+                                         names(ipm_sys)[i],
+                                         default = NA_real_)
+      names(kerns)[kern_it] <- names(ipm_sys)[i]
+      kern_it <- kern_it + 1
+    }
+  }
+  return(kerns)
 
 }
 
@@ -91,12 +105,17 @@
   # Remove duplicates, env_bind only works with unique values.
   bind_params <- all_params[!duplicated(names(all_params))]
 
-  rlang::env_bind(kern_env,
-                  !!! bind_params)
+  if(length(bind_params) > 0){
+    rlang::env_bind(kern_env,
+                    !!! bind_params)
+  }
 }
 
-.check_vr_text <- function(text, sub_eval,
-                           is_biv, is_trunc,
+.check_vr_text <- function(text,
+                           sub_eval,
+                           is_biv,
+                           is_trunc,
+                           family,
                            state_variable,
                            n_meshp, kernel) {
 
@@ -112,8 +131,12 @@
 
 
     if(is_biv & grepl('P|P_', kernel)) {
-      out <- .wrap_matrix_call(out, n_meshp)
+      out <- .wrap_matrix_call(out, n_meshp) # make_ipm_internal.R
     }
+  }
+
+  if(family %in% c('IPM_DC', 'IPM_CD')) {
+    out <- .convert_to_vector(out, state_variable) # make_ipm_internal.R
   }
 
   return(out)
@@ -203,6 +226,19 @@ discrete_extrema <- function(mat) {
   return(out)
 }
 
+.make_domain_env <- function(proto_ipm, domains, lower, upper, mesh_points) {
+
+  dom_list <- .extract_domains(proto_ipm,
+                               domains = domains,
+                               lower = domain_lower,
+                               upper = domain_upper,
+                               mesh_points = mesh_points)
+
+  out <- .generate_domain_env(dom_list) # make_ipm_internal.R
+
+  return(out)
+}
+
 .wrap_matrix_call <- function(text, n_meshp) {
 
   paste('matrix(',
@@ -221,7 +257,7 @@ discrete_extrema <- function(mat) {
   # in the text expression
   for(i in seq_along(kernels)) {
     kernel <- kernels[[i]]
-    nm_g <- .find_g_name(kernel)
+    nm_g <- .find_g_name(kernel) # make_ipm_internal.R
 
     g_mat <- kernel$eval_env[[nm_g]]
 
@@ -262,35 +298,42 @@ discrete_extrema <- function(mat) {
     proto_ind <- which(proto_ipm$kernel == kernel)
     kern_fam <- proto_ipm$parameters[[proto_ind]]$family
 
-    text_expr <- .prep_kernel_expr(sub_kernel_list[[i]],
+    text_expr <- .prep_kernel_expr(sub_kernel_list[[i]], # make_ipm_internal.R
                                    kernel,
                                    kern_fam,
+                                   proto_ipm$state_variable[i],
                                    proto_ipm$mesh_p[proto_ind])
 
-    out_expr <- rlang::parse_expr(text_expr)
-    out_quo <- rlang::enquo(out_expr)
-    out_quo <- rlang::quo_set_env(out_quo, sub_kernel_list[[i]]$eval_env)
+    out_quo <- .prep_quo(text_expr, sub_kernel_list[[i]]$eval_env) # make_k_internal.R
     sub_kernel_list[[i]]$kernel_text <- NULL
     sub_kernel_list[[i]]$kernel_quo <- list(out_quo)
     names(sub_kernel_list[[i]]$kernel_quo) <- kernel
+    sub_kernel_list[[i]]$family <- kern_fam
 
-    rlang::env_bind_lazy(sub_kernel_list[[i]]$eval_env,
-                         !!! sub_kernel_list[[i]]$kernel_quo,
-                         .eval_env = sub_kernel_list[[i]]$eval_env)
+    if(kern_fam %in% c('IPM_CC', 'IPM_DD', 'IPM_DC', 'IPM_CD')){
+
+      rlang::env_bind_lazy(sub_kernel_list[[i]]$eval_env,
+                           !!! sub_kernel_list[[i]]$kernel_quo,
+                           .eval_env = sub_kernel_list[[i]]$eval_env)
+    }
   }
 
   return(sub_kernel_list)
 
 }
 
-.prep_kernel_expr <- function(kernel_list, kernel_name, family, n_meshp) {
+.prep_kernel_expr <- function(kernel_list,
+                              kernel_name,
+                              family,
+                              state_var,
+                              n_meshp) {
 
   text <- kernel_list$kernel_text
 
   # start turning it into an evaluatable expression
   dropped_brackets <- gsub('\\s*\\[[^\\]]+\\]', '', text, perl = TRUE)
 
-  LHS_RHS <- RPadrino:::.split_trim(dropped_brackets, splitter = '[=]')
+  LHS_RHS <- .LHS_RHS_mat(dropped_brackets, split = '[=]') # make_proto_clean_internal.R
   RHS <- LHS_RHS[ ,2]
 
   # if it's a growth kernel, we have to do some weird stuff to make sure
@@ -306,10 +349,24 @@ discrete_extrema <- function(mat) {
   }
 
   if(family == 'IPM_CC'){
-    RHS <- RPadrino:::.wrap_matrix_call(RHS, n_meshp)
+    RHS <- .wrap_matrix_call(RHS, n_meshp)
+  } else if(family %in% c('IPM_CD', 'IPM_DC')) {
+    RHS <- .convert_to_vector(RHS, state_var)
   }
 
   return(RHS)
+
+}
+
+.convert_to_vector <- function(text, state_var) {
+  sv_1 <- paste(state_var, '_1', sep = "")
+  sv_2 <- paste(state_var, '_2', sep = "")
+  sv_vec <- paste(state_var, '_vec', sep = "")
+
+  text_1 <- gsub(sv_1, sv_vec, text)
+  out <- gsub(sv_2, sv_vec, text_1)
+
+  return(out)
 
 }
 
@@ -337,9 +394,9 @@ discrete_extrema <- function(mat) {
       nm <- proto_ipm$domain[j]
       sv <- proto_ipm$state_variable[j]
 
-      out[[nm]] <- c(proto_ipm$lower[i],
-                     proto_ipm$upper[i],
-                     proto_ipm$mesh_p[i],
+      out[[nm]] <- c(proto_ipm$lower[j],
+                     proto_ipm$upper[j],
+                     proto_ipm$mesh_p[j],
                      sv)
 
 

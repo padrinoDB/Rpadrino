@@ -2,21 +2,22 @@
 
 .LHS_RHS_mat <- function(text, split = '[=]') {
 
-  .split_trim(text, split)
+  LHS_RHS <- .split_trim(text, split)
+
+  out <- matrix(LHS_RHS, ncol = 2, byrow = TRUE)
+
 }
 
-.split_trim <- function(text, splitter) {
+.split_trim <- function(text, splitter, perl = FALSE) {
 
-  split_str <- strsplit(text, split = splitter)
-  LHS_RHS <- lapply(split_str,
-                   FUN = function(x) trimws(x))
+  split_str <- strsplit(text, split = splitter, perl = perl)
+  out <- lapply(split_str,
+                FUN = function(x) trimws(x))
 
-  out <- matrix(unlist(LHS_RHS), ncol = 2, byrow = TRUE)
 
-  return(out)
+  return(unlist(out))
 }
 
-# Resumer 12/21
 # Determine if a function is univariate, bivariate, or neither
 .is_bivariate <- function(LHS_RHS_mat, domain_table) {
   state_vars <- paste(domain_table$state_variable, 1:2, sep = '_')

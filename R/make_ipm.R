@@ -44,13 +44,11 @@ make_ipm <- function(proto_ipm,
                                       'Gauss-Legendre'),
                      return_all = TRUE) {
 
-  dom_list <- .extract_domains(proto_ipm,
-                               domains = domains,
-                               lower = domain_lower,
-                               upper = domain_upper,
-                               mesh_points = mesh_points)
-
-  domain_env <- .generate_domain_env(dom_list)
+  domain_env <- .make_domain_env(proto_ipm,
+                                 domains = domains,
+                                 lower = domain_lower,
+                                 upper = domain_upper,
+                                 mesh_points = mesh_points)
 
   sub_kernel_list <- RPadrino:::.generate_sub_kernels(proto_ipm, domain_env)
 
@@ -62,23 +60,20 @@ make_ipm <- function(proto_ipm,
   }
 
   sys <- .make_kernels(sub_kernel_list, proto_ipm)
-  kerns <- list()
-  for(i in seq_along(sys)){
-
-    kerns[[i]] <- rlang::env_get(sys[[i]]$eval_env,
-                                 names(sys)[i],
-                                 default = NA_real_)
-    names(kerns)[i] <- names(sys)[i]
-  }
+  kerns <- .get_kernels(sys)
 
   if(return_all){
     out <- list(kernels = kerns,
-                system = sys)
+                data_envs = sys)
+    class(out$kernels) <- c('ipm_kernels', class(out))
+    class(out) <- c('ipm_system', class(out))
   } else {
-    out <- kerns
+    out <- list(kernels = kerns)
+    rm(sys)
+    class(out) <- c('ipm_kernels', class(out))
   }
 
-  class(out) <- c('ipm_system', class(out))
+
   return(out)
 
 }

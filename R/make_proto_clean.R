@@ -66,9 +66,17 @@ make_proto_ipm <- function(db, ...) {
       kernel_param_out$kernel_text <- kernel_table$formula[kernel_table$kernel_id == kernel]
       kernel_param_out$family <- kernel_table$model_family[kernel_table$kernel_id == kernel]
 
-      # Extract the vital rate expressions for each kernel
-      vr_textexprs <- vr_table$formula[grep(kernel, vr_table$kernel_id)]
-      kernel_text_mat <- .LHS_RHS_mat(vr_textexprs, split = '[=]')
+      # Extract the vital rate expressions for each kernel. for kernels
+      # that are comprised of other kernels, then just use the kernel
+      # text
+      exact_kernel <- paste('\\b', kernel, '\\b', sep = "")
+      vr_textexprs <- vr_table$formula[grep(exact_kernel, vr_table$kernel_id)]
+      if(length(vr_textexprs) > 0) {
+        kernel_text_mat <- .LHS_RHS_mat(vr_textexprs, split = '[=]')
+      } else {
+        kernel_text_mat <- .LHS_RHS_mat(kernel_param_out$kernel_text,
+                                        split = '[=]')
+      }
 
       # is_bivariate is used in build_ipm
       is_bivs <- .is_bivariate(kernel_text_mat, domain_table)
