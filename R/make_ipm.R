@@ -64,7 +64,7 @@ make_ipm <- function(proto_ipm,
 
   if(return_all){
     out <- list(kernels = kerns,
-                data_envs = sys)
+                data_envs = sys) # use rlang::env_get_list instead to make less clunky
     class(out$kernels) <- c('ipm_kernels', class(out))
     class(out) <- c('ipm_system', class(out))
   } else {

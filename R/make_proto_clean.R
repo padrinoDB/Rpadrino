@@ -42,8 +42,7 @@ make_proto_ipm <- function(db, ...) {
     # for the generic expressions that are stored in the database
     if(.has_ranefs(current_model)) {
 
-      # current_model <- lapply(current_model,
-      #                         some_function)
+      current_model <- .split_ranefs(current_model)
     }
 
     kernel_ids <- unique(current_model[[8]]$kernel_id)

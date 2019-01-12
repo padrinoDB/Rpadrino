@@ -18,7 +18,7 @@
                                   sub_kernels,
                                   domain_env) {
 
-  high_level_proto <- .extract_high_level_protos(proto_ipm)
+  high_level_proto <- RPadrino:::.extract_high_level_protos(proto_ipm)
 
   out <- list()
   for(i in seq_along(high_level_proto$parameters)) {
