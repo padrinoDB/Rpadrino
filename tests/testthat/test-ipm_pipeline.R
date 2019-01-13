@@ -3,6 +3,10 @@
 
 context('Build pipeline produces correct info')
 
+test_ipm_metric_accuracy <- function(metric_target, metric_actual, tol) {
+  abs((metric_actual - metric_target) / metric_target) < tol
+}
+
 # test_that('Proto works as expected', {
 #
 #
@@ -50,12 +54,15 @@ test_that('make_k works as expected', {
 
   var_ovis_est <- sum(stab_ovis_w * mesh_p^2) - mean_ovis_z_w^2
 
-  expect_equal(var_ovis_est, var_z_ovis, tolerance = 1e-4)
 
   mean_z_est <- sum(stab_ovis_w * exp(mesh_p))
-  expect_true(
-    (mean_z_est - mean_z_ovis) / mean_z_ovis < 0.002 &
-    (mean_z_est - mean_z_ovis) / mean_z_ovis > -0.002)
+  expect_true(test_ipm_metric_accuracy(var_z_ovis,
+                                       var_ovis_est,
+                                       0.002))
+
+  expect_true(test_ipm_metric_accuracy(mean_z_ovis,
+                                       mean_z_est,
+                                       0.002))
 
 
 })

@@ -26,7 +26,9 @@ slot.
     + Not really sure what restrictions we need to put in place here as there seem
     to be a fair bit of risk in shooting oneself in the foot. **Discuss w/ group**
     
-4.  
+4.  Unit tests
+    + current tolerance for lambda deviations is 1e-4. Is that good enough?
+    + current tolerance for other metrics is 0.2% difference. Is that good enough?
 
 ## New functionality
 
