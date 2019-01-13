@@ -1,3 +1,5 @@
+^planning$
+^planning/*$
 ^old_funs$
 ^.*\.Rproj$
 ^\.Rproj\.user$

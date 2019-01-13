@@ -1,0 +1,50 @@
+---
+title: "Programming To-do"
+author: "Sam Levin"
+date: "January 13, 2019"
+output: html_document
+---
+
+# R-packages
+
+## Existing functionality
+1.  Convert return from `make_ipm` to use lists instead of environments in the `data`
+slot. 
+
+    + I think the multiple chained envs are causing R to get clunky, even with small
+    systems.
+
+    + `rlang::env_get_list()` should be able to do the job with a little finessing.
+    
+2.  Generalize `make_k` to deal with multiple Ks
+
+    + convert to internally implemented `.make_k_impl()` that works on 
+    single K, then `lapply()` it.
+    
+3.  Convert `.make_domain_env()` to work with user-specified domains
+
+    + Not really sure what restrictions we need to put in place here as there seem
+    to be a fair bit of risk in shooting oneself in the foot. **Discuss w/ group**
+    
+4.  
+
+## New functionality
+
+1. Environmental/density dependence
+    
+    + Build in functionality to deal w/ continuous environmental variables.
+    + Default value for database generated ones? Midpoint/mean/median of range?
+    
+2. Additional utilities - both user-experience and functionality
+    
+    + Parameter manipulation/perturbation
+    + Parameter extraction
+    + Automated report generation
+    + Surely need to add more here - let's do it!
+    
+
+# Database 
+
+1.  Split out tables for hierarchical models from env/density dependent?
+
+2.  Uncertainty info - parameter table or gets its own special one??
