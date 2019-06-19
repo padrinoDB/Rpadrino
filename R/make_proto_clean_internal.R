@@ -4,7 +4,15 @@
 
   LHS_RHS <- .split_trim(text, split)
 
+  # remove text bracketed text from RHS stuff
+  LHS_RHS <- vapply(LHS_RHS,
+                    FUN = function (x) gsub( "\\[.*?\\]", "", x),
+                    FUN.VALUE = character(1))
+
+
   out <- matrix(LHS_RHS, ncol = 2, byrow = TRUE)
+
+  return(out)
 
 }
 

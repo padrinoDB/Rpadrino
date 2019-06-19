@@ -123,12 +123,7 @@
     out <- text
 
   } else {
-    out <- switch(as.character(is_trunc),
-                  "TRUE" = .sub_trunc_dens_fun(text, kernel, state_variable),
-                  "FALSE" = .sub_dens_fun(text, kernel, state_variable),
-                  stop('Supplied an unknown type of eviction correction.',
-                       call. = FALSE))
-
+    out <- .sub_dens_fun(text, kernel, state_variable)
 
     if(is_biv & grepl('P|P_', kernel)) {
       out <- .wrap_matrix_call(out, n_meshp) # make_ipm_internal.R
@@ -163,18 +158,8 @@
 #' corresponding to the upper half of the domain).
 #'
 #' \code{truncated_distribution} works differently. This generates a truncated
-#' probability density function using the \code{\link{truncdist}} package and is
-#' called when creating the expressions for the probability density function
-#' describing growth.
-#'
-#' Note the differences in when these functions are called. This may affect construction
-#' of custom IPMs from raw data or altering existing IPMs downloaded from the
-#' \code{Padrino} database. Additionally, some testing suggest that this
-#' doesnt \emph{completely} correct for eviction as remainders of
-#' \code{1 - colSums(mat)} are occasionally between \code{1e-4} and \code{1e-6}
-#' on the cells near the border of the function domain. See the \code{Eviction}
-#' vignette (\code{vignette('Eviction-correction', pakage = "RPadrino")}) for
-#' more details.
+#' probability density function by dividing each column by the sum of the column
+#' sums.
 #'
 #' @export
 
@@ -192,6 +177,25 @@ discrete_extrema <- function(mat) {
 
   return(mat)
 
+}
+
+#' @rdname eviction
+#' @inheritParams discrete_extrema
+#'
+#' @export
+
+truncate_distributions <- function(mat) {
+
+  out <- mat/matrix(
+    as.vector(
+      apply(mat,
+            2,
+            sum)),
+    nrow = dim(mat)[1],
+    ncol = dim(mat)[2],
+    byrow = TRUE)
+
+  return(out)
 }
 
 .sub_dens_fun <- function(text, kernel, state_variable) {
@@ -248,20 +252,29 @@ discrete_extrema <- function(mat) {
         sep = "")
 }
 
-# Only works on P's currently.
-.correct_eviction <- function(sub_kernel_list) {
+# Only works on P's currently. Additionally, only allows 1 type of eviction correction
+# per model. This will have to change later.
+
+.correct_eviction <- function(sub_kernel_list, proto_ipm) {
 
   kernels <- sub_kernel_list[grepl('P|P_', names(sub_kernel_list))]
+  ev_type <- proto_ipm$evict_type[grepl('P|P_', proto_ipm$kernel)][1]
 
   # finds the name of the growth kernel by searching for calls to matrix
   # in the text expression
   for(i in seq_along(kernels)) {
     kernel <- kernels[[i]]
+
     nm_g <- .find_g_name(kernel) # make_ipm_internal.R
 
     g_mat <- kernel$eval_env[[nm_g]]
 
-    assign(nm_g, discrete_extrema(g_mat), envir = kernel$eval_env)
+    assign(nm_g,
+           switch(ev_type,
+                  'discrete_extrema' = discrete_extrema(g_mat),
+                  'truncated_distributions' = truncate_distributions(g_mat),
+                  stop('Unknown type of eviction correction', call. = FALSE)),
+           envir = kernel$eval_env)
 
   }
 
@@ -272,11 +285,11 @@ discrete_extrema <- function(mat) {
 
   ind <- logical(length(vr_exprs))
   for(i in seq_along(vr_exprs)) {
-    ind[i] <- grepl('matrix', rlang::quo_text(kernel$vr_quos[[i]]))
+    ind[i] <- grepl('g|g ', rlang::quo_text(kernel$vr_quos[[i]]))
 
   }
 
-  names(kernel$vr_quos)[ind]
+  names(kernel$vr_quos)[ind & !grepl('mean', names(kernel$vr_quos))]
 }
 
 .bind_vr_quos <- function(sub_kernel_list) {

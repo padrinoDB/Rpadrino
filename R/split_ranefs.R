@@ -1,6 +1,6 @@
 .split_ranefs <- function(current_model) {
 
-  ranef_table <- current_model[[11]]
+  ranef_table <- current_model[[12]]
 
   levels <- .make_ranef_levels(ranef_table)
 

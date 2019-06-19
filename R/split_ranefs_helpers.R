@@ -2,8 +2,8 @@
 # ranef handlers
 
 .has_ranefs <- function(db) {
-  if(dim(db[[11]])[1] > 0) {
-    !all(is.null(db[[11]]$env_range))
+  if(dim(db[[12]])[1] > 0) {
+    !all(is.null(db[[12]]$range))
   } else {
     FALSE
   }
@@ -11,16 +11,16 @@
 }
 
 
-# Simple extraction of effect suffixes
-.get_ranef_names <- function(names) {
-  name_list <- strsplit(names, '_')
-
-  suffixes <- lapply(name_list, function(x) x[2])
-
-  out <- unlist(suffixes)
-  return(out)
-
-}
+# # Simple extraction of effect suffixes - NOTE 6/18/19 don't think we need this
+# .get_ranef_names <- function(names) {
+#   name_list <- strsplit(names, '_')
+#
+#   suffixes <- lapply(name_list, function(x) x[2])
+#
+#   out <- unlist(suffixes)
+#   return(out)
+#
+# }
 
 
 # Extracts the different levels of each hierarchical variable and then
@@ -29,18 +29,14 @@
 .make_ranef_levels <- function(ranef_table) {
 
 
-  ranefs_list <- rlang::parse_exprs(unique(ranef_table$env_range))
+  ranefs_list <- rlang::parse_exprs(unique(ranef_table$range))
 
   #
   ranef_levels <- lapply(ranefs_list, eval)
-  ranef_names <- .get_ranef_names(unique(ranef_table$vr_expr_name))
+  ranef_names <- unique(ranef_table$vr_expr_name)
 
   names(ranef_levels) <- ranef_names
-  if(length(ranef_levels) > 1){
-    out <- expand.grid(ranef_levels)
-  } else {
-    out <- ranef_levels[[1]]
-  }
+  out <- expand.grid(ranef_levels)
 
   return(out)
 

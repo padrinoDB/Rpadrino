@@ -54,9 +54,8 @@ make_ipm <- function(proto_ipm,
 
   RPadrino:::.bind_vr_quos(sub_kernel_list)
 
-  # discrete_extrema is the only one implemented right now
   if(any(proto_ipm$evict)) {
-    RPadrino:::.correct_eviction(sub_kernel_list)
+    RPadrino:::.correct_eviction(sub_kernel_list, proto_ipm)
   }
 
   sys <- .make_kernels(sub_kernel_list, proto_ipm)
