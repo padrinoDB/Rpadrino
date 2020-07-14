@@ -1,6 +1,6 @@
 
 [![Travis build
-status](https://travis-ci.com/levisc8/RPadrino.svg?branch=master)](https://travis-ci.com/levisc8/RPadrino)
+status](https://travis-ci.org/levisc8/RPadrino.svg?branch=master)](https://travis-ci.com/levisc8/RPadrino)
 [![Codecov test
 coverage](https://codecov.io/gh/levisc8/RPadrino/branch/master/graph/badge.svg)](https://codecov.io/gh/levisc8/RPadrino?branch=master)
 
@@ -26,7 +26,9 @@ You can install RPadrino from github with:
 
 ``` r
 
-if(!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")
+if(!requireNamespace("remotes", quietly = TRUE)) {
+  install.packages("remotes")
+}
 
 remotes::install_github("levisc8/RPadrino")
 ```

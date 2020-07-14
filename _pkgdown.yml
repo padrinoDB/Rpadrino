@@ -4,6 +4,3 @@ url: https://levisc8.github.io/Rpadrino
 authors:
   Sam Levin:
     href: https://github.com/levisc8
-template:
-  params:
-    bootswatch: yeti
