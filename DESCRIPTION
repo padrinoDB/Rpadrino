@@ -4,7 +4,8 @@ Version: 0.0.0.9000
 Authors@R: c(
     person("Levin", "Sam", email = "levisc8@gmail.com", role = c("aut", "cre")),
     person("Childs", "Dylan", email = "d.childs@sheffield.ac.uk", role = c("aut")),
-    person("Salguero-Gomez", "Roberto", email = "rob.salguero@zoo.ox.ac.uk", role = c("aut")))
+    person("Salguero-Gomez", "Roberto", email = "rob.salguero@zoo.ox.ac.uk", role = c("aut")),
+    person("Knight", "Tiffany", role = "aut"))
 Description: PADRINO and MADRINA house textual representations of
     Integral Projection Models which can be converted from their 
     "elemental" forms into full kernels to reproduce or extend an 
@@ -12,13 +13,8 @@ Description: PADRINO and MADRINA house textual representations of
 Depends: R (>= 3.2.0)
 Imports:
   DBI (>= 1.0.0),
-  magrittr (>= 1.5),
-  purrr (>= 0.2.5),
-  readxl (>= 1.1.0),
   rlang (>= 0.2.0),
-  RPostgreSQL (>= 0.6.2),
-  tibble (>= 1.4.0),
-  dplyr (>= 0.7.0)
+  RPostgreSQL (>= 0.6.2)
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
@@ -26,5 +22,7 @@ RoxygenNote: 6.1.1
 Suggests: 
     testthat,
     knitr,
-    rmarkdown
+    rmarkdown,
+    readxl
 VignetteBuilder: knitr
+Remotes: levisc8/ipmr

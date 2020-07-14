@@ -20,3 +20,6 @@ test_ipm <- make_ipm(test_proto)
 
 # Not yet generalized...
 test_K <- make_k(test_ipm, test_proto)
+
+
+

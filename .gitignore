@@ -4,3 +4,8 @@
 .Ruserdata
 inst/doc
 *.xlsx
+*.html
+planning/*
+old_funs/*
+data-raw/*
+data-raw/
