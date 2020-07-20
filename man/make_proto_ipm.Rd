@@ -4,7 +4,7 @@
 \alias{make_proto_ipm}
 \title{Generate proto_ipms from Padrino objects}
 \usage{
-make_proto_ipm(pdb, ipm_id = NULL)
+make_proto_ipm(pdb, ipm_id = NULL, det_stoch = "det", kern_param = "kern")
 }
 \arguments{
 \item{pdb}{A \code{pdb} object}
@@ -12,6 +12,13 @@ make_proto_ipm(pdb, ipm_id = NULL)
 \item{ipm_id}{Optionally, one or more \code{ipm_id}'s to build. If empty,
 all models contained in the \code{pdb} object will be processed into
 \code{proto_ipm}'s.}
+
+\item{det_stoch}{Either \code{"det"} or \code{"stoch"}. This determines
+whether we want to construct a deterministic or stochastic model. Default
+is \code{"det"}.}
+
+\item{kern_param}{If \code{det_stoch = "stoch"}, then whether or not to construct
+a kernel resampled model, or a parameter resampled model. See details.}
 }
 \value{
 A list containing one or more \code{proto_ipms}. Names of the list
@@ -24,4 +31,11 @@ Padrino Database tables.
 \details{
 \code{proto_ipm} objects contain all of the information needed
 to implement an IPM, but stop short of actually generating kernels.
+
+For stochastic models, there is sometimes the option of building either a kernel-resampled
+or a parameter resampled model. A kernel resampled model uses some point estimate
+for time and/or space varying parameters to generate kernels for each year/site/grouping factor.
+Parameter resampled models sample parameters from distributions. Padrino stores this
+information for some models when it is available in the literature, and tries
+to fail informatively when these distributions aren't available in the database.
 }

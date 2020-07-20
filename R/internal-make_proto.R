@@ -1,8 +1,9 @@
 #' @noRd
+#' @importFrom ipmr init_ipm
 # Functions to construct a single proto_ipm. This will take a complete pdb
 # object and a single id, and construct a proto_ipm for it.
 
-.make_proto <- function(db_tabs, id) {
+.make_proto <- function(db_tabs, id, det_stoch, kern_param) {
 
   # Subset to a single IPM
 
@@ -15,42 +16,89 @@
 
   # Split out individual tables
 
-  sv_tab <- use_tabs[[2]]  # All state variables
-  ds_tab <- use_tabs[[3]]  # discrete state variables
-  dt_tab <- use_tabs[[4]]  # discrete transitions (e.g. markov mat)
-  cd_tab <- use_tabs[[5]]  # continuous domains
-  ir_tab <- use_tabs[[6]]  # integration rules
-  ps_tab <- use_tabs[[7]]  # pop trait distrib vectors/functions
-  ik_tab <- use_tabs[[8]]  # ipm kernel exprs
-  vr_tab <- use_tabs[[9]]  # vital rate exprs
-  pv_tab <- use_tabs[[10]] # paramter values
-  es_tab <- use_tabs[[11]] # environmental vars/exprs
-  he_tab <- use_tabs[[12]] # hierarchical vars/exprs
-  un_tab <- use_tabs[[13]] # uncertainty (currently not available)
+  # All state variables -> define_kernel(states = list(c(these)))
+  sv_tab <- use_tabs[[2]]
+
+  # discrete state variables -> define_kernel(family = CC||CD||DC, formula = these)
+  ds_tab <- use_tabs[[3]]
+
+  # discrete transitions (e.g. markov mat) ->
+  # define_k(n_these_t_1 = dt_tab$value) (I actually don't think this is necessary)
+  # and perhaps this table isn't even necessary. This will be captured
+  # by the IPM_FULL designated kernels (I think, need to review that format).
+  dt_tab <- use_tabs[[4]]
+
+  # continuous domains ->
+  # define_domains(rlang::list2(!!nm := list(lower = these, upper = these)))
+  cd_tab <- use_tabs[[5]]
+
+  # integration rules -> define_impl(rlang::list2(!! nm := list(int_rule = these)))
+  ir_tab <- use_tabs[[6]]
+
+  # pop trait distrib vectors/functions. I think these are all pretty much empty,
+  # so will need to initialize w/ some random distributions.
+  ps_tab <- use_tabs[[7]]
+
+  # ipm kernel exprs -> define_kernel(formula = !! these)
+  ik_tab <- use_tabs[[8]]
+
+  # vital rate exprs -> define_kernel(!!! these)
+  vr_tab <- use_tabs[[9]]
+
+  # paramter values -> define_kernel(data_list = as.list(these))
+  pv_tab <- use_tabs[[10]]
+
+  # environmental vars/exprs -> define_env_state(these)
+  es_tab <- use_tabs[[11]]
+
+  # hierarchical vars/exprs - >
+  # define_kernel(has_hier_effs = ifelse(dim(this), TRUE, FALSE), levs = list(these))
+  he_tab <- use_tabs[[12]]
+
+  # uncertainty (currently not available)
+  un_tab <- use_tabs[[13]]
+
+
+  # Get kernel IDs. Figure out if we're simple/general, and assign the model
+  # class to the initial proto.
 
   kern_ids <- use_tabs$IpmKernels$kernel_id
 
+  sim_gen  <- ifelse(dim(dt_tab)[1] > 0, "general", "simple")
+
+  if(det_stoch == "det") kern_param <- NULL
+
+  model_cls <- paste(c(sim_gen, "di", det_stoch, kern_param), collapse = "_")
+
+  # For now, no age size IPMs in Padrino anyway. Will alter this accordingly
+  # when that variable is created.
+
+  has_age <- FALSE
+
+  out <- ipmr::init_ipm(model_class = model_cls, has_age = has_age)
+
   for(i in seq_along(kern_ids)) {
 
-    # First, get state variable info. Not sure we really need
-    # the discrete state var names for ipmr, so dropping those for now.
-
-    states <- sv_tab$state_variable[sv_tab$discrete == 'f']
-
-    # Next, drop self assignment formulae. This won't be necessary after the
-    # the database is corrected internally, but needs to happen for the
-    # current version
-
-    vr_tab <- vr_tab[! vapply(vr_tab$formula,
-                              FUN = function(x) .is_the_same(x),
-                              logical(1L)), ]
-
-
-
+    out <- .define_single_kernel(out,
+                                 kern_ids[i],
+                                 sv_tab,
+                                 ds_tab,
+                                 dt_tab,
+                                 cd_tab,
+                                 ir_tab,
+                                 ps_tab,
+                                 ik_tab,
+                                 vr_tab,
+                                 pv_tab,
+                                 es_tab,
+                                 he_tab,
+                                 un_tab)
 
 
   }
 
+
+  return(out)
 
 }
 

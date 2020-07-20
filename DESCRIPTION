@@ -13,6 +13,7 @@ Description: PADRINO and MADRINA house textual representations of
 Depends: R (>= 3.2.0)
 Imports:
   DBI (>= 1.0.0),
+  ipmr,
   magrittr,
   rlang (>= 0.2.0),
   RPostgreSQL (>= 0.6.2)

@@ -33,6 +33,52 @@ if(!requireNamespace("remotes", quietly = TRUE)) {
 remotes::install_github("levisc8/RPadrino")
 ```
 
+### Usage
+
+A small-ish copy of the Padrino Database is included as a package data
+set. You can access it with the following code:
+
+``` r
+
+data("pdb_ex")
+```
+
+The next step is to identify the models we are interested in building.
+At the moment, there is no functionality to do that - you’ll just have
+to explore the *Metadata* table on your own. In the not so distant
+future, there will be a set of functions that actually help query
+specific columns of interest so the process of exploring the database is
+less painful.
+
+Once, we’ve identified the model(s) we want, we can build a list of
+[`proto_ipm`’s](https://levisc8.github.io/ipmr/articles/proto-ipms.html).
+This is an intermediate step between the database representation and a
+set of iteration kernels. Once we have this, we can build an actual
+model. Below, we extract a specific study, Levin et al. 2019, and
+construct an IPM from the database object.
+
+``` r
+
+# Generate an index to subset the database with
+
+subset_index <- pdb_ex$Metadata$ipm_id[pdb_ex$Metadata$corresponding_author == "Levin"]
+
+# This lapply statement extracts all rows from the database that correspond to our desired study/studies
+
+use_db       <- lapply(pdb_ex,
+                       function(x, subset_ind) x[x$ipm_id %in% subset_ind, ],
+                       subset_ind = subset_index)
+
+# We can construct a single IPM at a time, or make a list of many IPMs
+
+proto_list   <- make_proto_ipm(use_db, 
+                               ipm_id = subset_index[1],
+                               det_stoch = "det")
+
+
+ipm_list     <- make_ipm(proto_list)
+```
+
 ### Contributing
 
 Please note that the RPadrino project is released with a [Contributor
