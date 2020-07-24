@@ -1,0 +1,17 @@
+---
+output: html_document
+---
+
+## Database itself
+
+### Vital rate expressions
+
+1. Move all density functions out into their own lines. This will simplify the code that substitutes them, as we won't have to search the AST for PDFs nested within other functions and then re-construct the original call after substitution.
+
+2. 
+
+### IPM Kernels
+
+1. Need to re-do those that have discrete transitions so that each discrete one gets it's own kernel. Also should re-write the "IPM" kernels so that they work with population vectors, rather than the overload arithmetic operators and mega-K approach as from before (this approach is trash).
+
+

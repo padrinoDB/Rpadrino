@@ -123,6 +123,7 @@
 
   pdfs <- c(
     "Norm",
+    "Lognorm",
     "F",
     "Gamma",
     "t",
@@ -132,6 +133,7 @@
   )
 
   pdf_list <- setNames(as.list(paste("d", tolower(pdfs), sep = "")), pdfs)
+  pdf_list$Lognorm <- 'dlnorm'
 
   pdf_env <- list2env(as.list(pdf_list))
 
@@ -143,7 +145,8 @@
 #' @importFrom rlang call_name call_args parse_expr
 # TO-FIX: This breaks unless the dens fun is the ONLY call in the expression.
 # Must get all calls and *only* sub the density fun, then re-construct the complete
-# call.
+# call. Alternatively - just create new rows for each dens fun and then
+# use a variable name in the nested expression
 
 .prep_dens_fun <- function(dens_call, sv_2) {
 
