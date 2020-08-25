@@ -10,10 +10,11 @@ Description: PADRINO and MADRINA house textual representations of
     Integral Projection Models which can be converted from their 
     "elemental" forms into full kernels to reproduce or extend an 
     already published analysis.
-Depends: R (>= 3.2.0)
+Depends: 
+  R (>= 3.2.0),
+  ipmr
 Imports:
   DBI (>= 1.0.0),
-  ipmr,
   magrittr,
   rlang (>= 0.2.0),
   RPostgreSQL (>= 0.6.2)

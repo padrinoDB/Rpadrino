@@ -36,3 +36,21 @@
   isTRUE(identical(temp[1], temp[2]))
 }
 
+#' @noRd
+# Reads all sheets from a PadrinoDB file
+
+.read_all_sheets <- function(file) {
+
+  sheets <- readxl::excel_sheets(file)
+
+  out <- lapply(sheets,
+                FUN = function(x) readxl::read_excel(file, sheet = x))
+
+  names(out) <- sheets
+
+  return(out)
+
+}
+
+
+

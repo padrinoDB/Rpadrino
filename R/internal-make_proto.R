@@ -143,10 +143,17 @@
 
 #' @noRd
 #' @importFrom rlang call_name call_args parse_expr
-# TO-FIX: This breaks unless the dens fun is the ONLY call in the expression.
+#
+# dens_call: Must be a quosure
+# sv_2: The name of the state variable without _1 or _2 appended. This is handled
+# internally.
+#
+# TO-FIX: This breaks unless the dens fun is the FIRST call in the expression (i.e. outermost).
+# Norm(log(xyz)) works, but 1/Norm(xyz) will not
 # Must get all calls and *only* sub the density fun, then re-construct the complete
 # call. Alternatively - just create new rows for each dens fun and then
-# use a variable name in the nested expression
+# use a variable name in the nested expression (Preferable, though perhaps more
+# painstaking approach)
 
 .prep_dens_fun <- function(dens_call, sv_2) {
 
@@ -160,10 +167,128 @@
 
   sub_call <- eval(fun_call, envir = .make_pdf_env())
 
-  out <- paste(sub_call, "(", d_sv, ',',
+  out <- paste(sub_call, "(", d_sv, ', ',
                paste(current_args, collapse = ", "),
                ")", sep = "")
 
   return(out)
+
+}
+
+#' @noRd
+# Splits semi-colon separated model_iteration model families for the ...
+# in define_k
+
+.prep_k_dots <- function(ik_tab) {
+
+  # If no iteration procedure specified, then we can just build the iteration
+  # kernel(s) with a single expression. This will be defined using
+  # model_family == "IPM"
+
+  if(! "iteration_procedure" %in% k_tab$model_family) {
+
+    textpr    <- ik_tab$formula[ik_tab$model_family == "IPM"]
+
+    text_list <- strsplit(texpr, "=")
+
+    nm        <- text_list[[1]]
+    textpr    <- text_list[[2]]
+
+    out       <- rlang::list2(!! nm := rlang::parse_expr(textpr))
+
+    return(out)
+  }
+
+  textprs <- ik_tab$formula[ik_tab$model_family == "iteration_procedure"]
+
+  temp    <- strsplit(textprs, ";") %>%
+    lapply(FUN = function(x) {
+
+      strsplit(x, "=")
+
+    }) %>%
+    ipmr:::.flatten_to_depth(1L)
+
+  out        <- lapply(temp, function(x) rlang::parse_expr(x[2]))
+  names(out) <- vapply(temp, function(x) trimws(x[1]), character(1L))
+
+  return(out)
+
+
+
+}
+
+#' @noRd
+# Checks if requested models are possible, and tries to fail informatively
+# if they aren't
+
+.check_proto_args <- function(pdb, ipm_id, det_stoch, kern_param, .stop) {
+
+  mods    <- character()
+  reasons <- character()
+
+  # increments mods and reasons index. Modified from within each individual
+  # error function using <<-
+  it <- 0L
+
+  for(i in unique(pdb[[1]]$ipm_id)) {
+
+    use_db <- lapply(pdb,
+                     function(x, temp_id) {
+
+                       x[x$ipm_id == temp_id, ]
+
+                     },
+                     temp_id == i)
+
+    # Error if stoch and no hier_effs or environmental vars
+
+    temp_stoch_not_possible <- .proto_check_stoch_possible(use_db,
+                                                           det_stoch,
+                                                           kern_param)
+    mods[it]                <- temp_stoch_not_possible[1]
+    reasons[it]             <- temp_stoch_not_possible[2]
+
+    # Error if stoch_param requested and no stored distribution info
+
+    temp_param_not_possible <- .proto_check_param_possible(use_db,
+                                                           det_stoch,
+                                                           kern_param)
+    mods[it]                <- temp_param_not_possible[1]
+    reasons[it]             <- temp_param_not_possible[2]
+
+    # Internal errors. Hopefully these don't come up, but we will need to
+    # generate informative ones to aid trouble shooting.
+
+
+  }
+
+  if(.stop && length(mods) > 0) {
+
+    stop("The following models produced the following errors:\n",
+         paste(
+           paste(
+             mods, ": ", reasons, sep = ""
+           ),
+           collapse = "\n"
+         ),
+         call. = FALSE
+    )
+
+  } else if(length(mods) > 0) {
+
+    warning("The following models produced the following errors:\n",
+            paste(
+              paste(
+                mods, ": ", reasons, sep = ""
+              ),
+              collapse = "\n"
+            ),
+            call. = FALSE
+    )
+  }
+
+
+  return(TRUE)
 
 }
