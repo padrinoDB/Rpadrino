@@ -95,4 +95,3 @@ mat_mult <- function(x, y) {
   x %*% y
 
 }
-

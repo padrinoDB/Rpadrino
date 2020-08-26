@@ -14,10 +14,10 @@ Depends:
   R (>= 3.2.0),
   ipmr
 Imports:
-  DBI (>= 1.0.0),
   magrittr,
+  purrr,
   rlang (>= 0.2.0),
-  RPostgreSQL (>= 0.6.2)
+  utils
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
@@ -26,7 +26,6 @@ Suggests:
     testthat,
     knitr,
     rmarkdown,
-    readxl,
     covr,
     roxygen2
 VignetteBuilder: knitr

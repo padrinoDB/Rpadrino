@@ -36,7 +36,7 @@
                        x[x$ipm_id == temp_id, ]
 
                      },
-                     temp_id == i)
+                     temp_id = i)
 
     # Error if stoch and no hier_effs or environmental vars
 

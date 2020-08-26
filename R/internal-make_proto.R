@@ -15,48 +15,50 @@
   id = id)
 
   # Split out individual tables
+  md_tab <- use_tabs[[1]]
 
   # All state variables -> define_kernel(states = list(c(these)))
   sv_tab <- use_tabs[[2]]
 
-  # discrete state variables -> define_kernel(family = CC||CD||DC, formula = these)
+  # discrete state variables -> Not totally sure why these are needed, but
+  # may be useful for... something?
   ds_tab <- use_tabs[[3]]
 
   # discrete transitions (e.g. markov mat) ->
   # define_k(n_these_t_1 = dt_tab$value) (I actually don't think this is necessary)
   # and perhaps this table isn't even necessary. This will be captured
   # by the IPM_FULL designated kernels (I think, need to review that format).
-  dt_tab <- use_tabs[[4]]
+  # dt_tab <- use_tabs[[4]]
 
   # continuous domains ->
   # define_domains(rlang::list2(!!nm := list(lower = these, upper = these)))
-  cd_tab <- use_tabs[[5]]
+  cd_tab <- use_tabs[[4]]
 
   # integration rules -> define_impl(rlang::list2(!! nm := list(int_rule = these)))
-  ir_tab <- use_tabs[[6]]
+  ir_tab <- use_tabs[[5]]
 
   # pop trait distrib vectors/functions. I think these are all pretty much empty,
   # so will need to initialize w/ some random distributions.
-  ps_tab <- use_tabs[[7]]
+  ps_tab <- use_tabs[[6]]
 
   # ipm kernel exprs -> define_kernel(formula = !! these)
-  ik_tab <- use_tabs[[8]]
+  ik_tab <- use_tabs[[7]]
 
   # vital rate exprs -> define_kernel(!!! these)
-  vr_tab <- use_tabs[[9]]
+  vr_tab <- use_tabs[[8]]
 
   # paramter values -> define_kernel(data_list = as.list(these))
-  pv_tab <- use_tabs[[10]]
+  pv_tab <- use_tabs[[9]]
 
   # environmental vars/exprs -> define_env_state(these)
-  es_tab <- use_tabs[[11]]
+  es_tab <- use_tabs[[10]]
 
   # hierarchical vars/exprs - >
   # define_kernel(has_hier_effs = ifelse(dim(this), TRUE, FALSE), levs = list(these))
-  he_tab <- use_tabs[[12]]
+  he_tab <- use_tabs[[11]]
 
   # uncertainty (currently not available)
-  un_tab <- use_tabs[[13]]
+  un_tab <- use_tabs[[12]]
 
 
   # Get kernel IDs. Figure out if we're simple/general, and assign the model
@@ -64,7 +66,22 @@
 
   kern_ids <- use_tabs$IpmKernels$kernel_id
 
-  sim_gen  <- ifelse(dim(dt_tab)[1] > 0, "general", "simple")
+  if(dim(ds_tab)[1] > 0) {
+
+    sim_gen <- "general"
+
+  } else {
+
+    # Added d_z's to all CC, CD, and DC kernels in Padrino at some point.
+    # We don't need these for CC kernels in simple models because ipmr appends
+    # those automatically. Keeping them would do a double integration, which we
+    # don't want!
+
+    sim_gen <- "simple"
+
+    ik_tab <- .rm_dz_simple_ipm(ik_tab)
+
+  }
 
   if(det_stoch == "det") kern_param <- NULL
 
@@ -81,9 +98,9 @@
 
     out <- .define_single_kernel(out,
                                  kern_ids[i],
+                                 md_tab,
                                  sv_tab,
                                  ds_tab,
-                                 dt_tab,
                                  cd_tab,
                                  ir_tab,
                                  ps_tab,
@@ -96,6 +113,47 @@
 
 
   }
+
+  # If there is a "K" kernel, or it's a potentially stochastic model, we
+  # need to call ipmr::define_k(). We need to re-arrange a bunch of stuff
+  # though, so this is wrapped in .define_k
+
+  k_fams <- c("IPM", "iteration_procedure")
+
+
+  if(any(k_fams %in% ik_tab$model_family)) {
+
+    kern_ids <- ik_tab$kernel_id[ik_tab$model_family %in% k_fams]
+
+    out <- .define_k(out,
+                     kern_ids,
+                     md_tab,
+                     sv_tab,
+                     ds_tab,
+                     cd_tab,
+                     ir_tab,
+                     ps_tab,
+                     ik_tab,
+                     vr_tab,
+                     pv_tab,
+                     es_tab,
+                     he_tab,
+                     un_tab)
+
+  }
+
+  out <- .define_impl(
+    out,
+    ir_tab,
+    ik_tab
+  )
+
+  out <- .define_domains(
+    out,
+    cd_tab,
+    ps_tab,
+    ik_tab
+  )
 
 
   return(out)
@@ -142,18 +200,12 @@
 }
 
 #' @noRd
-#' @importFrom rlang call_name call_args parse_expr
+#' @importFrom rlang call_name call_args parse_expr call2
 #
 # dens_call: Must be a quosure
 # sv_2: The name of the state variable without _1 or _2 appended. This is handled
 # internally.
 #
-# TO-FIX: This breaks unless the dens fun is the FIRST call in the expression (i.e. outermost).
-# Norm(log(xyz)) works, but 1/Norm(xyz) will not
-# Must get all calls and *only* sub the density fun, then re-construct the complete
-# call. Alternatively - just create new rows for each dens fun and then
-# use a variable name in the nested expression (Preferable, though perhaps more
-# painstaking approach)
 
 .prep_dens_fun <- function(dens_call, sv_2) {
 
@@ -175,6 +227,39 @@
 
 }
 
+.prep_sub_fun <- function(dens_funs, states) {
+
+  if(length(dens_funs) == 0) return(NULL)
+
+  states <- unique(unlist(states))
+
+  if(length(states) > 1) warning("found multiple states for single kernel",
+                                 ". check results")
+
+  if(length(states) == 0) stop("no state info found for single kernel.",
+                               " check Padrino.")
+
+  lhs_rhs        <- vapply(dens_funs,
+                           function(x) unlist(strsplit(x, '=')) %>% trimws(),
+                           character(2L))
+
+  rhs            <- rlang::parse_expr(lhs_rhs[2, ])
+
+  dens_fun_exprs <- vapply(
+    rlang::quos(!!rhs),
+    .prep_dens_fun,
+    character(1L),
+    sv_2 = states
+  )
+
+  out <- lapply(dens_fun_exprs, rlang::parse_expr)
+
+  names(out) <- lhs_rhs[1, ]
+
+  return(out)
+
+}
+
 #' @noRd
 # Splits semi-colon separated model_iteration model families for the ...
 # in define_k
@@ -185,11 +270,11 @@
   # kernel(s) with a single expression. This will be defined using
   # model_family == "IPM"
 
-  if(! "iteration_procedure" %in% k_tab$model_family) {
+  if(! "iteration_procedure" %in% ik_tab$model_family) {
 
     textpr    <- ik_tab$formula[ik_tab$model_family == "IPM"]
 
-    text_list <- strsplit(texpr, "=")
+    text_list <- strsplit(textpr, "=")
 
     nm        <- text_list[[1]]
     textpr    <- text_list[[2]]
@@ -207,88 +292,38 @@
       strsplit(x, "=")
 
     }) %>%
-    ipmr:::.flatten_to_depth(1L)
+    .flatten_to_depth(1L)
 
   out        <- lapply(temp, function(x) rlang::parse_expr(x[2]))
   names(out) <- vapply(temp, function(x) trimws(x[1]), character(1L))
 
   return(out)
 
-
-
 }
+
 
 #' @noRd
-# Checks if requested models are possible, and tries to fail informatively
-# if they aren't
 
-.check_proto_args <- function(pdb, ipm_id, det_stoch, kern_param, .stop) {
+.rm_dz_simple_ipm <- function(ik_tab) {
 
-  mods    <- character()
-  reasons <- character()
+  for(i in seq_len(dim(ik_tab)[1])) {
 
-  # increments mods and reasons index. Modified from within each individual
-  # error function using <<-
-  it <- 0L
+    sv <- c(ik_tab$domain_start[i], ik_tab$domain_end[i])
 
-  for(i in unique(pdb[[1]]$ipm_id)) {
+    use_sv <- unique(sv)
 
-    use_db <- lapply(pdb,
-                     function(x, temp_id) {
+    if(all(is.na(use_sv))) next
 
-                       x[x$ipm_id == temp_id, ]
+    use_sv <- use_sv[!is.na(use_sv)]
 
-                     },
-                     temp_id == i)
+    d_z <- paste(" \\* d_", use_sv, sep = "")
 
-    # Error if stoch and no hier_effs or environmental vars
-
-    temp_stoch_not_possible <- .proto_check_stoch_possible(use_db,
-                                                           det_stoch,
-                                                           kern_param)
-    mods[it]                <- temp_stoch_not_possible[1]
-    reasons[it]             <- temp_stoch_not_possible[2]
-
-    # Error if stoch_param requested and no stored distribution info
-
-    temp_param_not_possible <- .proto_check_param_possible(use_db,
-                                                           det_stoch,
-                                                           kern_param)
-    mods[it]                <- temp_param_not_possible[1]
-    reasons[it]             <- temp_param_not_possible[2]
-
-    # Internal errors. Hopefully these don't come up, but we will need to
-    # generate informative ones to aid trouble shooting.
-
+    ik_tab$formula[i] <- gsub(d_z, "", ik_tab$formula[i])
 
   }
 
-  if(.stop && length(mods) > 0) {
-
-    stop("The following models produced the following errors:\n",
-         paste(
-           paste(
-             mods, ": ", reasons, sep = ""
-           ),
-           collapse = "\n"
-         ),
-         call. = FALSE
-    )
-
-  } else if(length(mods) > 0) {
-
-    warning("The following models produced the following errors:\n",
-            paste(
-              paste(
-                mods, ": ", reasons, sep = ""
-              ),
-              collapse = "\n"
-            ),
-            call. = FALSE
-    )
-  }
-
-
-  return(TRUE)
+  return(ik_tab)
 
 }
+
+

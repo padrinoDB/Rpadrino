@@ -4,7 +4,13 @@
 \alias{make_proto_ipm}
 \title{Generate proto_ipms from Padrino objects}
 \usage{
-make_proto_ipm(pdb, ipm_id = NULL, det_stoch = "det", kern_param = "kern")
+make_proto_ipm(
+  pdb,
+  ipm_id = NULL,
+  det_stoch = "det",
+  kern_param = "kern",
+  stop_on_failure = TRUE
+)
 }
 \arguments{
 \item{pdb}{A \code{pdb} object}
@@ -19,6 +25,11 @@ is \code{"det"}.}
 
 \item{kern_param}{If \code{det_stoch = "stoch"}, then whether or not to construct
 a kernel resampled model, or a parameter resampled model. See details.}
+
+\item{stop_on_failure}{A logical. If \code{TRUE}, when building many models,
+will halt the process with an error if any one of them is unable to build with the
+requested parameters. Otherwise, it will throw a warning indicating which
+models cannot be built}
 }
 \value{
 A list containing one or more \code{proto_ipms}. Names of the list
