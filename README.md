@@ -1,6 +1,6 @@
 
 [![Travis build
-status](https://travis-ci.org/levisc8/RPadrino.svg?branch=master)](https://travis-ci.com/levisc8/RPadrino)
+status](https://travis-ci.org/levisc8/RPadrino.svg?branch=master)](https://travis-ci.org/levisc8/RPadrino)
 [![Codecov test
 coverage](https://codecov.io/gh/levisc8/RPadrino/branch/master/graph/badge.svg)](https://codecov.io/gh/levisc8/RPadrino?branch=master)
 
@@ -78,6 +78,11 @@ proto_list   <- make_proto_ipm(use_db,
 
 ipm_list     <- make_ipm(proto_list)
 ```
+
+### Further steps
+
+The package is documented [here]() and the database is documented
+[here]().
 
 ### Contributing
 
