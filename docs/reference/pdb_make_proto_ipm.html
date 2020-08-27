@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • RPadrino</title>
+<title>Generate proto_ipms from Padrino objects — pdb_make_proto_ipm • RPadrino</title>
 
 
 <!-- jquery -->
@@ -39,7 +39,9 @@
 
 
 
-<meta property="og:title" content="Function reference" />
+<meta property="og:title" content="Generate proto_ipms from Padrino objects — pdb_make_proto_ipm" />
+<meta property="og:description" content="This function generates proto_ipm objects from
+Padrino Database tables." />
 
 
 
@@ -58,7 +60,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -112,60 +114,87 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Reference</h1>
+    <h1>Generate proto_ipms from Padrino objects</h1>
+    
+    <div class="hidden name"><code>pdb_make_proto_ipm.Rd</code></div>
     </div>
 
-    <table class="ref-index">
+    <div class="ref-description">
+    <p>This function generates <code>proto_ipm</code> objects from
+Padrino Database tables.</p>
+    </div>
 
-    <colgroup>
-      
-      <col class="alias" />
-      <col class="title" />
-    </colgroup>
+    <pre class="usage"><span class='fu'>pdb_make_proto_ipm</span>(
+  <span class='no'>pdb</span>,
+  <span class='kw'>ipm_id</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>det_stoch</span> <span class='kw'>=</span> <span class='st'>"det"</span>,
+  <span class='kw'>kern_param</span> <span class='kw'>=</span> <span class='st'>"kern"</span>,
+  <span class='kw'>stop_on_failure</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
+)</pre>
 
-    <tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      
-      
-    </tbody><tbody>
-      
-      
-      <tr>
-        
-        <td>
-          <p><code><a href="mat_mult.html">mat_mult()</a></code> </p>
-        </td>
-        <td><p>Matrix multiplication</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="pdb.html">pdb</a></code> </p>
-        </td>
-        <td><p>Selected models from the Padrino Database</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="pdb_make_ipm.html">pdb_make_ipm()</a></code> </p>
-        </td>
-        <td><p>Generate IPMs from Padrino objects</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="pdb_make_proto_ipm.html">pdb_make_proto_ipm()</a></code> </p>
-        </td>
-        <td><p>Generate proto_ipms from Padrino objects</p></td>
-      </tr>
-    </tbody>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>pdb</th>
+      <td><p>A <code>pdb</code> object.</p></td>
+    </tr>
+    <tr>
+      <th>ipm_id</th>
+      <td><p>Optionally, one or more <code>ipm_id</code>'s to build. If empty,
+all models contained in the <code>pdb</code> object will be processed into
+<code>proto_ipm</code>'s.</p></td>
+    </tr>
+    <tr>
+      <th>det_stoch</th>
+      <td><p>A vector containing either <code>"det"</code> or <code>"stoch"</code>.
+This determines whether we want to construct a deterministic or stochastic
+model. Default is <code>"det"</code>. See details</p></td>
+    </tr>
+    <tr>
+      <th>kern_param</th>
+      <td><p>If <code>det_stoch = "stoch"</code>, then whether or not to construct
+a kernel resampled model, or a parameter resampled model. See details.</p></td>
+    </tr>
+    <tr>
+      <th>stop_on_failure</th>
+      <td><p>A logical. If <code>TRUE</code>, when building many models,
+will halt the process with an error if any one of them is unable to build with the
+requested parameters. Otherwise, it will throw a warning indicating which
+models cannot be built.</p></td>
+    </tr>
     </table>
-  </div>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>A list containing one or more <code>proto_ipms</code>. Names of the list
+will correspond to <code>ipm_id</code>s.</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p><code>proto_ipm</code> objects contain all of the information needed
+to implement an IPM, but stop short of actually generating kernels. These
+are intermediate building blocks that can be modified before creating a full
+IPM so that things like perturbation analysis are a bit more straightforward.</p>
+<p>When requesting many models, the <code>det_stoch</code> and <code>kern_param</code> parameters
+can also be vectors. These are matched with <code>ipm_id</code> by position. If the
+lengths of <code>det_stoch</code> and <code>kern_param</code> do not match the length
+<code>ipm_id</code>, they will be recycled until they do.</p>
+<p>For stochastic models, there is sometimes the option of building either a kernel-resampled
+or a parameter resampled model. A kernel resampled model uses some point estimate
+for time and/or space varying parameters to generate kernels for each year/site/grouping factor.
+Parameter resampled models sample parameters from distributions. Padrino stores this
+information for some models when it is available in the literature, and tries
+to fail informatively when these distributions aren't available in the database.</p>
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p>For more info on <code>kern_param</code> definitions:</p>
+<p>Metcalf <em>et al.</em> (2015). Statistial modeling of annual variation
+for inference on stochastic population dynamics using Integral Projection Models.
+<em>Methods in Ecology and Evolution</em>. DOI: 10.1111/2041-210X.12405</p></div>
+
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
       <h2 data-toc-skip>Contents</h2>

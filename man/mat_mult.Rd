@@ -2,7 +2,7 @@
 % Please edit documentation in R/make_proto.R
 \name{mat_mult}
 \alias{mat_mult}
-\title{mat_mult}
+\title{Matrix multiplication}
 \usage{
 mat_mult(x, y)
 }

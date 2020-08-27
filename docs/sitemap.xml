@@ -4,10 +4,16 @@
     <loc>https://levisc8.github.io/Rpadrino/index.html</loc>
   </url>
   <url>
-    <loc>https://levisc8.github.io/Rpadrino/reference/make_proto_ipm.html</loc>
+    <loc>https://levisc8.github.io/Rpadrino/reference/mat_mult.html</loc>
   </url>
   <url>
-    <loc>https://levisc8.github.io/Rpadrino/reference/pdb_ex.html</loc>
+    <loc>https://levisc8.github.io/Rpadrino/reference/pdb.html</loc>
+  </url>
+  <url>
+    <loc>https://levisc8.github.io/Rpadrino/reference/pdb_make_ipm.html</loc>
+  </url>
+  <url>
+    <loc>https://levisc8.github.io/Rpadrino/reference/pdb_make_proto_ipm.html</loc>
   </url>
   <url>
     <loc>https://levisc8.github.io/Rpadrino/reference/pipe.html</loc>

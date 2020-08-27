@@ -79,7 +79,8 @@
 <div id="rpadrino" class="section level2">
 <h2 class="hasAnchor">
 <a href="#rpadrino" class="anchor"></a>RPadrino</h2>
-<p><code>RPadrino</code> is a package for interacting with the demography data base of the same name. It will likely consist of wrappers to an SQL data base that itself houses a suite of all known, published integral projection models (IPMs). Additionally, we’ll build in some basic tools to re-create the IPMs <em>as they were created in the original publication</em>.</p>
+<p><code>RPadrino</code> is a package for interacting with the Padrino Integral Projection Model database. This database really only exists as an internal dataset in this package right now. The longer term plan is to migrate it to a set of static, version-controlled tables that are hosted on Zenodo (or similar). For now, you can access it by installing the package, and running <code><a href="https://rdrr.io/r/utils/data.html">data(pdb)</a></code>.</p>
+<p>Data have had some quality checking, but some models will still definitely break with very strange looking error messages. A genuine, quality checked release will be tagged when it is actually ready to go. I really don’t suggest using this yet, except to get a feel for how the database looks and perhaps give some feedback on things you do or do not like.</p>
 </div>
 <div id="scope" class="section level2">
 <h2 class="hasAnchor">
@@ -101,9 +102,9 @@
 <a href="#usage" class="anchor"></a>Usage</h3>
 <p>A small-ish copy of the Padrino Database is included as a package data set. You can access it with the following code:</p>
 <div class="sourceCode" id="cb2"><pre class="r">
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"pdb_ex"</span>)</pre></div>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"pdb"</span>)</pre></div>
 <p>The next step is to identify the models we are interested in building. At the moment, there is no functionality to do that - you’ll just have to explore the <em>Metadata</em> table on your own. In the not so distant future, there will be a set of functions that actually help query specific columns of interest so the process of exploring the database is less painful.</p>
-<p>Once, we’ve identified the model(s) we want, we can build a list of <a href="https://levisc8.github.io/ipmr/articles/proto-ipms.html"><code>proto_ipm</code>’s</a>. This is an intermediate step between the database representation and a set of iteration kernels. Once we have this, we can build an actual model. Below, we extract a specific study, Levin et al. 2019, and construct an IPM from the database object.</p>
+<p>Once, we’ve identified the model(s) we want, we can build a list of <a href="https://levisc8.github.io/ipmr/articles/proto-ipms.html"><code>proto_ipm</code>’s</a>. This is an intermediate step between the database representation and a set of kernels. Once we have this, we can build an actual model. Below, we extract a specific study, Levin et al. 2019, and construct an IPM from the database object.</p>
 <div class="sourceCode" id="cb3"><pre class="r">
 <span class="co"># Generate an index to subset the database with</span>
 
@@ -117,12 +118,23 @@
 
 <span class="co"># We can construct a single IPM at a time, or make a list of many IPMs</span>
 
-<span class="no">proto_list</span>   <span class="kw">&lt;-</span> <span class="fu"><a href="reference/make_proto_ipm.html">make_proto_ipm</a></span>(<span class="no">use_db</span>,
-                               <span class="kw">ipm_id</span> <span class="kw">=</span> <span class="no">subset_index</span>[<span class="fl">1</span>],
-                               <span class="kw">det_stoch</span> <span class="kw">=</span> <span class="st">"det"</span>)
+<span class="no">proto_list</span>   <span class="kw">&lt;-</span> <span class="fu"><a href="reference/pdb_make_proto_ipm.html">pdb_make_proto_ipm</a></span>(<span class="no">use_db</span>,
+                                   <span class="kw">ipm_id</span> <span class="kw">=</span> <span class="no">subset_index</span>[<span class="fl">1</span>],
+                                   <span class="kw">det_stoch</span> <span class="kw">=</span> <span class="st">"det"</span>)</pre></div>
+<p>Once the list of <code>proto_ipm</code>’s is generated, you can either append your own IPMs to it, or you can go ahead to the next chunk. Note that <code>pdb_make_ipm</code> is not yet implemented, and so the second option is the only one you can use to work with models. Unfortunately, this means you’re restricted to <code><a href="https://rdrr.io/pkg/ipmr/man/make_ipm.html">ipmr::make_ipm</a></code>’s default arguments for each type of model in Padrino. This will change via the <code>addl_args</code> argument in <code>pdb_make_ipm</code>.</p>
+<div class="sourceCode" id="cb4"><pre class="r">
+<span class="co"># pdb_make_ipm not yet implemented</span>
 
+<span class="no">ipm_list</span>     <span class="kw">&lt;-</span> <span class="fu"><a href="reference/pdb_make_ipm.html">pdb_make_ipm</a></span>(<span class="no">proto_list</span>)
 
-<span class="no">ipm_list</span>     <span class="kw">&lt;-</span> <span class="fu">make_ipm</span>(<span class="no">proto_list</span>)</pre></div>
+<span class="co"># If you're dying to try it out, you can call the following</span>
+
+<span class="no">ipm_list</span>     <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="no">proto_list</span>, <span class="kw pkg">ipmr</span><span class="kw ns">::</span><span class="no"><a href="https://rdrr.io/pkg/ipmr/man/make_ipm.html">make_ipm</a></span>)</pre></div>
+</div>
+<div id="finding-help" class="section level3">
+<h3 class="hasAnchor">
+<a href="#finding-help" class="anchor"></a>Finding help</h3>
+<p>The package is documented <a href="https://levisc8.github.io/RPadrino/">here</a> and the database is documented <a href="https://levisc8.github.io/Padrino.github.io/">here</a> (though the latter is very out of date).</p>
 </div>
 <div id="contributing" class="section level3">
 <h3 class="hasAnchor">
@@ -160,7 +172,7 @@
   <div class="dev-status">
 <h2>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://travis-ci.com/levisc8/RPadrino"><img src="https://travis-ci.org/levisc8/RPadrino.svg?branch=master" alt="Travis build status"></a></li>
+<li><a href="https://travis-ci.org/levisc8/RPadrino"><img src="https://travis-ci.org/levisc8/RPadrino.svg?branch=master" alt="Travis build status"></a></li>
 <li><a href="https://codecov.io/gh/levisc8/RPadrino?branch=master"><img src="https://codecov.io/gh/levisc8/RPadrino/branch/master/graph/badge.svg" alt="Codecov test coverage"></a></li>
 </ul>
 </div>
