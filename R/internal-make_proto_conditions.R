@@ -2,7 +2,9 @@
 #
 .proto_check_stoch_possible <- function(db, det_stoch, kern_param) {
 
+  # Check
 
+  return("OK")
 
 }
 
@@ -11,6 +13,7 @@
 .proto_check_param_possible <- function(db, det_stoch, kern_param) {
 
 
+  return("OK")
 
 }
 
@@ -19,65 +22,45 @@
 # Checks if requested models are possible, and tries to fail informatively
 # if they aren't
 
-.check_proto_args <- function(pdb, ipm_id, det_stoch, kern_param, .stop) {
+.check_proto_args <- function(use_db, det_stoch, kern_param, .stop) {
 
-  mods    <- character()
-  reasons <- character()
+  mods <- unique(use_db$Metadata$ipm_id)
 
-  # increments mods and reasons index. Modified from within each individual
-  # error function using <<-
-  it <- 0L
+  # Error if stoch and no hier_effs or environmental vars
 
-  for(i in unique(pdb[[1]]$ipm_id)) {
-
-    use_db <- lapply(pdb,
-                     function(x, temp_id) {
-
-                       x[x$ipm_id == temp_id, ]
-
-                     },
-                     temp_id = i)
-
-    # Error if stoch and no hier_effs or environmental vars
-
-    temp_stoch_not_possible <- .proto_check_stoch_possible(use_db,
-                                                           det_stoch,
-                                                           kern_param)
-    mods[it]                <- temp_stoch_not_possible[1]
-    reasons[it]             <- temp_stoch_not_possible[2]
-
-    # Error if stoch_param requested and no stored distribution info
-
-    temp_param_not_possible <- .proto_check_param_possible(use_db,
-                                                           det_stoch,
-                                                           kern_param)
-    mods[it]                <- temp_param_not_possible[1]
-    reasons[it]             <- temp_param_not_possible[2]
-
-    # Internal errors. Hopefully these don't come up, but we will need to
-    # generate informative ones to aid trouble shooting.
+  problems <- .proto_check_stoch_possible(use_db,
+                                         det_stoch,
+                                         kern_param)
 
 
-  }
+  # Error if stoch_param requested and no stored distribution info
 
-  if(.stop && length(mods) > 0) {
+  temp_param_not_possible <- .proto_check_param_possible(use_db,
+                                                         det_stoch,
+                                                         kern_param)
+  problems <- c(problems, temp_param_not_possible)
+
+  # Internal errors. Hopefully these don't come up, but we will need to
+  # generate informative ones to aid trouble shooting.
+
+  if(.stop && any(problems != "OK")) {
 
     stop("The following models produced the following errors:\n",
          paste(
            paste(
-             mods, ": ", reasons, sep = ""
+             mods, ": ", problems, sep = ""
            ),
            collapse = "\n"
          ),
          call. = FALSE
     )
 
-  } else if(length(mods) > 0) {
+  } else if(any(problems != "OK")) {
 
     warning("The following models produced the following errors:\n",
             paste(
               paste(
-                mods, ": ", reasons, sep = ""
+                mods, ": ", problems, sep = ""
               ),
               collapse = "\n"
             ),

@@ -1,9 +1,10 @@
 #' @noRd
 #' @importFrom ipmr init_ipm
+
 # Functions to construct a single proto_ipm. This will take a complete pdb
 # object and a single id, and construct a proto_ipm for it.
 
-.make_proto <- function(db_tabs, id, det_stoch, kern_param) {
+.make_proto <- function(db_tabs, id, det_stoch, kern_param, stop_on_failure) {
 
   # Subset to a single IPM
 
@@ -13,6 +14,9 @@
 
   },
   id = id)
+
+  .check_proto_args(use_tabs, det_stoch, kern_param, stop_on_failure)
+
 
   # Split out individual tables
   md_tab <- use_tabs[[1]]
@@ -96,20 +100,20 @@
 
   for(i in seq_along(kern_ids)) {
 
-    out <- .define_single_kernel(out,
-                                 kern_ids[i],
-                                 md_tab,
-                                 sv_tab,
-                                 ds_tab,
-                                 cd_tab,
-                                 ir_tab,
-                                 ps_tab,
-                                 ik_tab,
-                                 vr_tab,
-                                 pv_tab,
-                                 es_tab,
-                                 he_tab,
-                                 un_tab)
+    out <- .define_kernel(out,
+                          kern_ids[i],
+                          md_tab,
+                          sv_tab,
+                          ds_tab,
+                          cd_tab,
+                          ir_tab,
+                          ps_tab,
+                          ik_tab,
+                          vr_tab,
+                          pv_tab,
+                          es_tab,
+                          he_tab,
+                          un_tab)
 
 
   }
@@ -138,7 +142,8 @@
                      pv_tab,
                      es_tab,
                      he_tab,
-                     un_tab)
+                     un_tab,
+                     det_stoch)
 
   }
 
@@ -155,6 +160,19 @@
     ik_tab
   )
 
+  out <- .define_pop_state(
+    out,
+    det_stoch,
+    ps_tab,
+    he_tab
+  )
+
+  if(!is.null(kern_param) && kern_param == "param") {
+    out <- .define_env_state(
+      out,
+      es_tab
+    )
+  }
 
   return(out)
 
@@ -264,7 +282,7 @@
 # Splits semi-colon separated model_iteration model families for the ...
 # in define_k
 
-.prep_k_dots <- function(ik_tab) {
+.prep_k_dots <- function(ik_tab, ps_tab, he_tab, det_stoch) {
 
   # If no iteration procedure specified, then we can just build the iteration
   # kernel(s) with a single expression. This will be defined using
@@ -276,8 +294,8 @@
 
     text_list <- strsplit(textpr, "=")
 
-    nm        <- text_list[[1]]
-    textpr    <- text_list[[2]]
+    nm        <- trimws(text_list[[1]][1])
+    textpr    <- trimws(text_list[[1]][2])
 
     out       <- rlang::list2(!! nm := rlang::parse_expr(textpr))
 
@@ -285,6 +303,8 @@
   }
 
   textprs <- ik_tab$formula[ik_tab$model_family == "iteration_procedure"]
+
+  textprs <- .append_pop_state_suffixes(textprs, ps_tab, he_tab, det_stoch)
 
   temp    <- strsplit(textprs, ";") %>%
     lapply(FUN = function(x) {
@@ -301,6 +321,41 @@
 
 }
 
+#' @noRd
+# Appends hier_effs suffixes to pop_state vars in iteration_procedure calls when
+# the model is deterministic. This needs to happen because otherwise, ipmr::make_ipm
+# will not be able to generate deterministic simulations for each level of the grouping
+# variable, which is probably what the user wants if they select a model with
+# hier_effs and specify the deterministic format.
+
+.append_pop_state_suffixes <- function(textprs, ps_tab, he_tab, det_stoch) {
+
+  # if it's a stochastic model, then the suffix-less format is correct. If
+  # there are no hier_effs, then there are no suffixes to append. In either or
+  # both cases, return early and skip the rest.
+
+  if(det_stoch == "stoch" || dim(he_tab)[1] == 0) return(textprs)
+
+  # Now, generate the base suffix. This is just the combination of the different
+  # grouping variable names collapsed into a single string. Next, append those
+  # to the various population states.
+
+  base_suff   <- paste(he_tab$vr_expr_name, collapse = "_")
+  for_replace <- paste(ps_tab$expression, base_suff, sep = "_")
+
+  # We are now ready to substitute. Going with fuzzy matching gsub for now
+  # but this could come back and bite me if it turns out some var names match
+  # each other somehow (e.g. something like n_b -> n_b_yr and n_b1 -> n_b_yr1)
+
+  for(i in seq_along(for_replace)) {
+
+    textprs <- gsub(ps_tab$expression[i], for_replace[i], textprs)
+
+  }
+
+  return(textprs)
+
+}
 
 #' @noRd
 

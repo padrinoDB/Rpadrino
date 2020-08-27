@@ -1,22 +1,23 @@
-# functions for .define_single_kernel()
+# functions that wrap their ipmr equivalents
+
 #' @noRd
 #' @importFrom ipmr define_kernel define_k define_impl define_pop_state
 #' define_env_state define_domains make_ipm
 
-.define_single_kernel <- function(proto_ipm,
-                                  kernel_id,
-                                  md_tab,
-                                  sv_tab,
-                                  ds_tab,
-                                  cd_tab,
-                                  ir_tab,
-                                  ps_tab,
-                                  ik_tab,
-                                  vr_tab,
-                                  pv_tab,
-                                  es_tab,
-                                  he_tab,
-                                  un_tab) {
+.define_kernel <- function(proto_ipm,
+                           kernel_id,
+                           md_tab,
+                           sv_tab,
+                           ds_tab,
+                           cd_tab,
+                           ir_tab,
+                           ps_tab,
+                           ik_tab,
+                           vr_tab,
+                           pv_tab,
+                           es_tab,
+                           he_tab,
+                           un_tab) {
 
 
   # We don't want to define_k here, that comes next .make_proto
@@ -180,7 +181,8 @@
                       pv_tab,
                       es_tab,
                       he_tab,
-                      un_tab) {
+                      un_tab,
+                      det_stoch) {
 
   # Get name for define_k. There really should only be *1* unique name
   # per model.
@@ -205,14 +207,22 @@
 
   out_fam <- "IPM"
 
-  out_dots <- .prep_k_dots(ik_tab)
+  out_dots <- .prep_k_dots(ik_tab, ps_tab, he_tab, det_stoch)
 
   out_par_list <- proto_ipm$params[[1]]$params
 
   out_states <- as.list(unique(c(ik_tab$domain_start, ik_tab$domain_end))) %>%
     Filter(f = Negate(is.na), x = .)
 
-  out_has_he <- grepl(out_nm, he_tab$kernel_id)
+  if(dim(he_tab)[1] > 0){
+
+    out_has_he <- grepl(out_nm, he_tab$kernel_id)
+
+  } else {
+
+    out_has_he <- FALSE
+
+  }
 
   if(out_has_he) {
 
@@ -306,4 +316,93 @@
 
   return(out)
 
+}
+
+#' @noRd
+# wrapper for ipmr::define_pop_state
+
+.define_pop_state <- function(proto_ipm,
+                              det_stoch,
+                              ps_tab,
+                              he_tab) {
+
+  # Fail if bin information simply isn't entered.
+
+  if(any(is.na(ps_tab$n_bins))) {
+
+    msg <- paste("Could not find number of bins for model: ",
+                 unique(ps_tab$ipm_id),
+                 sep = "")
+
+    msg <- paste(msg, collapse = "\n")
+
+    stop(msg,
+         "\nContact database developers for further help.", call. = FALSE)
+
+  } else if(dim(ps_tab)[1] == 0) {
+
+    # Otherwise, warn that no iteration based methods available, and just
+    # make a deterministic model.
+
+    warning("No population state functions defined for model: ",
+            unique(ps_tab$ipm_id),
+            "\nDeterministic analysis with eigenvalues is only possible option.")
+
+    sim_gen <- strsplit(class(proto_ipm), '_')[[1]][1]
+
+    new_cls <- paste(sim_gen, "_di_det", sep = "")
+
+    class(proto_ipm)[1] <- new_cls
+
+    return(proto_ipm)
+
+  }
+
+  tot_pop <- sum(ps_tab$n_bins)
+
+  pop_vecs <- list()
+
+  # Generate a suffix for deterministic models with hier_effs to append to
+  # population state names. This way, ipmr generates a different iteration
+  # population state for every level of grouping var combinations, and can
+  # iterate the models correctly.
+
+  if((det_stoch == "det") && (dim(he_tab)[1] > 0)) {
+
+    all_suf <- paste(he_tab$vr_expr_name, collapse = "_")
+    nm_sep  <- "_"
+
+  } else {
+
+    # If this isn't present, then just create dummies for the names so
+    # we can proceed normally
+
+    all_suf <- NULL
+    nm_sep  <- ""
+  }
+
+  for(i in seq_along(ps_tab$expression)) {
+
+    pop_vecs[[i]]      <- rep(1 / tot_pop,
+                              times = ps_tab$n_bins[i])
+
+    names(pop_vecs)[i] <- paste(ps_tab$expression[i], all_suf, sep = nm_sep)
+
+  }
+
+  out <- define_pop_state(
+    proto_ipm,
+    pop_vectors = pop_vecs
+  )
+
+  return(out)
+
+}
+
+#' @noRd
+#
+.define_env_state <- function(proto_ipm, ev_tab) {
+
+
+  return(proto_ipm)
 }

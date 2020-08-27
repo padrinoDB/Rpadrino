@@ -6,11 +6,19 @@ coverage](https://codecov.io/gh/levisc8/RPadrino/branch/master/graph/badge.svg)]
 
 ## RPadrino
 
-`RPadrino` is a package for interacting with the demography data base of
-the same name. It will likely consist of wrappers to an SQL data base
-that itself houses a suite of all known, published integral projection
-models (IPMs). Additionally, we’ll build in some basic tools to
-re-create the IPMs *as they were created in the original publication*.
+`RPadrino` is a package for interacting with the Padrino Integral
+Projection Model database. This database really only exists as an
+internal dataset in this package right now. The longer term plan is to
+migrate it to a set of static, version-controlled tables that are hosted
+on Zenodo (or similar). For now, you can access it by installing the
+package, and running `data(pdb)`.
+
+Data have had some quality checking, but some models will still
+definitely break with very strange looking error messages. A genuine,
+quality checked release will be tagged when it is actually ready to go.
+I really don’t suggest using this yet, except to get a feel for how the
+database looks and perhaps give some feedback on things you do or do not
+like.
 
 ## Scope
 
@@ -40,7 +48,7 @@ set. You can access it with the following code:
 
 ``` r
 
-data("pdb_ex")
+data("pdb")
 ```
 
 The next step is to identify the models we are interested in building.
@@ -53,9 +61,9 @@ less painful.
 Once, we’ve identified the model(s) we want, we can build a list of
 [`proto_ipm`’s](https://levisc8.github.io/ipmr/articles/proto-ipms.html).
 This is an intermediate step between the database representation and a
-set of iteration kernels. Once we have this, we can build an actual
-model. Below, we extract a specific study, Levin et al. 2019, and
-construct an IPM from the database object.
+set of kernels. Once we have this, we can build an actual model. Below,
+we extract a specific study, Levin et al. 2019, and construct an IPM
+from the database object.
 
 ``` r
 
@@ -71,18 +79,36 @@ use_db       <- lapply(pdb_ex,
 
 # We can construct a single IPM at a time, or make a list of many IPMs
 
-proto_list   <- make_proto_ipm(use_db, 
-                               ipm_id = subset_index[1],
-                               det_stoch = "det")
-
-
-ipm_list     <- make_ipm(proto_list)
+proto_list   <- pdb_make_proto_ipm(use_db, 
+                                   ipm_id = subset_index[1],
+                                   det_stoch = "det")
 ```
 
-### Further steps
+Once the list of `proto_ipm`’s is generated, you can either append your
+own IPMs to it, or you can go ahead to the next chunk. Note that
+`pdb_make_ipm` is not yet implemented, and so the second option is the
+only one you can use to work with models. Unfortunately, this means
+you’re restricted to `ipmr::make_ipm`’s default arguments for each
+type of model in Padrino. This will change via the `addl_args` argument
+in `pdb_make_ipm`.
 
-The package is documented [here]() and the database is documented
-[here]().
+``` r
+
+# pdb_make_ipm not yet implemented
+
+ipm_list     <- pdb_make_ipm(proto_list)
+
+# If you're dying to try it out, you can call the following
+
+ipm_list     <- lapply(proto_list, ipmr::make_ipm)
+```
+
+### Finding help
+
+The package is documented [here](https://levisc8.github.io/RPadrino/)
+and the database is documented
+[here](https://levisc8.github.io/Padrino.github.io/) (though the latter
+is very out of date).
 
 ### Contributing
 

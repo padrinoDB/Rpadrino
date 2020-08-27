@@ -1,27 +1,34 @@
 #' @title Generate proto_ipms from Padrino objects
 #'
-#' @description These functions generate \code{proto_ipm} objects from
+#' @description This function generates \code{proto_ipm} objects from
 #' Padrino Database tables.
 #'
-#' @param pdb A \code{pdb} object
+#' @param pdb A \code{pdb} object.
 #' @param ipm_id Optionally, one or more \code{ipm_id}'s to build. If empty,
 #' all models contained in the \code{pdb} object will be processed into
 #' \code{proto_ipm}'s.
-#' @param det_stoch Either \code{"det"} or \code{"stoch"}. This determines
-#' whether we want to construct a deterministic or stochastic model. Default
-#' is \code{"det"}.
+#' @param det_stoch A vector containing either \code{"det"} or \code{"stoch"}.
+#' This determines whether we want to construct a deterministic or stochastic
+#' model. Default is \code{"det"}. See details
 #' @param kern_param If \code{det_stoch = "stoch"}, then whether or not to construct
 #' a kernel resampled model, or a parameter resampled model. See details.
 #' @param stop_on_failure A logical. If \code{TRUE}, when building many models,
 #' will halt the process with an error if any one of them is unable to build with the
 #' requested parameters. Otherwise, it will throw a warning indicating which
-#' models cannot be built
+#' models cannot be built.
 #'
 #' @return A list containing one or more \code{proto_ipms}. Names of the list
 #' will correspond to \code{ipm_id}s.
 #'
 #' @details \code{proto_ipm} objects contain all of the information needed
-#' to implement an IPM, but stop short of actually generating kernels.
+#' to implement an IPM, but stop short of actually generating kernels. These
+#' are intermediate building blocks that can be modified before creating a full
+#' IPM so that things like perturbation analysis are a bit more straightforward.
+#'
+#' When requesting many models, the \code{det_stoch} and \code{kern_param} parameters
+#' can also be vectors. These are matched with \code{ipm_id} by position. If the
+#' lengths of \code{det_stoch} and \code{kern_param} do not match the length
+#' \code{ipm_id}, they will be recycled until they do.
 #'
 #' For stochastic models, there is sometimes the option of building either a kernel-resampled
 #' or a parameter resampled model. A kernel resampled model uses some point estimate
@@ -30,14 +37,20 @@
 #' information for some models when it is available in the literature, and tries
 #' to fail informatively when these distributions aren't available in the database.
 #'
+#' @seealso
+#' For more info on \code{kern_param} definitions:
+#'
+#' Metcalf \emph{et al.} (2015). Statistial modeling of annual variation
+#' for inference on stochastic population dynamics using Integral Projection Models.
+#' \emph{Methods in Ecology and Evolution}. DOI: 10.1111/2041-210X.12405
 #'
 #' @export
 
-make_proto_ipm <- function(pdb,
-                           ipm_id = NULL,
-                           det_stoch = "det",
-                           kern_param = "kern",
-                           stop_on_failure = TRUE) {
+pdb_make_proto_ipm <- function(pdb,
+                               ipm_id = NULL,
+                               det_stoch = "det",
+                               kern_param = "kern",
+                               stop_on_failure = TRUE) {
 
 
   if(!is.null(ipm_id)) {
@@ -57,27 +70,37 @@ make_proto_ipm <- function(pdb,
 
   }
 
-  .check_proto_args(pdb, ipm_id, det_stoch, kern_param, stop_on_failure)
-
   out        <- list()
 
   unique_ids <- unique(pdb[[1]]$ipm_id)
+
+  # Recycle det_stoch so it is the correct length.
+
+  if(length(det_stoch) < length(unique_ids)) {
+
+    det_stoch <- rep_len(det_stoch, length.out = length(unique_ids))
+
+    # Will need to add checks here for kern_param if any(det_stoch == "stoch")
+
+  }
 
   for(i in seq_along(unique_ids)) {
 
     out[[i]]      <- .make_proto(pdb,
                                  id = unique_ids[i],
                                  det_stoch[i],
-                                 kern_param[i])
+                                 kern_param[i],
+                                 stop_on_failure)
 
     names(out)[i] <- unique_ids[i]
+
   }
 
   return(out)
 
 }
 
-#' @title mat_mult
+#' @title Matrix multiplication
 #' @description Multiply two matrices
 #'
 #' @param x,y Numeric matrices or vectors
