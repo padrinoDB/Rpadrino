@@ -2,7 +2,7 @@
 # Adds additional arguments to specified eviction correction functions.
 # Right now, only works with truncated_distributions. Need to add discrete_extrema
 
-.add_ev_args <- function(ev_fun, ev_target, dens_fun_exprs) {
+.add_ev_args <- function(ev_fun, ev_target, dens_fun_exprs, state) {
 
   extra_args <- switch(
     ev_fun,
@@ -10,8 +10,7 @@
                                                      ev_target),
     "rescale_kernel" = .add_trunc_dist_args(dens_fun_exprs,
                                             ev_target),
-    "discrete_extrema" = warning("discrete_extrema not",
-                                 "implemented yet")
+    "discrete_extrema" = .add_disc_extrema_call(ev_target, state)
   )
 
   return(extra_args)
@@ -30,4 +29,12 @@
   out <- list(dens_fun, ev_target)
 
   return(out)
+}
+
+#' @noRd
+
+.add_disc_extrema_call <- function(ev_target, state) {
+
+  list(ev_target, state)
+
 }

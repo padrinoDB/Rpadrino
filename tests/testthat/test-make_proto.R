@@ -4,7 +4,10 @@ data(pdb)
 
 id <- "aaaa55"
 
-proto <- pdb_make_proto_ipm(pdb, ipm_id = id, det_stoch = "det", kern_param = NA)
+proto <- pdb_make_proto_ipm(pdb,
+                            ipm_id = id,
+                            det_stoch = "det",
+                            kern_param = NA)
 
 test_that("proto_ipm is named and classed right", {
 
@@ -13,24 +16,24 @@ test_that("proto_ipm is named and classed right", {
 
 })
 
-x <- ipmr::make_ipm(proto[[1]], iterations = 50)
+x <- pdb_make_ipm(proto)
 
 test_that("ipmr recognizes outputs from pdb_make_proto", {
 
-  expect_s3_class(x, "general_di_det_ipm")
+  expect_s3_class(x[[1]], "general_di_det_ipm")
 
 })
 
 # For the sake of this rebuild, will switch my model's eviction function
 # to truncated_distributions
 
-pdb$Metadata$evict_type[pdb$Metadata$ipm_id == 'aaa341'] <- 'truncated_distributions'
+# pdb$Metadata$evict_type[pdb$Metadata$ipm_id == 'aaa341'] <- 'truncated_distributions'
 
 id <- c("aaa341", "aaaa55")
 
 proto_2 <- pdb_make_proto_ipm(pdb, ipm_id = id, det_stoch = c("det", "det"))
 
-x_2 <- lapply(proto_2, ipmr::make_ipm)
+x_2 <- pdb_make_ipm(proto_2)
 
 test_that("building multiple protos works", {
 

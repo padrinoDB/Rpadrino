@@ -33,3 +33,6 @@ jobs:
   - os: osx
     r: devel
   - if: branch != master && os = osx
+
+after_success:
+  - Rscript -e 'covr::codecov()'

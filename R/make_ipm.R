@@ -53,7 +53,7 @@ pdb_make_ipm <- function(proto_ipm_list, addl_args = list()) {
 
   # generates the actual ipm
 
-  out        <- lapply(made_calls, .call_ipmr_make_ipm)
+  out        <- lapply(made_calls, eval)
 
   return(out)
 

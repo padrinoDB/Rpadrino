@@ -2,7 +2,9 @@
 #
 .proto_check_stoch_possible <- function(db, det_stoch, kern_param) {
 
-  # Check
+  # Check that there's either something in he_tab and/or env_vars tab
+
+
 
   return("OK")
 
@@ -12,6 +14,7 @@
 #
 .proto_check_param_possible <- function(db, det_stoch, kern_param) {
 
+  # check if parameter distributions exist
 
   return("OK")
 

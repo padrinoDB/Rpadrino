@@ -133,12 +133,18 @@
 
     } else {
 
+      use_state <- unique(c(ik_tab$domain_start[grepl(kernel_id, ik_tab$kernel_id)],
+                            ik_tab$domain_end[grepl(kernel_id, ik_tab$kernel_id)]))
+
       ev_target <- vapply(dens_fun_exprs,
                           function(x) strsplit(x, '=')[[1]][1] %>% trimws(),
                           character(1L),
                           USE.NAMES = FALSE)
 
-      ev_target <- .add_ev_args(ev_fun, ev_target, dens_fun_exprs)
+      ev_target <- .add_ev_args(ev_fun,
+                                ev_target,
+                                dens_fun_exprs,
+                                use_state)
 
       ev_call <- rlang::call2(ev_fun, !!! ev_target)
 
