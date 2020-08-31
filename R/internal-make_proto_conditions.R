@@ -29,6 +29,15 @@
 
   mods <- unique(use_db$Metadata$ipm_id)
 
+  # error if has_time_lag, these are not implemented yet
+
+  if(use_db[[1]]$has_time_lag) {
+
+    stop("Time-lagged models are not yet implemented",
+         call. = FALSE)
+
+  }
+
   # Error if stoch and no hier_effs or environmental vars
 
   problems <- .proto_check_stoch_possible(use_db,

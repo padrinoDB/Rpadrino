@@ -15,7 +15,6 @@
 
   return(extra_args)
 }
-
 #' @noRd
 
 .add_trunc_dist_args <- function(dens_fun_expr, ev_target) {

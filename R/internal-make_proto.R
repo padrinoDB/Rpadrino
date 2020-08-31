@@ -91,10 +91,10 @@
 
   model_cls <- paste(c(sim_gen, "di", det_stoch, kern_param), collapse = "_")
 
-  # For now, no age size IPMs in Padrino anyway. Will alter this accordingly
-  # when that variable is created.
+  # There shouldn't be any of these models in Padrino yet anyway, but they're
+  # implemented in ipmr, so they could theoretically be digitized now
 
-  has_age <- FALSE
+  has_age <- md_tab$has_age
 
   out <- ipmr::init_ipm(model_class = model_cls, has_age = has_age)
 
@@ -197,23 +197,32 @@
 
 .make_pdf_env <- function() {
 
-  pdfs <- c(
-    "Norm",
-    "Lognorm",
-    "F",
-    "Gamma",
-    "t",
-    "Beta",
-    "ChiSq",
-    "Cauchy",
-    "Expo"
+  pdfs <- list(
+    Norm      = "dnorm",
+    Lognorm   = "dlnorm",
+    F_dist    = "df",
+    Gamma     = "dgamma",
+    T_dist    = "dt",
+    Beta      = "dbeta",
+    Chi       = "dchisq",
+    Cauchy    = "dcauchy",
+    Expo      = "dexp",
+    Binom     = "dbinom",
+    Bernoulli = "dbinom",
+    Geom      = "dgeom",
+    Hgeom     = "dhyper",
+    Multinom  = "dmultinom",
+    Negbin    = "dnbinom",
+    Pois      = "dpois",
+    Unif      = "dunif",
+    Weib      = "dweibull"
+
   )
 
-  pdf_list <- setNames(as.list(paste("d", tolower(pdfs), sep = "")), pdfs)
-  pdf_list$Lognorm <- 'dlnorm'
-  pdf_list$Expo    <- "dexp"
 
-  pdf_env <- list2env(as.list(pdf_list))
+
+
+  pdf_env <- list2env(as.list(pdfs))
 
   return(pdf_env)
 

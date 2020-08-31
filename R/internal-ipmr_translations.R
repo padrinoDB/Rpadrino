@@ -118,9 +118,11 @@
   }
 
   # Finally, add eviction if it's used, and construct the call to that
-  # function
+  # function. Since eviction is defined at the metadata row level rather
+  # than the kernel level, we need to make sure kernels that don't have
+  # an eviction expression are skipped when the proto_ipm is getting built
 
-  ev_cor <- md_tab$eviction_used
+  ev_cor <- md_tab$eviction_used && length(dens_fun_exprs) > 0
 
   if(ev_cor) {
 
