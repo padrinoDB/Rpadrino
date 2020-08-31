@@ -26,7 +26,7 @@
 
   current_fam <- ik_tab$model_family[ik_tab$kernel_id == kernel_id]
 
-  if(current_fam %in% skips) return(proto_ipm)
+  if(any(current_fam %in% skips)) return(proto_ipm)
 
   # Going through ipmr::define_kernel() arguments in order of appearance
   # Skip the "name" argument because that's just kernel_id. This leads to formula
