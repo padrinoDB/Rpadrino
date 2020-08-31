@@ -150,6 +150,10 @@
 
     }
 
+  } else {
+
+    ev_call <- NULL
+
   }
 
   out <- ipmr::define_kernel(
