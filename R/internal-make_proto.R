@@ -205,11 +205,13 @@
     "t",
     "Beta",
     "ChiSq",
-    "Cauchy"
+    "Cauchy",
+    "Expo"
   )
 
   pdf_list <- setNames(as.list(paste("d", tolower(pdfs), sep = "")), pdfs)
   pdf_list$Lognorm <- 'dlnorm'
+  pdf_list$Expo    <- "dexp"
 
   pdf_env <- list2env(as.list(pdf_list))
 
