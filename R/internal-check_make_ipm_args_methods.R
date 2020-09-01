@@ -42,7 +42,7 @@
                 "normalize_pop_size",
                 "report_progress")
 
-  cur_args <- names(args)
+  cur_args <- names(args[[1]])
 
   if(any(! cur_args %in% pos_args)) {
 
@@ -68,7 +68,7 @@
                 "normalize_pop_size",
                 "report_progress")
 
-  cur_args <- names(args)
+  cur_args <- names(args[[1]])
 
   if(any(! cur_args %in% pos_args)) {
 
@@ -92,7 +92,7 @@
                 "iterations",
                 "normalize_pop_size")
 
-  cur_args <- names(args)
+  cur_args <- names(args[[1]])
 
   if(any(! cur_args %in% pos_args)) {
 
@@ -116,7 +116,7 @@
                 "normalize_pop_size",
                 "report_progress")
 
-  cur_args <- names(args)
+  cur_args <- names(args[[1]])
 
   if(any(! cur_args %in% pos_args)) {
 
@@ -159,7 +159,9 @@
 
 .stop_bad_make_ipm_args <- function(cur_args, pos_args, cls) {
 
-  bad_args <- which(!cur_args %in% pos_args)
+  bad_ind <- which(!cur_args %in% pos_args)
+
+  bad_args <- cur_args[bad_ind]
 
   bad_args <- paste(bad_args, collapse = ", ")
 
