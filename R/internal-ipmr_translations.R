@@ -288,7 +288,7 @@
                             ik_tab$domain_start[i]),
       dom_end      = ifelse(is.na(ik_tab$domain_end[i]),
                             NA_character_,
-                            ik_tab$domain_end)
+                            ik_tab$domain_end[i])
       )
 
     impl_list <- c(impl_list, temp)
