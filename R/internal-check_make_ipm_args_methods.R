@@ -142,7 +142,7 @@
                 "normalize_pop_size",
                 "report_progress")
 
-  cur_args <- names(args)
+  cur_args <- names(args[[1]])
 
   if(any(! cur_args %in% pos_args)) {
 
