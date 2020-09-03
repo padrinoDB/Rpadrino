@@ -215,7 +215,8 @@
     Negbin    = "dnbinom",
     Pois      = "dpois",
     Unif      = "dunif",
-    Weib      = "dweibull"
+    Weib      = "dweibull",
+    MVN       = "rmvnorm"
 
   )
 
@@ -230,6 +231,7 @@
 
 #' @noRd
 #' @importFrom rlang call_name call_args parse_expr call2
+#' @importFrom mvtnorm rmvnorm dmvnorm
 #
 # dens_call: Must be a quosure
 # sv_2: The name of the state variable without _1 or _2 appended. This is handled
@@ -248,9 +250,21 @@
 
   sub_call <- eval(fun_call, envir = .make_pdf_env())
 
-  out <- paste(sub_call, "(", d_sv, ', ',
-               paste(current_args, collapse = ", "),
-               ")", sep = "")
+  if(fun_call == "MVN") {
+
+    out <- paste(sub_call, "(1, ",
+                 paste(current_args,
+                       collapse = ", "),
+                 ")",
+                 sep = "")
+
+  } else {
+
+    out <- paste(sub_call, "(", d_sv, ', ',
+                 paste(current_args, collapse = ", "),
+                 ")", sep = "")
+
+  }
 
   return(out)
 
