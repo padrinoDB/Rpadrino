@@ -138,6 +138,13 @@
       use_state <- unique(c(ik_tab$domain_start[grepl(kernel_id, ik_tab$kernel_id)],
                             ik_tab$domain_end[grepl(kernel_id, ik_tab$kernel_id)]))
 
+      # Remove NAs introduced by CD and DC kernels. Otherwise, too many arguments
+      # to whichever function call we end up constructing.
+
+      if(any(is.na(use_state))) {
+        use_state <- use_state[!is.na(use_state)]
+      }
+
       ev_target <- vapply(dens_fun_exprs,
                           function(x) strsplit(x, '=')[[1]][1] %>% trimws(),
                           character(1L),
