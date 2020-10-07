@@ -65,7 +65,7 @@
 
   } else {
 
-    kern_dots_text <- strsplit(eval_fun_exprs, "=")
+    kern_dots_text <- strsplit(eval_fun_exprs, " = ")
 
     kern_dots_nms  <- vapply(kern_dots_text,
                              function(x) trimws(x[1]),
@@ -228,7 +228,7 @@
 
   if(dim(he_tab)[1] > 0){
 
-    out_has_he <- grepl(out_nm, he_tab$kernel_id)
+    out_has_he <- any(grepl(out_nm, he_tab$kernel_id))
 
   } else {
 
@@ -282,7 +282,9 @@
 
     temp <- ipmr::make_impl_args_list(
       kernel_names = use_id,
-      int_rule     = ir_tab$integration_rule[grepl(use_id, ir_tab$kernel_id)],
+      int_rule     = ifelse(any(grepl(use_id, ir_tab$kernel_id)),
+                            ir_tab$integration_rule,
+                            NA_character_),
       dom_start    = ifelse(is.na(ik_tab$domain_start[i]),
                             NA_character_,
                             ik_tab$domain_start[i]),

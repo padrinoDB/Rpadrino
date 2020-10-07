@@ -191,8 +191,67 @@
 
 }
 
+
 #' @noRd
-#' @importFrom stats setNames
+# Generates an environment to sub various random number generators into an
+# actual function call.
+
+.make_ran_env <- function() {
+
+  rans <- list(
+    Norm      = "rnorm",
+    Lognorm   = "rlnorm",
+    F_dist    = "rf",
+    Gamma     = "rgamma",
+    T_dist    = "rt",
+    Beta      = "rbeta",
+    Chi       = "rchisq",
+    Cauchy    = "rcauchy",
+    Expo      = "rexp",
+    Binom     = "rbinom",
+    Bernoulli = "rbinom",
+    Geom      = "rgeom",
+    Hgeom     = "rhyper",
+    Multinom  = "rmultinom",
+    Negbin    = "rnbinom",
+    Pois      = "rpois",
+    Unif      = "runif",
+    Weib      = "rweibull",
+    MVN       = "rmvnorm"
+
+  )
+
+  ran_env <- list2env(as.list(rans))
+
+  return(ran_env)
+
+}
+
+#' @noRd
+#' @importFrom mvtnorm rmvnorm dmvnorm
+#
+# Generates call to r*pr_fun(1, other_args). Used to sample parameter distributions
+# and/or environmental variables in *_stoch_param models
+
+.prep_ran_fun <- function(ran_call) {
+
+  fun_call <- rlang::call_name(ran_call) %>%
+    rlang::parse_expr()
+
+  current_args <- rlang::call_args(ran_call)
+
+  out_fun      <- eval(fun_call, envir = .make_ran_env())
+
+  out          <- paste(out_fun, "(1, ",
+                        paste(current_args, collapse = ", "),
+                        ")",
+                        sep = "")
+
+  return(out)
+
+}
+
+#' @noRd
 # Generates an environment to sub various PDFs into an actual function call.
 
 .make_pdf_env <- function() {
@@ -216,12 +275,9 @@
     Pois      = "dpois",
     Unif      = "dunif",
     Weib      = "dweibull",
-    MVN       = "rmvnorm"
+    MVN       = "dmvnorm"
 
   )
-
-
-
 
   pdf_env <- list2env(as.list(pdfs))
 
@@ -231,8 +287,6 @@
 
 #' @noRd
 #' @importFrom rlang call_name call_args parse_expr call2
-#' @importFrom mvtnorm rmvnorm dmvnorm
-#
 # dens_call: Must be a quosure
 # sv_2: The name of the state variable without _1 or _2 appended. This is handled
 # internally.
@@ -250,21 +304,9 @@
 
   sub_call <- eval(fun_call, envir = .make_pdf_env())
 
-  if(fun_call == "MVN") {
-
-    out <- paste(sub_call, "(1, ",
-                 paste(current_args,
-                       collapse = ", "),
-                 ")",
-                 sep = "")
-
-  } else {
-
-    out <- paste(sub_call, "(", d_sv, ', ',
-                 paste(current_args, collapse = ", "),
-                 ")", sep = "")
-
-  }
+  out <- paste(sub_call, "(", d_sv, ', ',
+               paste(current_args, collapse = ", "),
+               ")", sep = "")
 
   return(out)
 
@@ -286,10 +328,19 @@
                            function(x) unlist(strsplit(x, '=')) %>% trimws(),
                            character(2L))
 
-  rhs            <- rlang::parse_expr(lhs_rhs[2, ])
+  if(ncol(lhs_rhs) > 1) {
+
+    rhs            <- rlang::parse_exprs(lhs_rhs[2, ]) %>%
+      unlist()
+
+  } else {
+
+    rhs <- list(rlang::parse_expr(lhs_rhs[2, ]))
+
+  }
 
   dens_fun_exprs <- vapply(
-    rlang::quos(!!rhs),
+    rlang::quos(!!! rhs),
     .prep_dens_fun,
     character(1L),
     sv_2 = states
@@ -329,6 +380,8 @@
 
   textprs <- ik_tab$formula[ik_tab$model_family == "iteration_procedure"]
 
+  # Some models might have a K defined too. Build that one up if needed
+
   textprs <- .append_pop_state_suffixes(textprs, ps_tab, he_tab, det_stoch)
 
   temp    <- strsplit(textprs, ";") %>%
@@ -338,6 +391,14 @@
 
     }) %>%
     .flatten_to_depth(1L)
+
+  if("IPM" %in% ik_tab$model_family) {
+
+    k        <- strsplit(ik_tab$formula[ik_tab$model_family == "IPM"], "=")
+
+    temp <- c(temp, k) %>% .flatten_to_depth(1L)
+
+  }
 
   out        <- lapply(temp, function(x) rlang::parse_expr(x[2]))
   names(out) <- vapply(temp, function(x) trimws(x[1]), character(1L))

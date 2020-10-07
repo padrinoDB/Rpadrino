@@ -43,3 +43,42 @@ utils::globalVariables(c("."), add = FALSE)
 #' @importFrom purrr flatten
 
 .flatten_to_depth <- getFromNamespace(".flatten_to_depth", 'ipmr')
+
+#' @noRd
+#  Generates var-covar matrix for a given set of values
+
+sig_mat <- function(...) {
+
+  vals <- c(...)
+
+  dims <- sqrt(length(vals))
+
+  out  <- matrix(vals, nrow = dims, ncol = dims, byrow = TRUE)
+
+  return(out)
+
+}
+
+#' @noRd
+# Utitlity to create functions for pdb metadata accessors
+
+.make_pdb_accessor <- function(col) {
+
+  force(col)
+
+  fun <- function(pdb, ipm_id = NULL) {
+
+    if(is.null(ipm_id)) {
+
+      ipm_id <- unique(pdb[[1]]$ipm_id)
+
+    }
+
+    out <- pdb[[1]][ , col][pdb[[1]]$ipm_id %in% ipm_id]
+
+    return(out)
+  }
+
+
+  return(fun)
+}
