@@ -325,7 +325,7 @@
                                " check Padrino.")
 
   lhs_rhs        <- vapply(dens_funs,
-                           function(x) unlist(strsplit(x, '=')) %>% trimws(),
+                           function(x) unlist(strsplit(x, ' = ')) %>% trimws(),
                            character(2L))
 
   if(ncol(lhs_rhs) > 1) {
@@ -368,7 +368,7 @@
 
     textpr    <- ik_tab$formula[ik_tab$model_family == "IPM"]
 
-    text_list <- strsplit(textpr, "=")
+    text_list <- strsplit(textpr, " = ")
 
     nm        <- trimws(text_list[[1]][1])
     textpr    <- trimws(text_list[[1]][2])
