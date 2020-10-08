@@ -94,6 +94,8 @@ pdb_make_proto_ipm <- function(pdb,
 
     names(out)[i] <- unique_ids[i]
 
+    out[[i]]$id   <- unique_ids[i]
+
   }
 
   return(out)
