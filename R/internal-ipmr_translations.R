@@ -104,7 +104,7 @@
 
   if(dim(he_tab)[1] > 0) {
 
-    has_hier_effs         <- TRUE
+    has_hier_effs         <- any(grepl(kernel_id, he_tab$kernel_id))
     levs_hier_effs        <- lapply(he_tab$range,
                                     function(x) eval(parse(text = x)))
 
