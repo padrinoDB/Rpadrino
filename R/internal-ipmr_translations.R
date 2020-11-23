@@ -53,7 +53,7 @@
                             FUN = function(x) .is_the_same(x),
                             logical(1L)), ]
 
-  vr_tab <- vr_tab[grepl(kernel_id, vr_tab$kernel_id), ]
+  vr_tab <- vr_tab[.kernel_ids(kernel_id, vr_tab$kernel_id), ]
 
   # Next, split out evaluated exprs - these are pretty much ready to go
 
@@ -426,4 +426,20 @@
 
 
   return(proto_ipm)
+}
+
+.kernel_ids <- function(target_id, kernel_ids) {
+
+  out <- vapply(kernel_ids,
+                       function(x, target) {
+                         temp <- strsplit(x, ';') %>%
+                           unlist() %>%
+                           trimws()
+                           any(temp == target)
+                       },
+                       target = target_id,
+                logical(1L))
+
+  return(out)
+
 }
