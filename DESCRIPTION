@@ -17,7 +17,7 @@ Imports:
   magrittr,
   mvtnorm,
   purrr,
-  rlang (>= 0.2.0),
+  rlang (>= 0.3.0),
   utils
 License: GPL-3
 Encoding: UTF-8

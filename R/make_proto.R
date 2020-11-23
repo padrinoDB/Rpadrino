@@ -98,6 +98,8 @@ pdb_make_proto_ipm <- function(pdb,
 
   }
 
+  class(out) <- c("pdb_proto_ipm", "list")
+
   return(out)
 
 }

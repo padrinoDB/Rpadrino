@@ -58,6 +58,8 @@ pdb_make_ipm <- function(proto_ipm_list, addl_args = list()) {
 
   out        <- lapply(made_calls, eval)
 
+  class(out) <- c("pdb_ipm", "list")
+
   return(out)
 
 }

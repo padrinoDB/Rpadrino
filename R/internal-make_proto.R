@@ -89,7 +89,12 @@
 
   if(det_stoch == "det") kern_param <- NULL
 
-  model_cls <- paste(c(sim_gen, "di", det_stoch, kern_param), collapse = "_")
+  di_dd <- ifelse(md_tab$has_dd, "dd", "di")
+
+  # If missing, assume "di" for now
+  if(is.na(di_dd)) di_dd <- "di"
+
+  model_cls <- paste(c(sim_gen, di_dd, det_stoch, kern_param), collapse = "_")
 
   # There shouldn't be any of these models in Padrino yet anyway, but they're
   # implemented in ipmr, so they could theoretically be digitized now
