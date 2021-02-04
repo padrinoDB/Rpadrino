@@ -94,14 +94,17 @@
   # If missing, assume "di" for now
   if(is.na(di_dd)) di_dd <- "di"
 
-  model_cls <- paste(c(sim_gen, di_dd, det_stoch, kern_param), collapse = "_")
 
   # There shouldn't be any of these models in Padrino yet anyway, but they're
   # implemented in ipmr, so they could theoretically be digitized now
 
   has_age <- md_tab$has_age
 
-  out <- ipmr::init_ipm(model_class = model_cls, has_age = has_age)
+  out <- ipmr::init_ipm(sim_gen    = sim_gen,
+                        di_dd      = di_dd,
+                        det_stoch  = det_stoch,
+                        kern_param = kern_param,
+                        has_age    = has_age)
 
   for(i in seq_along(kern_ids)) {
 
@@ -123,35 +126,6 @@
 
   }
 
-  # If there is a "K" kernel, or it's a potentially stochastic model, we
-  # need to call ipmr::define_k(). We need to re-arrange a bunch of stuff
-  # though, so this is wrapped in .define_k
-
-  k_fams <- c("IPM", "iteration_procedure")
-
-
-  if(any(k_fams %in% ik_tab$model_family)) {
-
-    kern_ids <- ik_tab$kernel_id[ik_tab$model_family %in% k_fams]
-
-    out <- .define_k(out,
-                     kern_ids,
-                     md_tab,
-                     sv_tab,
-                     ds_tab,
-                     cd_tab,
-                     ir_tab,
-                     ps_tab,
-                     ik_tab,
-                     vr_tab,
-                     pv_tab,
-                     es_tab,
-                     he_tab,
-                     un_tab,
-                     det_stoch)
-
-  }
-
   out <- .define_impl(
     out,
     ir_tab,
@@ -161,8 +135,7 @@
   out <- .define_domains(
     out,
     cd_tab,
-    ps_tab,
-    ik_tab
+    ps_tab
   )
 
   out <- .define_pop_state(

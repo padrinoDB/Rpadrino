@@ -11,7 +11,8 @@
 .check_make_ipm_args_impl.simple_di_det <- function(proto, args) {
 
 
-  pos_args <- c("return_all",
+  pos_args <- c("return_main_env",
+                "return_all_envs",
                 "usr_funs",
                 "domain_list",
                 "iterate",
@@ -33,7 +34,8 @@
 #' @noRd
 .check_make_ipm_args_impl.simple_di_stoch_kern <- function(proto, args) {
 
-  pos_args <- c("return_all",
+  pos_args <- c("return_main_env",
+                "return_all_envs",
                 "usr_funs",
                 "domain_list",
                 "iterate",
@@ -59,7 +61,8 @@
 #' @noRd
 .check_make_ipm_args_impl.simple_di_stoch_param <- function(proto, args) {
 
-  pos_args <- c("return_all",
+  pos_args <- c("return_main_env",
+                "return_all_envs",
                 "usr_funs",
                 "domain_list",
                 "iterate",
@@ -85,7 +88,8 @@
 #' @noRd
 .check_make_ipm_args_impl.general_di_det <- function(proto, args) {
 
-  pos_args <- c("return_all",
+  pos_args <- c("return_main_env",
+                "return_all_envs",
                 "usr_funs",
                 "domain_list",
                 "iterate",
@@ -107,7 +111,8 @@
 #' @noRd
 .check_make_ipm_args_impl.general_di_stoch_kern <- function(proto, args) {
 
-  pos_args <- c("return_all",
+  pos_args <- c("return_main_env",
+                "return_all_envs",
                 "usr_funs",
                 "domain_list",
                 "iterate",
@@ -133,7 +138,8 @@
 #' @noRd
 .check_make_ipm_args_impl.general_di_stoch_param <- function(proto, args) {
 
-  pos_args <- c("return_all",
+  pos_args <- c("return_main_env",
+                "return_all_envs",
                 "usr_funs",
                 "domain_list",
                 "iterate",

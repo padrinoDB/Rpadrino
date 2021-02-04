@@ -184,96 +184,6 @@
 }
 
 #' @noRd
-# Defines the iteration kernel and the iteration procedure, and handles all
-# of the transformations to ipmr format
-
-.define_k <- function(proto_ipm,
-                      kern_ids,
-                      md_tab,
-                      sv_tab,
-                      ds_tab,
-                      cd_tab,
-                      ir_tab,
-                      ps_tab,
-                      ik_tab,
-                      vr_tab,
-                      pv_tab,
-                      es_tab,
-                      he_tab,
-                      un_tab,
-                      det_stoch) {
-
-  # Get name for define_k. There really should only be *1* unique name
-  # per model.
-  # I don't htink this can ever happen - but just checking.
-
-  if(length(unique(kern_ids)) > 1) {
-
-    out_nm <- unique(kern_ids)[grepl("K", unique(kern_ids))][1]
-    warning("Found multiple names for K in model: ", md_tab$ipm_id,
-            "\nUsing the first name. Please contact database maintainers to make",
-            " sure this is not an error.",
-            call. = FALSE)
-
-  } else {
-
-    out_nm <- unique(kern_ids)
-
-  }
-
-  # Hard code this, as it really can't be anything else without breaking
-  # ipmr
-
-  out_fam <- "IPM"
-
-  out_dots <- .prep_k_dots(ik_tab, ps_tab, he_tab, det_stoch)
-
-  out_par_list <- proto_ipm$params[[1]]$params
-
-  out_states <- as.list(unique(c(ik_tab$domain_start, ik_tab$domain_end))) %>%
-    Filter(f = Negate(is.na), x = .)
-
-  if(dim(he_tab)[1] > 0){
-
-    out_has_he <- any(grepl(out_nm, he_tab$kernel_id))
-
-  } else {
-
-    out_has_he <- FALSE
-
-  }
-
-  if(out_has_he) {
-
-    out_lev_he <- lapply(he_tab$range,
-                         function(x) eval(parse(text = x)))
-
-    names(out_lev_he) <- he_tab$vr_expr_name
-
-  } else {
-
-    out_lev_he <- list()
-
-  }
-
-  out <- ipmr::define_k(
-    proto_ipm        = proto_ipm,
-    name             = out_nm,
-    family           = out_fam,
-    !!! out_dots,
-    data_list        = out_par_list,
-    states           = out_states,
-    has_hier_effs    = out_has_he,
-    levels_hier_effs = out_lev_he,
-    evict_cor        = FALSE,
-    evict_fun        = NULL
-  )
-
-  return(out)
-
-}
-
-#' @noRd
 # Wrapper for ipmr::define_impl()
 
 .define_impl <- function(proto_ipm,
@@ -283,22 +193,31 @@
 
   impl_list <- list()
 
+  use_id <- ir_tab$ipm_id
+
+  if(length(use_id) > 1) {
+    stop("internal error - too many 'ipm_id's passed to .define_impl.")
+  }
+
+  if(is.na(ir_tab$integration_rule[ir_tab$kernel_id == use_id])) {
+    stop("No integration rule found for model: ", use_id,
+         call. = FALSE)
+  }
+
+  # Need to remove all K rows from the IpmKernels table eventually,
+  # but this should keep them from causing any trouble in the meantime
+
+  ik_tab <- ik_tab[!ik_tab$kernel_id %in% "K"]
+
   for(i in seq_along(ik_tab$kernel_id)) {
 
-    use_id <- ik_tab$kernel_id[i]
+    kern_id <- ik_tab$kernel_id[i]
 
     temp <- ipmr::make_impl_args_list(
       kernel_names = use_id,
-      int_rule     = ifelse(any(grepl(use_id, ir_tab$kernel_id)),
-                            ir_tab$integration_rule,
-                            NA_character_),
-      dom_start    = ifelse(is.na(ik_tab$domain_start[i]),
-                            NA_character_,
-                            ik_tab$domain_start[i]),
-      dom_end      = ifelse(is.na(ik_tab$domain_end[i]),
-                            NA_character_,
-                            ik_tab$domain_end[i])
-      )
+      int_rule     = ir_tab$integration_rule,
+      state_start  = ik_tab$domain_start[i],
+      state_end    = ik_tab$domain_end[i])
 
     impl_list <- c(impl_list, temp)
   }
@@ -314,8 +233,7 @@
 
 .define_domains <- function(proto_ipm,
                             cd_tab,
-                            ps_tab,
-                            ik_tab) {
+                            ps_tab) {
 
   n_svs <- dim(cd_tab)[1]
 
@@ -365,9 +283,11 @@
     # Otherwise, warn that no iteration based methods available, and just
     # make a deterministic model.
 
-    warning("No population state functions defined for model: ",
+    warning("No initial population state information found for model: ",
             unique(ps_tab$ipm_id),
-            "\nDeterministic analysis with eigenvalues is only possible option.")
+            "\nDeterministic analysis is only possible option.",
+            " Call ipmr::make_iter_kernel after\nIPM is built to run",
+            " eigen-value/vector analyses.")
 
     sim_gen <- strsplit(class(proto_ipm), '_')[[1]][1]
 
@@ -424,6 +344,7 @@
 #
 .define_env_state <- function(proto_ipm, ev_tab) {
 
+  ## NEEED TO DEFINEEEEEEE
 
   return(proto_ipm)
 }
@@ -443,3 +364,4 @@
   return(out)
 
 }
+
