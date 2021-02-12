@@ -1,6 +1,5 @@
 
-[![Travis build
-status](https://travis-ci.org/levisc8/RPadrino.svg?branch=master)](https://travis-ci.org/levisc8/RPadrino)
+[![R-CMD-check](https://github.com/levisc8/RPadrino/workflows/R-CMD-check/badge.svg)](https://github.com/levisc8/RPadrino/actions)
 [![Codecov test
 coverage](https://codecov.io/gh/levisc8/RPadrino/branch/master/graph/badge.svg)](https://codecov.io/gh/levisc8/RPadrino?branch=master)
 
@@ -33,7 +32,6 @@ the `proto_ipm` as a common data structure to power the analysis.
 You can install RPadrino from github with:
 
 ``` r
-
 if(!requireNamespace("remotes", quietly = TRUE)) {
   install.packages("remotes")
 }
@@ -47,6 +45,7 @@ A small-ish copy of the Padrino Database is included as a package data
 set. You can access it with the following code:
 
 ``` r
+library(RPadrino)
 
 data("pdb")
 ```
@@ -62,25 +61,14 @@ Once, we’ve identified the model(s) we want, we can build a list of
 [`proto_ipm`’s](https://levisc8.github.io/ipmr/articles/proto-ipms.html).
 This is an intermediate step between the database representation and a
 set of kernels. Once we have this, we can build an actual model. Below,
-we extract a specific study, Levin et al. 2019, and construct an IPM
-from the database object.
+we extract a specific study, and construct an IPM from the database
+object.
 
 ``` r
-
-# Generate an index to subset the database with
-
-subset_index <- pdb_ex$Metadata$ipm_id[pdb_ex$Metadata$corresponding_author == "Levin"]
-
-# This lapply statement extracts all rows from the database that correspond to our desired study/studies
-
-use_db       <- lapply(pdb_ex,
-                       function(x, subset_ind) x[x$ipm_id %in% subset_ind, ],
-                       subset_ind = subset_index)
-
 # We can construct a single IPM at a time, or make a list of many IPMs
 
-proto_list   <- pdb_make_proto_ipm(use_db, 
-                                   ipm_id = subset_index[1],
+proto_list   <- pdb_make_proto_ipm(pdb, 
+                                   ipm_id = "aaaa55",
                                    det_stoch = "det")
 ```
 
@@ -88,27 +76,20 @@ Once the list of `proto_ipm`’s is generated, you can either append your
 own IPMs to it, or you can go ahead to the next chunk. Note that
 `pdb_make_ipm` is not yet implemented, and so the second option is the
 only one you can use to work with models. Unfortunately, this means
-you’re restricted to `ipmr::make_ipm`’s default arguments for each
-type of model in Padrino. This will change via the `addl_args` argument
-in `pdb_make_ipm`.
+you’re restricted to `ipmr::make_ipm`’s default arguments for each type
+of model in Padrino. This will change via the `addl_args` argument in
+`pdb_make_ipm`.
 
 ``` r
-
-# pdb_make_ipm not yet implemented
+# pdb_make_ipm is not yet implemented, but this will be what the workflow looks 
+# like
 
 ipm_list     <- pdb_make_ipm(proto_list)
-
-# If you're dying to try it out, you can call the following
-
-ipm_list     <- lapply(proto_list, ipmr::make_ipm)
 ```
 
 ### Finding help
 
-The package is documented [here](https://levisc8.github.io/RPadrino/)
-and the database is documented
-[here](https://levisc8.github.io/Padrino.github.io/) (though the latter
-is very out of date).
+The package is documented [here](https://levisc8.github.io/RPadrino/).
 
 ### Contributing
 
