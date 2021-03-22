@@ -1,12 +1,11 @@
-^planning$
 ^planning/*$
-^old_funs$
+^old_funs/*$
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^\.travis\.yml$
 ^README\.Rmd$
 ^README-.*\.png$
-^data-raw$
+^data-raw/*$
 ^LICENSE\.md$
 ^codecov\.yml$
 ^CODE_OF_CONDUCT\.md$
@@ -14,3 +13,5 @@
 ^docs$
 ^pkgdown$
 ^paper$
+^\.github$
+^data-raw$

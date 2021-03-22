@@ -28,12 +28,6 @@
   # may be useful for... something?
   ds_tab <- use_tabs[[3]]
 
-  # discrete transitions (e.g. markov mat) ->
-  # define_k(n_these_t_1 = dt_tab$value) (I actually don't think this is necessary)
-  # and perhaps this table isn't even necessary. This will be captured
-  # by the IPM_FULL designated kernels (I think, need to review that format).
-  # dt_tab <- use_tabs[[4]]
-
   # continuous domains ->
   # define_domains(rlang::list2(!!nm := list(lower = these, upper = these)))
   cd_tab <- use_tabs[[4]]
@@ -70,7 +64,7 @@
 
   kern_ids <- use_tabs$IpmKernels$kernel_id
 
-  if(dim(ds_tab)[1] > 0) {
+  if(any(sv_tab$discrete)) {
 
     sim_gen <- "general"
 
@@ -145,7 +139,8 @@
     he_tab
   )
 
-  if(!is.null(kern_param) && kern_param == "param") {
+  # Turning off stoch_param for now
+  if(nrow(es_tab) > 0 && FALSE) {
     out <- .define_env_state(
       out,
       es_tab
@@ -171,32 +166,246 @@
 
 
 #' @noRd
+#' @importFrom mvtnorm rmvnorm dmvnorm
+#
+# Generates call to r*pr_fun(1, other_args). Used to sample parameter distributions
+# and/or environmental variables in *_stoch_param models
+
+.prep_ran_fun <- function(ran_calls, data_list, ev_tab) {
+
+  out <- fun_bodies <- list()
+
+  arg_env <- list2env(data_list)
+
+  for(i in seq_along(ran_calls)) {
+
+    fun_bodies[[i]] <- .ran_fun_body(ran_calls[i], ev_tab)
+
+    temp_args       <- .args_from_txt(ran_calls[i])
+
+    fun_def_args    <- rlang::env_get_list(arg_env,
+                                           nms = temp_args,
+                                           default = NULL)
+
+
+    out[[i]] <- rlang::new_function(
+      args = fun_def_args,
+      body = fun_bodies[[i]]
+    )
+
+  }
+
+  return(out)
+
+}
+
+.ran_fun_body <- function(ran_call, ev_tab) {
+
+  # Get PADRINO version of the r* function, and the name that it's supposed
+  # to create.
+
+  pdb_name <- ev_tab$vr_expr_name[ev_tab$env_function == ran_call]
+
+  ran_call <- rlang::parse_expr(ran_call)
+
+  fun_call <- rlang::call_name(ran_call)
+
+  # Pull out the arguments from PADRINO
+
+  current_args <- rlang::call_args(ran_call)
+
+  if(fun_call %in% .math_ops()) {
+
+    out_fun      <- fun_call
+
+  } else if(fun_call %in% names(.make_ran_env())) {
+
+    out_fun      <- eval(rlang::sym(fun_call),
+                         envir = .make_ran_env())
+
+    # We don't want to set the name of first argument to out_fun because
+    # that comes later (thanks rhyper!),
+    # but we do want to grab the others formal names. This strategy below assumes
+    # they are entered in PADRINO in the same order that they would appear
+    # in the formal argument list for the R function. Methinks this a dubious
+    # proposition, but will update accordingly when things break
+
+    formal_args         <- formals(eval(rlang::parse_expr(out_fun)))
+    names(current_args) <- names(formal_args)[2:(length(current_args) + 1)]
+
+  }
+
+  # Most of the environmental functions are truncated distributions
+  # We need to format these correctly:
+  # rtrunc(spec = out_fun[-"r" predix],
+  #        n = 1,
+  #        a = env_range[1],
+  #        b = env_range[2],
+  #        !!! current_args)
+  # eval(fun_call, .make_ran_env()) returns a vector w length >= 2 for rtrunc
+  # calls with the names of the possible !!! current_args.
+
+  if(out_fun[1] == "rtrunc") {
+
+    names(current_args) <- out_fun[2:length(out_fun)]
+
+    out_fun <- out_fun[1]
+
+    # Get the spec name. This removes the "T" prefix, then
+    # gets the distribution abbreviation from ran_env, then removes
+    # the "r" prefix to create the correct format of "spec".
+
+    spec    <- rlang::call_name(ran_call) %>%
+      substr(x = ., start = 2, stop = nchar(.)) %>%
+      rlang::parse_expr() %>%
+      eval(., envir = .make_ran_env()) %>%
+      substr(x = ., start = 2, stop = nchar(.))
+
+    current_args <- c(current_args, list(spec = spec))
+
+    # Finally, we need to get the truncation interval. This is stored in the same
+    # line as the sampling function in env_range, with the format: L;U (i.e.
+    # a semi-colon split).
+
+    t_interval <- ev_tab$env_range[ev_tab$env_function == rlang::expr_text(ran_call)]
+
+    a_b        <- strsplit(t_interval, ';') %>%
+      lapply(trimws) %>%
+      unlist() %>%
+      as.numeric()
+
+    a          <- a_b[1]
+    b          <- a_b[2]
+
+    current_args <- c(current_args,
+                      list(a = a,
+                           b = b))
+
+  }
+
+  # For some reason, the rhyper function uses "nn" to specify the
+  # number of samples from the distribution. This makes sure that name
+  # is set correctly.
+
+  if(fun_call == "Hgeom" || fun_call == "THgeom") {
+
+    body_args    <- c(list(nn = 1),
+                      current_args)
+
+    out_fun <- rlang::parse_expr(out_fun)
+
+  } else if(fun_call %in% names(.make_ran_env())) {
+
+    body_args    <- c(list(n = 1),
+                      current_args)
+
+    out_fun <- rlang::parse_expr(out_fun)
+
+  } else {
+
+    # Math_opserations. These almost universally use the names
+    # x,y for their arguments.
+
+    body_args <- current_args
+    names(body_args) <- c("x", "y")
+
+    out_fun   <- rlang::sym(out_fun)
+
+  }
+
+  fun_temp     <- call2(eval(out_fun),
+                      !!! body_args)
+
+  fun_body     <- .new_env_fun(fun_temp, body_args, pdb_nm)
+
+  return(fun_body)
+
+}
+
+.math_ops <- function() {
+
+  c("+", "-", "*", "/")
+
+}
+
+#' @noRd
+
+.new_env_fun <- function(body, args, out_nms) {
+
+  f <- rlang::new_function(
+    args = args,
+    body = body
+  )
+
+  out <- function(f, out_nms, args){
+
+    .env_name_wrapper(f(args), out_nms)
+  }
+
+  return(list(use_fun = out,
+              env_fun = f))
+
+}
+
+#' @noRd
+# Helper that makes sure env_fun always returns a list with the right
+# names
+
+.env_name_wrapper <- function(fun, nms, fun_args) {
+
+  stats::setNames(object = fun(fun_args), nm = nms)
+
+}
+
+#' @noRd
+#' @importFrom truncdist rtrunc
 # Generates an environment to sub various random number generators into an
 # actual function call.
+
 
 .make_ran_env <- function() {
 
   rans <- list(
-    Norm      = "rnorm",
-    Lognorm   = "rlnorm",
-    F_dist    = "rf",
-    Gamma     = "rgamma",
-    T_dist    = "rt",
-    Beta      = "rbeta",
-    Chi       = "rchisq",
-    Cauchy    = "rcauchy",
-    Expo      = "rexp",
-    Binom     = "rbinom",
-    Bernoulli = "rbinom",
-    Geom      = "rgeom",
-    Hgeom     = "rhyper",
-    Multinom  = "rmultinom",
-    Negbin    = "rnbinom",
-    Pois      = "rpois",
-    Unif      = "runif",
-    Weib      = "rweibull",
-    MVN       = "rmvnorm"
+    Norm      = "stats::rnorm",
+    Lognorm   = "stats::rlnorm",
+    F_dist    = "stats::rf",
+    Gamma     = "stats::rgamma",
+    T_dist    = "stats::rt",
+    Beta      = "stats::rbeta",
+    Chi       = "stats::rchisq",
+    Cauchy    = "stats::rcauchy",
+    Expo      = "stats::rexp",
+    Binom     = "stats::rbinom",
+    Bernoulli = "stats::rbinom",
+    Geom      = "stats::rgeom",
+    Hgeom     = "stats::rhyper",
+    Multinom  = "stats::rmultinom",
+    Negbin    = "stats::rnbinom",
+    Pois      = "stats::rpois",
+    Weib      = "stats::rweibull",
+    MVN       = "mvtnorm::rmvnorm",
 
+    # Truncated distributions - mostly for define_env_state
+
+    TNorm      = c("truncdist::rtrunc", "mean", "sd"),
+    TLognorm   = c("truncdist::rtrunc", "meanlog", "sdlog"),
+    TF_dist    = c("truncdist::rtrunc", "df1", "df2"),
+    TGamma     = c("truncdist::rtrunc", "shape", "rate", "scale"),
+    TT_dist    = c("truncdist::rtrunc", "df", "ncp"),
+    TBeta      = c("truncdist::rtrunc", "shape1", "shape2", "ncp"),
+    TChi       = c("truncdist::rtrunc", "df", "ncp"),
+    TCauchy    = c("truncdist::rtrunc", "location", "scale"),
+    TExpo      = c("truncdist::rtrunc", "rate"),
+    TBinom     = c("truncdist::rtrunc", "size", "prob"),
+    Ternoulli  = c("truncdist::rtrunc", "size", "prob"),
+    TGeom      = c("truncdist::rtrunc", "prob"),
+    THgeom     = c("truncdist::rtrunc", "m", "n", "k"),
+    TMultinom  = c("truncdist::rtrunc", "size", "prob"),
+    TNegbin    = c("truncdist::rtrunc", "size", "prob", "mu"),
+    TPois      = c("truncdist::rtrunc", "lambda"),
+    TWeib      = c("truncdist::rtrunc", "shape", "scale"),
+    TMVN       = c("truncdist::rtrunc", "mean", "sigma"),
+    sample     = c("stats::runif", "min", "max")
   )
 
   ran_env <- list2env(as.list(rans))
@@ -205,29 +414,6 @@
 
 }
 
-#' @noRd
-#' @importFrom mvtnorm rmvnorm dmvnorm
-#
-# Generates call to r*pr_fun(1, other_args). Used to sample parameter distributions
-# and/or environmental variables in *_stoch_param models
-
-.prep_ran_fun <- function(ran_call) {
-
-  fun_call <- rlang::call_name(ran_call) %>%
-    rlang::parse_expr()
-
-  current_args <- rlang::call_args(ran_call)
-
-  out_fun      <- eval(fun_call, envir = .make_ran_env())
-
-  out          <- paste(out_fun, "(1, ",
-                        paste(current_args, collapse = ", "),
-                        ")",
-                        sep = "")
-
-  return(out)
-
-}
 
 #' @noRd
 # Generates an environment to sub various PDFs into an actual function call.
@@ -235,25 +421,25 @@
 .make_pdf_env <- function() {
 
   pdfs <- list(
-    Norm      = "dnorm",
-    Lognorm   = "dlnorm",
-    F_dist    = "df",
-    Gamma     = "dgamma",
-    T_dist    = "dt",
-    Beta      = "dbeta",
-    Chi       = "dchisq",
-    Cauchy    = "dcauchy",
-    Expo      = "dexp",
-    Binom     = "dbinom",
-    Bernoulli = "dbinom",
-    Geom      = "dgeom",
-    Hgeom     = "dhyper",
-    Multinom  = "dmultinom",
-    Negbin    = "dnbinom",
-    Pois      = "dpois",
-    Unif      = "dunif",
-    Weib      = "dweibull",
-    MVN       = "dmvnorm"
+    Norm      = "stats::dnorm",
+    Lognorm   = "stats::dlnorm",
+    F_dist    = "stats::df",
+    Gamma     = "stats::dgamma",
+    T_dist    = "stats::dt",
+    Beta      = "stats::dbeta",
+    Chi       = "stats::dchisq",
+    Cauchy    = "stats::dcauchy",
+    Expo      = "stats::dexp",
+    Binom     = "stats::dbinom",
+    Bernoulli = "stats::dbinom",
+    Geom      = "stats::dgeom",
+    Hgeom     = "stats::dhyper",
+    Multinom  = "stats::dmultinom",
+    Negbin    = "stats::dnbinom",
+    Pois      = "stats::dpois",
+    Unif      = "stats::dunif",
+    Weib      = "stats::dweibull",
+    MVN       = "mvtnorm::dmvnorm"
 
   )
 
@@ -332,58 +518,6 @@
 
 }
 
-#' @noRd
-# Splits semi-colon separated model_iteration model families for the ...
-# in define_k
-
-.prep_k_dots <- function(ik_tab, ps_tab, he_tab, det_stoch) {
-
-  # If no iteration procedure specified, then we can just build the iteration
-  # kernel(s) with a single expression. This will be defined using
-  # model_family == "IPM"
-
-  if(! "iteration_procedure" %in% ik_tab$model_family) {
-
-    textpr    <- ik_tab$formula[ik_tab$model_family == "IPM"]
-
-    text_list <- strsplit(textpr, " = ")
-
-    nm        <- trimws(text_list[[1]][1])
-    textpr    <- trimws(text_list[[1]][2])
-
-    out       <- rlang::list2(!! nm := rlang::parse_expr(textpr))
-
-    return(out)
-  }
-
-  textprs <- ik_tab$formula[ik_tab$model_family == "iteration_procedure"]
-
-  # Some models might have a K defined too. Build that one up if needed
-
-  textprs <- .append_pop_state_suffixes(textprs, ps_tab, he_tab, det_stoch)
-
-  temp    <- strsplit(textprs, ";") %>%
-    lapply(FUN = function(x) {
-
-      strsplit(x, "=")
-
-    }) %>%
-    .flatten_to_depth(1L)
-
-  if("IPM" %in% ik_tab$model_family) {
-
-    k        <- strsplit(ik_tab$formula[ik_tab$model_family == "IPM"], "=")
-
-    temp <- c(temp, k) %>% .flatten_to_depth(1L)
-
-  }
-
-  out        <- lapply(temp, function(x) rlang::parse_expr(x[2]))
-  names(out) <- vapply(temp, function(x) trimws(x[1]), character(1L))
-
-  return(out)
-
-}
 
 #' @noRd
 # Appends hier_effs suffixes to pop_state vars in iteration_procedure calls when
@@ -445,4 +579,12 @@
 
 }
 
+#' @noRd
 
+.can_be_number <- function(x) {
+
+  out <- suppressWarnings(is.na(as.numeric(x)))
+
+  return(!out)
+
+}

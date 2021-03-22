@@ -9,22 +9,22 @@
 #' @param object An object produced by \code{pdb_make_proto_ipm} or
 #' \code{pdb_make_ipm}.
 #'
-#' @importFrom ipmr vital_rates
+#' @importFrom ipmr vital_rate_exprs
 #' @export
 
 
-vital_rates.pdb_proto_ipm <- function(object) {
+vital_rate_exprs.pdb_proto_ipm <- function(object) {
 
-  lapply(object, vital_rates)
+  lapply(object, vital_rate_exprs)
 
 }
 
 #' @rdname padrino_accessors
 #' @export
 
-vital_rates.pdb_ipm <- function(object) {
+vital_rate_exprs.pdb_ipm <- function(object) {
 
-  lapply(object, function(x) vital_rates(x$proto_ipm))
+  lapply(object, function(x) vital_rate_exprs(x$proto_ipm))
 
 }
 

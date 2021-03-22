@@ -6,9 +6,9 @@ Authors@R: c(
     person("Childs", "Dylan", email = "d.childs@sheffield.ac.uk", role = c("aut")),
     person("Salguero-Gomez", "Roberto", email = "rob.salguero@zoo.ox.ac.uk", role = c("aut")),
     person("Knight", "Tiffany", role = "aut"))
-Description: PADRINO and MADRINA house textual representations of
+Description: PADRINO houses textual representations of
     Integral Projection Models which can be converted from their 
-    "elemental" forms into full kernels to reproduce or extend an 
+    table format into full kernels to reproduce or extend an 
     already published analysis.
 Depends: 
   R (>= 3.2.0),
@@ -18,6 +18,7 @@ Imports:
   mvtnorm,
   purrr,
   rlang (>= 0.3.0),
+  truncdist,
   utils
 License: GPL-3
 Encoding: UTF-8
@@ -30,4 +31,3 @@ Suggests:
     covr,
     roxygen2
 VignetteBuilder: knitr
-Remotes: levisc8/ipmr

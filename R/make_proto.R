@@ -80,8 +80,13 @@ pdb_make_proto_ipm <- function(pdb,
 
     det_stoch <- rep_len(det_stoch, length.out = length(unique_ids))
 
-    # Will need to add checks here for kern_param if any(det_stoch == "stoch")
+  }
 
+  if(length(kern_param) < length(det_stoch) && any(det_stoch == "stoch")) {
+
+    kern_param <- rep_len(kern_param, length.out = length(det_stoch))
+
+    kern_param[det_stoch == "det"] <- NA_character_
   }
 
   for(i in seq_along(unique_ids)) {
@@ -101,24 +106,5 @@ pdb_make_proto_ipm <- function(pdb,
   class(out) <- c("pdb_proto_ipm", "list")
 
   return(out)
-
-}
-
-#' @title Matrix multiplication
-#' @description Multiply two matrices
-#'
-#' @param x,y Numeric matrices or vectors
-#'
-#' @return A numeric matrix or vector
-#'
-#' @details This is a wrapper around \code{\%*\%} that allows Padrino's internal
-#' syntax to be slightly less R-specific. You're probably better off using
-#' \code{\%*\%} for interactive use.
-#'
-#' @export
-
-mat_mult <- function(x, y) {
-
-  x %*% y
 
 }

@@ -1,7 +1,7 @@
 # functions that wrap their ipmr equivalents
 
 #' @noRd
-#' @importFrom ipmr define_kernel define_k define_impl define_pop_state
+#' @importFrom ipmr define_kernel define_impl define_pop_state
 #' define_env_state define_domains make_ipm
 
 .define_kernel <- function(proto_ipm,
@@ -75,19 +75,24 @@
                               function(x) trimws(x[2]),
                               character(1L))
 
+    .check_eval_fun_forms(eval_fun_forms, unique(vr_tab$ipm_id))
+
     kern_dots_eval        <- lapply(eval_fun_forms, rlang::parse_expr)
     names(kern_dots_eval) <- kern_dots_nms
 
   }
 
-  # get state variable info. Not sure we really need
-  # the discrete state var names for ipmr, so dropping those for now.
-  # We need the states to append them to the call to prep_dens_fun
+  # get state variable info. At the kernel level, this is comprised of
+  # domain start, and domain end. For now, we have to assume all probability
+  # density functions generate z'. I cannot imagine a case where that isn't true
+  # (except maybe demographic stochasticity?)
 
-  states <- list(c(sv_tab$state_variable[!sv_tab$discrete]))
+  all_states     <- ik_tab[ik_tab$kernel_id == kernel_id, c("domain_start",
+                                                            "domain_end")]
+  sub_fun_state  <- all_states[2]
 
   dens_fun_exprs <- vr_tab$formula[vr_tab$model_type == "Substituted"]
-  kern_dots_subs <- .prep_sub_fun(dens_fun_exprs, states)
+  kern_dots_subs <- .prep_sub_fun(dens_fun_exprs, sub_fun_state)
 
   all_kern_dots <- c(kern_dots_eval, kern_dots_subs)
 
@@ -135,15 +140,8 @@
 
     } else {
 
-      use_state <- unique(c(ik_tab$domain_start[grepl(kernel_id, ik_tab$kernel_id)],
-                            ik_tab$domain_end[grepl(kernel_id, ik_tab$kernel_id)]))
+      use_state <- all_states[2]
 
-      # Remove NAs introduced by CD and DC kernels. Otherwise, too many arguments
-      # to whichever function call we end up constructing.
-
-      if(any(is.na(use_state))) {
-        use_state <- use_state[!is.na(use_state)]
-      }
 
       ev_target <- vapply(dens_fun_exprs,
                           function(x) strsplit(x, '=')[[1]][1] %>% trimws(),
@@ -172,7 +170,7 @@
     family           = mod_fam,
     !!! all_kern_dots,
     data_list        = par_list,
-    states           = states,
+    states           = all_states,
     has_hier_effs    = has_hier_effs,
     levels_hier_effs = levs_hier_effs,
     evict_cor        = ev_cor,
@@ -196,10 +194,10 @@
   use_id <- ir_tab$ipm_id
 
   if(length(use_id) > 1) {
-    stop("internal error - too many 'ipm_id's passed to .define_impl.")
+    stop("internal error - too many 'ipm_id's passed to .define_impl().")
   }
 
-  if(is.na(ir_tab$integration_rule[ir_tab$kernel_id == use_id])) {
+  if(is.na(ir_tab$integration_rule[ir_tab$ipm_id == use_id])) {
     stop("No integration rule found for model: ", use_id,
          call. = FALSE)
   }
@@ -214,7 +212,7 @@
     kern_id <- ik_tab$kernel_id[i]
 
     temp <- ipmr::make_impl_args_list(
-      kernel_names = use_id,
+      kernel_names = kern_id,
       int_rule     = ir_tab$integration_rule,
       state_start  = ik_tab$domain_start[i],
       state_end    = ik_tab$domain_end[i])
@@ -265,7 +263,7 @@
                               ps_tab,
                               he_tab) {
 
-  # Fail if bin information simply isn't entered.
+  # Fail if bin information or trait distribution information isn't entered.
 
   if(any(is.na(ps_tab$n_bins))) {
 
@@ -280,22 +278,7 @@
 
   } else if(dim(ps_tab)[1] == 0) {
 
-    # Otherwise, warn that no iteration based methods available, and just
-    # make a deterministic model.
-
-    warning("No initial population state information found for model: ",
-            unique(ps_tab$ipm_id),
-            "\nDeterministic analysis is only possible option.",
-            " Call ipmr::make_iter_kernel after\nIPM is built to run",
-            " eigen-value/vector analyses.")
-
-    sim_gen <- strsplit(class(proto_ipm), '_')[[1]][1]
-
-    new_cls <- paste(sim_gen, "_di_det", sep = "")
-
-    class(proto_ipm)[1] <- new_cls
-
-    return(proto_ipm)
+    stop("No population trait distribution information found.", call. = FALSE)
 
   }
 
@@ -341,10 +324,42 @@
 }
 
 #' @noRd
-#
+#' @importFrom stats setNames
+
 .define_env_state <- function(proto_ipm, ev_tab) {
 
-  ## NEEED TO DEFINEEEEEEE
+  ran_calls <- ev_tab$env_function[ev_tab$env_function != "NULL"]
+
+  data_list <- ev_tab$env_range[.can_be_number(ev_tab$env_range)] %>%
+    as.list() %>%
+    stats::setNames(ev_tab$env_variable[.can_be_number(ev_tab$env_range)]) %>%
+    lapply(as.numeric)
+
+  env_fun_dots <- .prep_ran_fun(ran_calls, data_list, ev_tab)
+
+  # Creates a list of symbols representing the function calls and
+  # sets the names of env_fun_dots to be the name of the function itself.
+  # this will make it accessible to the build process when combined w/
+  # the data_list (e.g. sample_env(xyz) becomes list(sample_env = sample_env))
+
+  env_fun_d_list <- lapply(env_fun_dots,
+                           function(x) {
+                             rlang::sym(rlang::call_name(env_fun_dots[[x]]))
+                           }
+                     ) %>%
+    stats::setNames(
+      as.character(unlist(.))
+    )
+
+  proto_ipm <- define_env_state(
+    proto_ipm = proto_ipm,
+    !!! env_fun_dots,
+    data_list = c(
+      data_list,
+      env_fun_d_list
+    )
+  )
+
 
   return(proto_ipm)
 }
@@ -362,6 +377,23 @@
                 logical(1L))
 
   return(out)
+
+}
+
+# checks vr_exprs for functions that ipmr doesn't currently support
+# Currently, just GAM, but others should probably go in here too.
+
+#' @noRd
+.check_eval_fun_forms <- function(forms, ipm_id) {
+
+  bad_forms <- c("GAM")
+
+  if(any(bad_forms %in% forms)) {
+    stop("Model ID ", ipm_id, " contains functional forms that are not currently",
+         " supported by ipmr.\nRe-run without these 'ipm_id's.")
+  }
+
+  invisible(TRUE)
 
 }
 
