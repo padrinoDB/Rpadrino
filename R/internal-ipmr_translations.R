@@ -192,7 +192,7 @@
 
   impl_list <- list()
 
-  use_id <- ir_tab$ipm_id
+  use_id <- unique(ir_tab$ipm_id)
 
   if(length(use_id) > 1) {
     stop("internal error - too many 'ipm_id's passed to .define_impl().")
@@ -214,7 +214,7 @@
 
     temp <- ipmr::make_impl_args_list(
       kernel_names = kern_id,
-      int_rule     = ir_tab$integration_rule,
+      int_rule     = ir_tab$integration_rule[grepl(kern_id, ir_tab$kernel_id)],
       state_start  = ik_tab$domain_start[i],
       state_end    = ik_tab$domain_end[i])
 
