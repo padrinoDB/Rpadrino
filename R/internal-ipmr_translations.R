@@ -206,7 +206,7 @@
   # Need to remove all K rows from the IpmKernels table eventually,
   # but this should keep them from causing any trouble in the meantime
 
-  ik_tab <- ik_tab[!ik_tab$kernel_id %in% "K"]
+  ik_tab <- ik_tab[!ik_tab$kernel_id %in% "K", ]
 
   for(i in seq_along(ik_tab$kernel_id)) {
 

@@ -108,3 +108,63 @@ pop_state.pdb_ipm <- function(object) {
 
 }
 
+#' @rdname ipmr_generics
+#' @title Padrino methods for \code{ipmr} generics
+#'
+#' @description Provides wrappers around \code{ipmr} generic functions to extract
+#' some quantities of interest from \code{pdb_ipm}s.
+#'
+#' @param ipm A \code{pdb_ipm}.
+#' @param ... further arguments passed to \code{\link[ipmr]{lambda}}.
+#' @param iterations The number of times to iterate the model to reach
+#' convergence. Default is 100.
+#' @param tolerance Tolerance to evaluate convergence to asymptotic dynamics.
+#'
+#' @importFrom ipmr lambda
+#' @export
+
+lambda.pdb_ipm <- function(ipm, ...) {
+
+  addl_args <- list(...)
+
+
+  out       <- lapply(ipm,
+                      function(x, dots) {
+
+                        all_args <- rlang::list2(ipm = x, !!! dots)
+
+                        rlang::exec(lambda,!!! all_args)
+
+                      },
+                      dots = addl_args)
+
+}
+
+#' @rdname ipmr_generics
+#' @importFrom ipmr right_ev left_ev
+#' @export
+
+right_ev.pdb_ipm <- function(ipm, iterations = 100, tolerance = 100) {
+
+  lapply(ipm,
+         function(x, iterations, tolerance) {
+           right_ev(x, iterations = iterations, tolerance = tolerance)
+         },
+         iterations = iterations,
+         tolerance = tolerance)
+
+}
+
+#' @rdname ipmr_generics
+#' @export
+
+left_ev.pdb_ipm <- function(ipm, iterations = 100, tolerance = 100) {
+
+  lapply(ipm,
+         function(x, iterations, tolerance) {
+           left_ev(x, iterations = iterations, tolerance = tolerance)
+         },
+         iterations = iterations,
+         tolerance = tolerance)
+
+}
