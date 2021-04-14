@@ -329,38 +329,73 @@
 
 .define_env_state <- function(proto_ipm, ev_tab) {
 
-  ran_calls <- ev_tab$env_function[ev_tab$env_function != "NULL"]
+  ran_calls <- ev_tab[ev_tab$model_type %in% c("Substituted",
+                                               "Evaluated"), ]
 
-  data_list <- ev_tab$env_range[.can_be_number(ev_tab$env_range)] %>%
-    as.list() %>%
-    stats::setNames(ev_tab$env_variable[.can_be_number(ev_tab$env_range)]) %>%
-    lapply(as.numeric)
+  par_ind <- (ev_tab$model_type == "Parameter" | ev_tab$env_range != "NULL")
+  par_ind <- par_ind & !is.na(par_ind)
 
-  env_fun_dots <- .prep_ran_fun(ran_calls, data_list, ev_tab)
+  # Call eval(parse()) to convert to numerics. data will technically be
+  # strings because of the NULLs
+  data_list <- as.list(ev_tab$env_range[par_ind]) %>%
+    setNames(ev_tab$vr_expr_name[par_ind]) %>%
+    lapply(function(x) {
+      eval(parse(text = x))
+    })
 
-  # Creates a list of symbols representing the function calls and
-  # sets the names of env_fun_dots to be the name of the function itself.
-  # this will make it accessible to the build process when combined w/
-  # the data_list (e.g. sample_env(xyz) becomes list(sample_env = sample_env))
+  env_funs <- list()
 
-  env_fun_d_list <- lapply(env_fun_dots,
-                           function(x) {
-                             rlang::sym(rlang::call_name(env_fun_dots[[x]]))
-                           }
-                     ) %>%
-    stats::setNames(
-      as.character(unlist(.))
-    )
+  for(i in seq_len(nrow(ran_calls))) {
+
+    env_var  <- ran_calls$env_variable[i]
+    out_nm   <- ran_calls$vr_expr_name[i]
+    ran_expr <- rlang::parse_expr(ran_calls$env_function[i])
+
+    # Create subsetted data_lists for each individual expression.
+    # These are bound to each function's environment so the default
+    # values can be found in make_ipm(). These can be overriden by
+    # setting alternative values in the function's enclosing environment
+    # (see snippet in data-raw/def_env_state_sandbox.R for more details on
+    # how that works).
+
+    temp_dl  <- data_list[names(data_list) %in%
+                            ev_tab[ev_tab$env_variable == env_var,
+                                   "vr_expr_name", drop = TRUE]]
+
+    env_funs[[i]] <- .make_ran_fun(ran_expr, out_nm, temp_dl)
+
+
+
+    # if(call_str[1] == "sample") {
+    #
+    #   env_funs[[i]] <- .prep_sample_fun(data_list[[i]], names(data_list)[i], call_str)
+    #
+    # } else if(call_str[1] == "rtrunc") {
+    #
+    #   env_funs[[i]] <- .prep_trunc_fun(data_list[[i]], names(data_list), call_str)
+    #
+    # } else {
+    #
+    #   env_funs[[i]] <- .prep_ran_fun(data_list[[i]], names(data_list)[i], call_str)
+    #
+    # }
+
+  }
+
+  # The names of the functions can be arbitrary, all that matters in ipmr
+  # is that the returned list is named with whatever value appears in the
+  # vital rate/kernel expressions.
+
+  names(env_funs) <- paste("out_funs", seq_along(env_funs), sep = "_")
 
   proto_ipm <- define_env_state(
     proto_ipm = proto_ipm,
-    !!! env_fun_dots,
+    !!! env_funs,
     data_list = c(
-      data_list,
-      env_fun_d_list
+      env_funs,
+      data_list
     )
   )
-
 
   return(proto_ipm)
 }

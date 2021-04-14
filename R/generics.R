@@ -133,10 +133,12 @@ lambda.pdb_ipm <- function(ipm, ...) {
 
                         all_args <- rlang::list2(ipm = x, !!! dots)
 
-                        rlang::exec(lambda,!!! all_args)
+                        rlang::exec(lambda, !!! all_args)
 
                       },
                       dots = addl_args)
+
+  return(out)
 
 }
 

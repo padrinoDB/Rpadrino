@@ -140,7 +140,7 @@
   )
 
   # Turning off stoch_param for now
-  if(nrow(es_tab) > 0 && FALSE) {
+  if(nrow(es_tab) > 0) {
     out <- .define_env_state(
       out,
       es_tab
@@ -164,6 +164,42 @@
 
 }
 
+#' @noRd
+#' @importFrom rlang new_function pairlist2 :=
+
+.prep_sample_fun <- function(data_list, out_nm, call_info) {
+
+  # Get the string form of the function call. Since sample is a special case,
+  # this is always just going to be "sample"
+
+  call_str <- call_info[1]
+
+  # Sample size should always be 1, and x corresponds to the first argument
+  # to sample. This function gets called every model iteration, so no need
+  # to pre-generate a vector of selected values.
+
+  args     <- list(x    = eval(parse(text = data_list)),
+                   size = 1)
+
+  body     <- rlang::call2(rlang::parse_expr(call_str), !!! args)
+
+  # fun_1 is the actual expression we want to evaluate. it generates a value
+  # from the expression stored in the database.
+
+  fun_1    <- rlang::new_function(args = rlang::pairlist2(... = ),
+                                  body = body)
+
+  # Next, we need to wrap this expression so that the returned value is in a list
+  # and its name corresponds to that which is used in the VitalRateExpr
+
+  out_fun  <- rlang::new_function(args = rlang::pairlist2(nm = out_nm,
+                                                          f = fun_1),
+                                  body = quote(rlang::list2(!!nm := f())))
+
+  return(out_fun)
+
+}
+
 
 #' @noRd
 #' @importFrom mvtnorm rmvnorm dmvnorm
@@ -171,31 +207,29 @@
 # Generates call to r*pr_fun(1, other_args). Used to sample parameter distributions
 # and/or environmental variables in *_stoch_param models
 
-.prep_ran_fun <- function(ran_calls, data_list, ev_tab) {
+.prep_ran_fun <- function(data_list, out_nm, call_info) {
 
-  out <- fun_bodies <- list()
+  arg_nms <- formals(call_info[[1]]) %>%
+    names(.)[2:length(.)]
+  args     <- c(1, data_list)
+  n_nm     <- ifelse(call_str == "Hgeom", "nn", "n")
 
-  arg_env <- list2env(data_list)
+  names(args) <- c(n_nm, arg_nms)
 
-  for(i in seq_along(ran_calls)) {
+  # fun_1 is the actual expression we want to evaluate. it generates a value
+  # from the expression stored in the database.
 
-    fun_bodies[[i]] <- .ran_fun_body(ran_calls[i], ev_tab)
+  fun_1    <- rlang::new_function(args = rlang::pairlist2(... = ),
+                                  body = call_info)
 
-    temp_args       <- .args_from_txt(ran_calls[i])
+  # Next, we need to wrap this expression so that the returned value is in a list
+  # and its name corresponds to that which is used in the VitalRateExpr
 
-    fun_def_args    <- rlang::env_get_list(arg_env,
-                                           nms = temp_args,
-                                           default = NULL)
+  out_fun  <- rlang::new_function(args = rlang::pairlist2(nm = out_nm,
+                                                          f = fun_1),
+                                  body = quote(rlang::list2(!!nm := f())))
 
-
-    out[[i]] <- rlang::new_function(
-      args = fun_def_args,
-      body = fun_bodies[[i]]
-    )
-
-  }
-
-  return(out)
+  return(out_fun)
 
 }
 
@@ -358,60 +392,116 @@
 }
 
 #' @noRd
-#' @importFrom truncdist rtrunc
 # Generates an environment to sub various random number generators into an
 # actual function call.
 
+.make_ran_fun <- function(ran_expr, out_nm, data_list) {
 
-.make_ran_env <- function() {
+  # Create a symbol that will evaluate in the .args_list() environment,
+  # and then retrieve the set of arguments that Padrino functions can accept
 
-  rans <- list(
-    Norm      = "stats::rnorm",
-    Lognorm   = "stats::rlnorm",
-    F_dist    = "stats::rf",
-    Gamma     = "stats::rgamma",
-    T_dist    = "stats::rt",
-    Beta      = "stats::rbeta",
-    Chi       = "stats::rchisq",
-    Cauchy    = "stats::rcauchy",
-    Expo      = "stats::rexp",
-    Binom     = "stats::rbinom",
-    Bernoulli = "stats::rbinom",
-    Geom      = "stats::rgeom",
-    Hgeom     = "stats::rhyper",
-    Multinom  = "stats::rmultinom",
-    Negbin    = "stats::rnbinom",
-    Pois      = "stats::rpois",
-    Weib      = "stats::rweibull",
-    MVN       = "mvtnorm::rmvnorm",
+  pdb_call  <- rlang::parse_expr(rlang::call_name(ran_expr))
+  call_info <- rlang::eval_tidy(pdb_call, env = .args_list())
+
+  # This is the actual R function name, as translated by the args_list environment
+  ran_call  <- rlang::parse_expr(call_info[1])
+
+  # These are the formal arguments provided to the R function
+  arg_nms   <- call_info[-1]
+
+  fml_args <- c(n = 1, rlang::syms(names(data_list)))
+
+  names(fml_args) <- arg_nms
+
+  .new_ran_fun(ran_call, fml_args, out_nm, vals = data_list)
+
+
+}
+
+#' @noRd
+#' @importFrom truncdist rtrunc
+#
+# Creates a function given a set of formal argument names, symbols representing
+# variables in padrino, and a name to set for the output (which is used in the
+# vital rate/kernel expressions)
+
+.new_ran_fun <- function(ran_call,
+                         fml_args,
+                         out_nm,
+                         vals) {
+
+  force(ran_call)
+  force(fml_args)
+
+  rlang::new_function(
+    args = fml_args,
+    body = rlang::expr({
+
+      temp <- rlang::call2(ran_call,
+                           !!! fml_args)
+
+      rlang::list2(!! out_nm := eval(temp))
+
+    }),
+    env = rlang::env(!!! vals)
+  )
+
+}
+
+#' @noRd
+
+.args_list <- function() {
+
+  args <- list(
+    Norm      = c("stats::rnorm","n", "mean", "sd"),
+    Lognorm   = c("stats::rlnorm","n", "meanlog", "sdlog"),
+    F_dist    = c("stats::rf","n", "df1", "df2"),
+    Gamma     = c("stats::rgamma","n", "shape", "rate", "scale"),
+    T_dist    = c("stats::rt","n", "df", "ncp"),
+    Beta      = c("stats::rbeta","n", "shape1", "shape2", "ncp"),
+    Chi       = c("stats::rchisq","n", "df", "ncp"),
+    Cauchy    = c("stats::rcauchy","n", "location", "scale"),
+    Expo      = c("stats::rexp", "n","rate"),
+    Binom     = c("stats::rbinom", "n","size", "prob"),
+    Bernoulli = c("stats::rbinom", "n","size", "prob"),
+    Geom      = c("stats::rgeom", "n","prob"),
+    Hgeom     = c("stats::rhyper", "nn","m", "n", "k"),
+    Multinom  = c("stats::rmultinom","n", "size", "prob"),
+    Negbin    = c("stats::rnbinom", "n","size", "prob", "mu"),
+    Pois      = c("stats::rpois", "n","lambda"),
+    Weib      = c("stats::rweibull", "n","shape", "scale"),
+    MVN       = c("mvtnorm::rmvnorm", "n","mean", "sigma"),
+    Unif      = c("stats::runif", "n","min", "max"),
+    sample    = c("sample", "size", "x"),
 
     # Truncated distributions - mostly for define_env_state
 
-    TNorm      = c("truncdist::rtrunc", "mean", "sd"),
-    TLognorm   = c("truncdist::rtrunc", "meanlog", "sdlog"),
-    TF_dist    = c("truncdist::rtrunc", "df1", "df2"),
-    TGamma     = c("truncdist::rtrunc", "shape", "rate", "scale"),
-    TT_dist    = c("truncdist::rtrunc", "df", "ncp"),
-    TBeta      = c("truncdist::rtrunc", "shape1", "shape2", "ncp"),
-    TChi       = c("truncdist::rtrunc", "df", "ncp"),
-    TCauchy    = c("truncdist::rtrunc", "location", "scale"),
-    TExpo      = c("truncdist::rtrunc", "rate"),
-    TBinom     = c("truncdist::rtrunc", "size", "prob"),
-    Ternoulli  = c("truncdist::rtrunc", "size", "prob"),
-    TGeom      = c("truncdist::rtrunc", "prob"),
-    THgeom     = c("truncdist::rtrunc", "m", "n", "k"),
-    TMultinom  = c("truncdist::rtrunc", "size", "prob"),
-    TNegbin    = c("truncdist::rtrunc", "size", "prob", "mu"),
-    TPois      = c("truncdist::rtrunc", "lambda"),
-    TWeib      = c("truncdist::rtrunc", "shape", "scale"),
-    TMVN       = c("truncdist::rtrunc", "mean", "sigma"),
-    sample     = c("stats::runif", "min", "max")
+    TNorm      = c("truncdist::rtrunc", "n", "mean", "sd"),
+    TLognorm   = c("truncdist::rtrunc", "n", "meanlog", "sdlog"),
+    TF_dist    = c("truncdist::rtrunc", "n", "df1", "df2"),
+    TGamma     = c("truncdist::rtrunc", "n", "shape", "rate", "scale"),
+    TT_dist    = c("truncdist::rtrunc", "n", "df", "ncp"),
+    TBeta      = c("truncdist::rtrunc", "n", "shape1", "shape2", "ncp"),
+    TChi       = c("truncdist::rtrunc", "n", "df", "ncp"),
+    TCauchy    = c("truncdist::rtrunc", "n", "location", "scale"),
+    TExpo      = c("truncdist::rtrunc", "n", "rate"),
+    TBinom     = c("truncdist::rtrunc", "n", "size", "prob"),
+    Ternoulli  = c("truncdist::rtrunc", "n", "size", "prob"),
+    TGeom      = c("truncdist::rtrunc", "n", "prob"),
+    THgeom     = c("truncdist::rtrunc", "n", "m", "n", "k"),
+    TMultinom  = c("truncdist::rtrunc", "n", "size", "prob"),
+    TNegbin    = c("truncdist::rtrunc", "n", "size", "prob", "mu"),
+    TPois      = c("truncdist::rtrunc", "n", "lambda"),
+    TWeib      = c("truncdist::rtrunc", "n", "shape", "scale"),
+    TMVN       = c("truncdist::rtrunc", "n", "mean", "sigma")
   )
 
-  ran_env <- list2env(as.list(rans))
+  math_ops <- as.list(.math_ops()) %>%
+    setNames(.math_ops())
 
-  return(ran_env)
+  args <- c(args, math_ops)
 
+  list2env(args)
 }
 
 
