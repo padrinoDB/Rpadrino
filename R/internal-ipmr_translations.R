@@ -109,16 +109,16 @@
 
   if(dim(he_tab)[1] > 0) {
 
-    has_hier_effs         <- any(grepl(kernel_id, he_tab$kernel_id))
-    levs_hier_effs        <- lapply(he_tab$range,
-                                    function(x) eval(parse(text = x)))
+    uses_par_sets          <- any(grepl(kernel_id, he_tab$kernel_id))
+    par_set_indices        <- lapply(he_tab$range,
+                                     function(x) eval(parse(text = x)))
 
-    names(levs_hier_effs) <- he_tab$vr_expr_name
+    names(par_set_indices) <- he_tab$vr_expr_name
 
   } else {
 
-    has_hier_effs  <- FALSE
-    levs_hier_effs <- list()
+    uses_par_sets   <- FALSE
+    par_set_indices <- list()
 
   }
 
@@ -171,8 +171,8 @@
     !!! all_kern_dots,
     data_list        = par_list,
     states           = all_states,
-    has_hier_effs    = has_hier_effs,
-    levels_hier_effs = levs_hier_effs,
+    uses_par_sets    = uses_par_sets,
+    par_set_indices  = par_set_indices,
     evict_cor        = ev_cor,
     evict_fun        = !! ev_call
   )
@@ -343,13 +343,30 @@
       eval(parse(text = x))
     })
 
+
+  # Generate abstract syntax trees for all ran_calls, and then check whether
+  # any depend on each other. If so, they'll need to be lumped together into
+  # a single function so that their values are available to each other at build
+  # time.
+
+  # ran_asts <- lapply(ran_calls$env_function,
+  #                    function(x) {
+  #                      .ast_from_txt(x) %>%
+  #                        unlist()
+  #                    }) %>%
+  #   setNames(ran_calls$vr_expr_name)
+  #
+  # ran_calls <- .group_ran_calls(ran_calls, ran_asts)
+  #
   env_funs <- list()
 
-  for(i in seq_len(nrow(ran_calls))) {
+  for(j in seq_len(nrow(ran_calls))) {
 
-    env_var  <- ran_calls$env_variable[i]
-    out_nm   <- ran_calls$vr_expr_name[i]
-    ran_expr <- rlang::parse_expr(ran_calls$env_function[i])
+
+    env_var   <- ran_calls$env_variable[j]
+    out_nm    <- ran_calls$vr_expr_name[j]
+    ran_expr  <- rlang::parse_expr(ran_calls$env_function[j])
+    expr_type <- ran_calls$model_type[j]
 
     # Create subsetted data_lists for each individual expression.
     # These are bound to each function's environment so the default
@@ -362,23 +379,11 @@
                             ev_tab[ev_tab$env_variable == env_var,
                                    "vr_expr_name", drop = TRUE]]
 
-    env_funs[[i]] <- .make_ran_fun(ran_expr, out_nm, temp_dl)
+    temp_dl  <- Filter(function(x) x != "NULL", temp_dl)
 
+    env_funs[[j]] <- .new_env_fun(ran_expr, out_nm, temp_dl, expr_type)
 
-
-    # if(call_str[1] == "sample") {
-    #
-    #   env_funs[[i]] <- .prep_sample_fun(data_list[[i]], names(data_list)[i], call_str)
-    #
-    # } else if(call_str[1] == "rtrunc") {
-    #
-    #   env_funs[[i]] <- .prep_trunc_fun(data_list[[i]], names(data_list), call_str)
-    #
-    # } else {
-    #
-    #   env_funs[[i]] <- .prep_ran_fun(data_list[[i]], names(data_list)[i], call_str)
-    #
-    # }
+    names(env_funs)[j] <- out_nm
 
   }
 
@@ -386,15 +391,11 @@
   # is that the returned list is named with whatever value appears in the
   # vital rate/kernel expressions.
 
-  names(env_funs) <- paste("out_funs", seq_along(env_funs), sep = "_")
 
   proto_ipm <- define_env_state(
     proto_ipm = proto_ipm,
     !!! env_funs,
-    data_list = c(
-      env_funs,
-      data_list
-    )
+    data_list = data_list
   )
 
   return(proto_ipm)

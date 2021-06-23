@@ -70,7 +70,7 @@
 
       arg_ind <- which(names(addl_args) == use_id)
 
-      use_args <- addl_args[arg_ind]
+      use_args <- .flatten_to_depth(addl_args[arg_ind], 1L)
 
       temp <- rlang::call_modify(temp,
                                  !!! use_args,

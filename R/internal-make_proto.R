@@ -51,8 +51,8 @@
   # environmental vars/exprs -> define_env_state(these)
   es_tab <- use_tabs[[10]]
 
-  # hierarchical vars/exprs - >
-  # define_kernel(has_hier_effs = ifelse(dim(this), TRUE, FALSE), levs = list(these))
+  # parameter set  vars/exprs - >
+  # define_kernel(uses_par_sets = ifelse(dim(this), TRUE, FALSE), levs = list(these))
   he_tab <- use_tabs[[11]]
 
   # uncertainty (currently not available)
@@ -77,7 +77,7 @@
 
     sim_gen <- "simple"
 
-    ik_tab <- .rm_dz_simple_ipm(ik_tab)
+    ik_tab <- .rm_dz_simple_ipm(ik_tab, cd_tab)
 
   }
 
@@ -92,13 +92,13 @@
   # There shouldn't be any of these models in Padrino yet anyway, but they're
   # implemented in ipmr, so they could theoretically be digitized now
 
-  has_age <- md_tab$has_age
+  uses_age <- md_tab$has_age
 
   out <- ipmr::init_ipm(sim_gen    = sim_gen,
                         di_dd      = di_dd,
                         det_stoch  = det_stoch,
                         kern_param = kern_param,
-                        has_age    = has_age)
+                        uses_age    = uses_age)
 
   for(i in seq_along(kern_ids)) {
 
@@ -364,31 +364,119 @@
 
 #' @noRd
 
-.new_env_fun <- function(body, args, out_nms) {
+.ast_from_txt <- function(txt) {
 
-  f <- rlang::new_function(
-    args = args,
-    body = body
-  )
+  exprr <- rlang::parse_expr(txt)
 
-  out <- function(f, out_nms, args){
+  lapply(as.list(exprr),
+         function(x) {
+           ipmr:::.switch_expr(typeof(x),
+                               "constant" = as.character(x),
+                               "symbol"   = as.character(x),
+                               "call" = {
+                                 .ast_from_txt(as.character(x))
+                               })
+         })
 
-    .env_name_wrapper(f(args), out_nms)
-  }
-
-  return(list(use_fun = out,
-              env_fun = f))
 
 }
 
 #' @noRd
-# Helper that makes sure env_fun always returns a list with the right
-# names
 
-.env_name_wrapper <- function(fun, nms, fun_args) {
+.group_ran_calls <- function(call_tab, call_asts) {
 
-  stats::setNames(object = fun(fun_args), nm = nms)
+  any_nested <- matrix(nrow = length(call_asts),
+                       ncol = length(call_asts),
+                       dimnames = list(names(call_asts),
+                                       names(call_asts)))
 
+  for(i in seq_along(call_asts)) {
+
+    any_nested[i, ] <- purrr::map_lgl(
+      .x = call_asts,
+      .f = function(.x, targ) {
+        any(targ %in% .x)
+      },
+      targ = names(call_asts)[i]
+    )
+
+  }
+
+  if(all(!any_nested)) {
+
+    call_tab$model_group <- letters[1:nrow(call_tab)]
+
+    return(call_tab)
+
+  }
+
+  children_expr_nms <- .nest_all_env_exprs(any_nested, call_asts)
+
+}
+
+
+#'@ noRd
+
+.nest_all_env_exprs <- function(lgl_mat, asts) {
+
+  out <- vector("list", length(asts)) %>%
+    setNames(names(asts))
+
+  # first pass
+  for(i in seq_len(nrow(lgl_mat))) {
+
+    out[[i]] <- dimnames(lgl_mat)[[1]][lgl_mat[, i]]
+
+  }
+
+  out <- Filter(function(x) !rlang::is_empty(x), out)
+
+  stp_lgl <- TRUE
+
+  while(stp_lgl) {
+
+    nms <- names(out)
+
+    for(i in seq_along(out)) {
+
+      if(any(nms %in% out[[i]])) {
+
+        add      <- which(nms %in% out[[i]])
+
+        out[[i]] <- c(out[[i]], out[[add]])
+      }
+
+    }
+
+    stp_lgl <- any(
+      vapply(
+        out, rlang::is_empty,
+        logical(1L)
+      )
+    )
+
+    out <- Filter(function(x) !rlang::is_empty(x), out)
+
+  }
+
+  out <- purrr::map2(
+    .x = out,
+    .y = names(out),
+    ~ c(.y, .x)
+  )
+
+  out <- .drop_duplicated_env_index(out)
+
+  return(out)
+
+}
+
+.new_env_fun <- function(env_expr, out_nm, temp_dl, expr_type) {
+
+
+    switch(expr_type,
+           "Substituted" = .make_ran_fun(env_expr, out_nm, temp_dl),
+           "Evaluated"   = .make_eval_fun(env_expr, out_nm))
 }
 
 #' @noRd
@@ -413,7 +501,7 @@
 
   names(fml_args) <- arg_nms
 
-  .new_ran_fun(ran_call, fml_args, out_nm, vals = data_list)
+  .new_ran_call(ran_call, fml_args, out_nm, vals = data_list)
 
 
 }
@@ -425,26 +513,26 @@
 # variables in padrino, and a name to set for the output (which is used in the
 # vital rate/kernel expressions)
 
-.new_ran_fun <- function(ran_call,
-                         fml_args,
-                         out_nm,
-                         vals) {
+.new_ran_call <- function(ran_call,
+                          fml_args,
+                          out_nm,
+                          vals) {
 
   force(ran_call)
   force(fml_args)
 
-  rlang::new_function(
-    args = fml_args,
-    body = rlang::expr({
+  temp <- rlang::call2(ran_call,
+                       !!! fml_args)
 
-      temp <- rlang::call2(ran_call,
-                           !!! fml_args)
+  .make_eval_fun(temp, out_nm)
 
-      rlang::list2(!! out_nm := eval(temp))
+}
 
-    }),
-    env = rlang::env(!!! vals)
-  )
+#' @noRd
+
+.make_eval_fun <- function(env_expr, out_nm) {
+
+  rlang::expr(rlang::list2(!! out_nm := !! env_expr))
 
 }
 
@@ -476,24 +564,24 @@
 
     # Truncated distributions - mostly for define_env_state
 
-    TNorm      = c("truncdist::rtrunc", "n", "mean", "sd"),
-    TLognorm   = c("truncdist::rtrunc", "n", "meanlog", "sdlog"),
-    TF_dist    = c("truncdist::rtrunc", "n", "df1", "df2"),
-    TGamma     = c("truncdist::rtrunc", "n", "shape", "rate", "scale"),
-    TT_dist    = c("truncdist::rtrunc", "n", "df", "ncp"),
-    TBeta      = c("truncdist::rtrunc", "n", "shape1", "shape2", "ncp"),
-    TChi       = c("truncdist::rtrunc", "n", "df", "ncp"),
-    TCauchy    = c("truncdist::rtrunc", "n", "location", "scale"),
-    TExpo      = c("truncdist::rtrunc", "n", "rate"),
-    TBinom     = c("truncdist::rtrunc", "n", "size", "prob"),
-    Ternoulli  = c("truncdist::rtrunc", "n", "size", "prob"),
-    TGeom      = c("truncdist::rtrunc", "n", "prob"),
-    THgeom     = c("truncdist::rtrunc", "n", "m", "n", "k"),
-    TMultinom  = c("truncdist::rtrunc", "n", "size", "prob"),
-    TNegbin    = c("truncdist::rtrunc", "n", "size", "prob", "mu"),
-    TPois      = c("truncdist::rtrunc", "n", "lambda"),
-    TWeib      = c("truncdist::rtrunc", "n", "shape", "scale"),
-    TMVN       = c("truncdist::rtrunc", "n", "mean", "sigma")
+    TNorm      = c("truncdist::rtrunc", "n", "mean", "sd", "a", "b"),
+    TLognorm   = c("truncdist::rtrunc", "n", "meanlog", "sdlog", "a", "b"),
+    TF_dist    = c("truncdist::rtrunc", "n", "df1", "df2", "a", "b"),
+    TGamma     = c("truncdist::rtrunc", "n", "shape", "rate", "scale", "a", "b"),
+    TT_dist    = c("truncdist::rtrunc", "n", "df", "ncp", "a", "b"),
+    TBeta      = c("truncdist::rtrunc", "n", "shape1", "shape2", "ncp", "a", "b"),
+    TChi       = c("truncdist::rtrunc", "n", "df", "ncp", "a", "b"),
+    TCauchy    = c("truncdist::rtrunc", "n", "location", "scale", "a", "b"),
+    TExpo      = c("truncdist::rtrunc", "n", "rate", "a", "b"),
+    TBinom     = c("truncdist::rtrunc", "n", "size", "prob", "a", "b"),
+    Ternoulli  = c("truncdist::rtrunc", "n", "size", "prob", "a", "b"),
+    TGeom      = c("truncdist::rtrunc", "n", "prob", "a", "b"),
+    THgeom     = c("truncdist::rtrunc", "n", "m", "n", "k", "a", "b"),
+    TMultinom  = c("truncdist::rtrunc", "n", "size", "prob", "a", "b"),
+    TNegbin    = c("truncdist::rtrunc", "n", "size", "prob", "mu", "a", "b"),
+    TPois      = c("truncdist::rtrunc", "n", "lambda", "a", "b"),
+    TWeib      = c("truncdist::rtrunc", "n", "shape", "scale", "a", "b"),
+    TMVN       = c("truncdist::rtrunc", "n", "mean", "sigma", "a", "b")
   )
 
   math_ops <- as.list(.math_ops()) %>%
@@ -610,16 +698,16 @@
 
 
 #' @noRd
-# Appends hier_effs suffixes to pop_state vars in iteration_procedure calls when
+# Appends par_sets suffixes to pop_state vars in iteration_procedure calls when
 # the model is deterministic. This needs to happen because otherwise, ipmr::make_ipm
 # will not be able to generate deterministic simulations for each level of the grouping
 # variable, which is probably what the user wants if they select a model with
-# hier_effs and specify the deterministic format.
+# par_sets and specify the deterministic format.
 
 .append_pop_state_suffixes <- function(textprs, ps_tab, he_tab, det_stoch) {
 
   # if it's a stochastic model, then the suffix-less format is correct. If
-  # there are no hier_effs, then there are no suffixes to append. In either or
+  # there are no par_sets, then there are no suffixes to append. In either or
   # both cases, return early and skip the rest.
 
   if(det_stoch == "stoch" || dim(he_tab)[1] == 0) return(textprs)
@@ -647,13 +735,14 @@
 
 #' @noRd
 
-.rm_dz_simple_ipm <- function(ik_tab) {
+.rm_dz_simple_ipm <- function(ik_tab, cd_tab) {
 
   for(i in seq_len(dim(ik_tab)[1])) {
 
     sv <- c(ik_tab$domain_start[i], ik_tab$domain_end[i])
 
-    use_sv <- unique(sv)
+    use_sv <- unique(sv) %>%
+      .[. %in% cd_tab$state_variable]
 
     if(all(is.na(use_sv))) next
 
