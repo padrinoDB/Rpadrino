@@ -32,6 +32,10 @@
 }
 
 #' @noRd
+.check_make_ipm_args_impl.simple_dd_det <-
+  .check_make_ipm_args_impl.simple_di_det
+
+#' @noRd
 .check_make_ipm_args_impl.simple_di_stoch_kern <- function(proto, args) {
 
   pos_args <- c("return_main_env",
@@ -57,6 +61,10 @@
   return(TRUE)
 
 }
+
+#' @noRd
+.check_make_ipm_args_impl.simple_dd_stoch_kern <-
+  .check_make_ipm_args_impl.simple_di_stoch_kern
 
 #' @noRd
 .check_make_ipm_args_impl.simple_di_stoch_param <- function(proto, args) {
@@ -86,6 +94,10 @@
 }
 
 #' @noRd
+.check_make_ipm_args_impl.simple_dd_stoch_param <-
+  .check_make_ipm_args_impl.simple_di_stoch_param
+
+#' @noRd
 .check_make_ipm_args_impl.general_di_det <- function(proto, args) {
 
   pos_args <- c("return_main_env",
@@ -107,6 +119,10 @@
   return(TRUE)
 
 }
+
+#' @noRd
+.check_make_ipm_args_impl.general_dd_det <-
+  .check_make_ipm_args_impl.general_di_det
 
 #' @noRd
 .check_make_ipm_args_impl.general_di_stoch_kern <- function(proto, args) {
@@ -136,6 +152,10 @@
 }
 
 #' @noRd
+.check_make_ipm_args_impl.general_dd_stoch_kern <-
+  .check_make_ipm_args_impl.general_di_stoch_kern
+
+#' @noRd
 .check_make_ipm_args_impl.general_di_stoch_param <- function(proto, args) {
 
   pos_args <- c("return_main_env",
@@ -162,6 +182,9 @@
 
 }
 
+#' @noRd
+.check_make_ipm_args_impl.general_dd_stoch_param <-
+  .check_make_ipm_args_impl.general_di_stoch_param
 
 .stop_bad_make_ipm_args <- function(cur_args, pos_args, cls) {
 
