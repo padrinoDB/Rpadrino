@@ -90,6 +90,10 @@
   all_states     <- ik_tab[ik_tab$kernel_id == kernel_id, c("domain_start",
                                                             "domain_end")]
   sub_fun_state  <- all_states[2]
+  if("age_x_size" %in% class(proto_ipm)) sub_fun_state <- gsub("(_age)",
+                                                               "",
+                                                               sub_fun_state)
+
 
   dens_fun_exprs <- vr_tab$formula[vr_tab$model_type == "Substituted"]
   kern_dots_subs <- .prep_sub_fun(dens_fun_exprs, sub_fun_state)
@@ -109,17 +113,45 @@
 
   if(dim(he_tab)[1] > 0) {
 
-    uses_par_sets          <- any(grepl(kernel_id, he_tab$kernel_id))
-    par_set_indices        <- lapply(he_tab$range,
-                                     function(x) eval(parse(text = x)))
+    uses_par_sets          <- any(grepl(kernel_id, he_tab$kernel_id) &
+                                  !he_tab$vr_expr_name %in% c("age", "max_age"))
 
-    names(par_set_indices) <- he_tab$vr_expr_name
+    if(uses_par_sets) {
+
+      use_par_sets <- he_tab[!he_tab$vr_expr_name %in% c("age", "max_age"), ]
+
+      par_set_indices <- lapply(
+        use_par_sets$range,
+        function(x) eval(parse(text = x))
+      )
+
+      names(par_set_indices) <- use_par_sets$vr_expr_name
+
+    } else {
+
+      par_set_indices <- list()
+    }
 
   } else {
 
     uses_par_sets   <- FALSE
     par_set_indices <- list()
 
+  }
+
+  if("age_x_size" %in% class(proto_ipm)) {
+
+    use_rows <- he_tab[he_tab$vr_expr_name %in% c("age", "max_age"), ]
+    age_inds <- lapply(
+      use_rows$range,
+      function(x) eval(parse(text = x))
+    )
+
+    names(age_inds) <- use_rows$vr_expr_name
+
+  } else {
+
+    age_inds <- list()
   }
 
   # Finally, add eviction if it's used, and construct the call to that
@@ -140,7 +172,10 @@
 
     } else {
 
-      use_state <- all_states[2]
+      use_state <- eval(unlist(all_states, use.names = FALSE)[2])
+
+      if("age_x_size" %in% class(proto_ipm)) use_state <- gsub("(_age)", "",
+                                                               use_state)
 
 
       ev_target <- vapply(dens_fun_exprs,
@@ -173,6 +208,7 @@
     states           = all_states,
     uses_par_sets    = uses_par_sets,
     par_set_indices  = par_set_indices,
+    age_indices      = age_inds,
     evict_cor        = ev_cor,
     evict_fun        = !! ev_call
   )
@@ -344,6 +380,25 @@
     })
 
 
+  env_funs <- list()
+
+  for(i in seq_along(ran_calls)) {
+
+    expr_type <- ran_calls$model_type[i]
+    env_var   <- ran_calls$env_variable[i]
+    out_nm    <- ran_calls$vr_expr_name[i]
+    ran_expr  <- rlang::parse_expr(ran_calls$env_function[i])
+
+    temp_dl  <- data_list[names(data_list) %in%
+                            ev_tab[ev_tab$env_variable == env_var,
+                                   "vr_expr_name", drop = TRUE]]
+
+    # temp_dl  <- Filter(function(x) x != "NULL", temp_dl)
+
+    env_funs <- c(env_funs, .new_env_fun(ran_expr, out_nm, temp_dl, expr_type))
+
+  }
+
   # Generate abstract syntax trees for all ran_calls, and then check whether
   # any depend on each other. If so, they'll need to be lumped together into
   # a single function so that their values are available to each other at build
@@ -358,34 +413,34 @@
   #
   # ran_calls <- .group_ran_calls(ran_calls, ran_asts)
   #
-  env_funs <- list()
-
-  for(j in seq_len(nrow(ran_calls))) {
-
-
-    env_var   <- ran_calls$env_variable[j]
-    out_nm    <- ran_calls$vr_expr_name[j]
-    ran_expr  <- rlang::parse_expr(ran_calls$env_function[j])
-    expr_type <- ran_calls$model_type[j]
-
-    # Create subsetted data_lists for each individual expression.
-    # These are bound to each function's environment so the default
-    # values can be found in make_ipm(). These can be overriden by
-    # setting alternative values in the function's enclosing environment
-    # (see snippet in data-raw/def_env_state_sandbox.R for more details on
-    # how that works).
-
-    temp_dl  <- data_list[names(data_list) %in%
-                            ev_tab[ev_tab$env_variable == env_var,
-                                   "vr_expr_name", drop = TRUE]]
-
-    temp_dl  <- Filter(function(x) x != "NULL", temp_dl)
-
-    env_funs[[j]] <- .new_env_fun(ran_expr, out_nm, temp_dl, expr_type)
-
-    names(env_funs)[j] <- out_nm
-
-  }
+  # env_funs <- list()
+  #
+  # for(j in seq_len(nrow(ran_calls))) {
+  #
+  #
+  #   env_var   <- ran_calls$env_variable[j]
+  #   out_nm    <- ran_calls$vr_expr_name[j]
+  #   ran_expr  <- rlang::parse_expr(ran_calls$env_function[j])
+  #   expr_type <- ran_calls$model_type[j]
+  #
+  #   # Create subsetted data_lists for each individual expression.
+  #   # These are bound to each function's environment so the default
+  #   # values can be found in make_ipm(). These can be overriden by
+  #   # setting alternative values in the function's enclosing environment
+  #   # (see snippet in data-raw/def_env_state_sandbox.R for more details on
+  #   # how that works).
+  #
+  #   temp_dl  <- data_list[names(data_list) %in%
+  #                           ev_tab[ev_tab$env_variable == env_var,
+  #                                  "vr_expr_name", drop = TRUE]]
+  #
+  #   temp_dl  <- Filter(function(x) x != "NULL", temp_dl)
+  #
+  #   env_funs[[j]] <- .new_env_fun(ran_expr, out_nm, temp_dl, expr_type)
+  #
+  #   names(env_funs)[j] <- out_nm
+  #
+  # }
 
   # The names of the functions can be arbitrary, all that matters in ipmr
   # is that the returned list is named with whatever value appears in the

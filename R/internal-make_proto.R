@@ -58,6 +58,12 @@
   # uncertainty (currently not available)
   un_tab <- use_tabs[[12]]
 
+  if(!is.na(md_tab$remark)) {
+
+    message("'ipm_id' ", id, " has the following notes that require your attention:\n",
+            .quote_marks(md_tab$remark))
+
+  }
 
   # Get kernel IDs. Figure out if we're simple/general, and assign the model
   # class to the initial proto.
@@ -81,7 +87,24 @@
 
   }
 
-  if(det_stoch == "det") kern_param <- NULL
+  if(det_stoch == "det") {
+
+    if(nrow(es_tab) > 0) {
+      det_stoch <- "stoch"
+      kern_param <- "param"
+
+      message("'ipm_id' ", id," has resampled parameters, resetting 'det_stoch'",
+              " to 'stoch' and \n'kern_param' to 'param'!\n",
+              "Default number of iterations for 'pdb_make_ipm' will be 50. Modify ",
+              "this behavior \nwith the 'addl_args' argument of 'pdb_make_ipm'.")
+
+    } else {
+
+      kern_param <- NULL
+
+    }
+
+  }
 
   di_dd <- ifelse(md_tab$has_dd, "dd", "di")
 
@@ -98,7 +121,7 @@
                         di_dd      = di_dd,
                         det_stoch  = det_stoch,
                         kern_param = kern_param,
-                        uses_age    = uses_age)
+                        uses_age   = uses_age)
 
   for(i in seq_along(kern_ids)) {
 
@@ -532,7 +555,7 @@
 
 .make_eval_fun <- function(env_expr, out_nm) {
 
-  rlang::expr(rlang::list2(!! out_nm := !! env_expr))
+  rlang::list2(!!out_nm := rlang::quo(!! env_expr))
 
 }
 
@@ -766,4 +789,8 @@
 
   return(!out)
 
+}
+
+.quote_marks <- function(x) {
+  paste("'", x, "'", sep = "")
 }
