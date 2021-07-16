@@ -11,7 +11,7 @@ test_that("pdb_subset works", {
 
   expect_s3_class(sub_db, "pdb")
 
-  expect_equal(dim(sub_db$Metadata)[1], 5L)
+  expect_equal(dim(sub_db$Metadata)[1], 3L)
 
 
   sub_ind <- "xyz"
