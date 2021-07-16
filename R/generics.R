@@ -115,7 +115,8 @@ pop_state.pdb_ipm <- function(object) {
 #' some quantities of interest from \code{pdb_ipm}s.
 #'
 #' @param ipm A \code{pdb_ipm}.
-#' @param ... further arguments passed to \code{\link[ipmr]{lambda}}.
+#' @param ... further arguments passed to \code{\link[ipmr]{lambda}}. Unused for
+#' \code{left_ev} and \code{right_ev} - only present for compatibility.
 #' @param iterations The number of times to iterate the model to reach
 #' convergence. Default is 100.
 #' @param tolerance Tolerance to evaluate convergence to asymptotic dynamics.
@@ -146,7 +147,7 @@ lambda.pdb_ipm <- function(ipm, ...) {
 #' @importFrom ipmr right_ev left_ev
 #' @export
 
-right_ev.pdb_ipm <- function(ipm, iterations = 100, tolerance = 100) {
+right_ev.pdb_ipm <- function(ipm, iterations = 100, tolerance = 100, ...) {
 
   lapply(ipm,
          function(x, iterations, tolerance) {
@@ -160,7 +161,7 @@ right_ev.pdb_ipm <- function(ipm, iterations = 100, tolerance = 100) {
 #' @rdname ipmr_generics
 #' @export
 
-left_ev.pdb_ipm <- function(ipm, iterations = 100, tolerance = 100) {
+left_ev.pdb_ipm <- function(ipm, iterations = 100, tolerance = 100, ...) {
 
   lapply(ipm,
          function(x, iterations, tolerance) {

@@ -8,14 +8,15 @@
 \usage{
 \method{lambda}{pdb_ipm}(ipm, ...)
 
-\method{right_ev}{pdb_ipm}(ipm, iterations = 100, tolerance = 100)
+\method{right_ev}{pdb_ipm}(ipm, iterations = 100, tolerance = 100, ...)
 
-\method{left_ev}{pdb_ipm}(ipm, iterations = 100, tolerance = 100)
+\method{left_ev}{pdb_ipm}(ipm, iterations = 100, tolerance = 100, ...)
 }
 \arguments{
 \item{ipm}{A \code{pdb_ipm}.}
 
-\item{...}{further arguments passed to \code{\link[ipmr]{lambda}}.}
+\item{...}{further arguments passed to \code{\link[ipmr]{lambda}}. Unused for
+\code{left_ev} and \code{right_ev} - only present for compatibility.}
 
 \item{iterations}{The number of times to iterate the model to reach
 convergence. Default is 100.}
