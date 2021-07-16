@@ -15,7 +15,7 @@
 
 vital_rate_exprs.pdb_proto_ipm <- function(object) {
 
-  lapply(object, vital_rate_exprs)
+  lapply(object, ipmr::vital_rate_exprs)
 
 }
 
@@ -24,7 +24,7 @@ vital_rate_exprs.pdb_proto_ipm <- function(object) {
 
 vital_rate_exprs.pdb_ipm <- function(object) {
 
-  lapply(object, function(x) vital_rate_exprs(x$proto_ipm))
+  lapply(object, function(x) ipmr::vital_rate_exprs(x$proto_ipm))
 
 }
 
@@ -35,7 +35,7 @@ vital_rate_exprs.pdb_ipm <- function(object) {
 
 kernel_formulae.pdb_proto_ipm <- function(object) {
 
-  lapply(object, kernel_formulae)
+  lapply(object, ipmr::kernel_formulae)
 
 }
 
@@ -44,7 +44,7 @@ kernel_formulae.pdb_proto_ipm <- function(object) {
 
 kernel_formulae.pdb_ipm <- function(object) {
 
-  lapply(object, function(x) kernel_formulae(x$proto_ipm))
+  lapply(object, function(x) ipmr::kernel_formulae(x$proto_ipm))
 
 }
 
@@ -56,7 +56,7 @@ kernel_formulae.pdb_ipm <- function(object) {
 
 domains.pdb_proto_ipm <- function(object) {
 
-  lapply(object, domains)
+  lapply(object, ipmr::domains)
 
 }
 
@@ -65,7 +65,7 @@ domains.pdb_proto_ipm <- function(object) {
 
 domains.pdb_ipm <- function(object) {
 
-  lapply(object, function(x) domains(x$proto_ipm))
+  lapply(object, function(x) ipmr::domains(x$proto_ipm))
 
 }
 
@@ -76,7 +76,7 @@ domains.pdb_ipm <- function(object) {
 
 parameters.pdb_proto_ipm <- function(object) {
 
-  lapply(object, parameters)
+  lapply(object, ipmr::parameters)
 
 }
 
@@ -85,7 +85,7 @@ parameters.pdb_proto_ipm <- function(object) {
 
 parameters.pdb_ipm <- function(object) {
 
-  lapply(object, function(x) parameters(x$proto_ipm))
+  lapply(object, function(x) ipmr::parameters(x$proto_ipm))
 
 }
 
@@ -95,7 +95,7 @@ parameters.pdb_ipm <- function(object) {
 
 pop_state.pdb_proto_ipm <- function(object) {
 
-  lapply(object, pop_state)
+  lapply(object, ipmr::pop_state)
 
 }
 
@@ -104,7 +104,7 @@ pop_state.pdb_proto_ipm <- function(object) {
 
 pop_state.pdb_ipm <- function(object) {
 
-  lapply(object, pop_state)
+  lapply(object, ipmr::pop_state)
 
 }
 
@@ -133,7 +133,7 @@ lambda.pdb_ipm <- function(ipm, ...) {
 
                         all_args <- rlang::list2(ipm = x, !!! dots)
 
-                        rlang::exec(lambda, !!! all_args)
+                        rlang::exec(ipmr::lambda, !!! all_args)
 
                       },
                       dots = addl_args)
@@ -150,7 +150,7 @@ right_ev.pdb_ipm <- function(ipm, iterations = 100, tolerance = 100) {
 
   lapply(ipm,
          function(x, iterations, tolerance) {
-           right_ev(x, iterations = iterations, tolerance = tolerance)
+           ipmr::right_ev(x, iterations = iterations, tolerance = tolerance)
          },
          iterations = iterations,
          tolerance = tolerance)
@@ -164,7 +164,7 @@ left_ev.pdb_ipm <- function(ipm, iterations = 100, tolerance = 100) {
 
   lapply(ipm,
          function(x, iterations, tolerance) {
-           left_ev(x, iterations = iterations, tolerance = tolerance)
+           ipmr::left_ev(x, iterations = iterations, tolerance = tolerance)
          },
          iterations = iterations,
          tolerance = tolerance)
