@@ -25,7 +25,7 @@
     rlang::call_name() %>%
     tolower()
 
-  out <- list(dens_fun, ev_target)
+  out <- list(fun = dens_fun, target = ev_target)
 
   return(out)
 }
@@ -34,6 +34,6 @@
 
 .add_disc_extrema_call <- function(ev_target, state) {
 
-  list(ev_target, state)
+  list(target = ev_target, state = eval(unlist(state, use.names = FALSE)))
 
 }
