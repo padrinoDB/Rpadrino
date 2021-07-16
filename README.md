@@ -1,7 +1,7 @@
 
 [![R-CMD-check](https://github.com/levisc8/RPadrino/workflows/R-CMD-check/badge.svg)](https://github.com/levisc8/RPadrino/actions)
 [![Codecov test
-coverage](https://codecov.io/gh/levisc8/RPadrino/branch/master/graph/badge.svg)](https://codecov.io/gh/levisc8/RPadrino?branch=master)
+coverage](https://codecov.io/gh/levisc8/RPadrino/branch/main/graph/badge.svg)](https://codecov.io/gh/levisc8/RPadrino?branch=main)
 
 ## RPadrino
 
@@ -12,20 +12,18 @@ migrate it to a set of static, version-controlled tables that are hosted
 on Zenodo (or similar). For now, you can access it by installing the
 package, and running `data(pdb)`.
 
-Data have had some quality checking, but some (in fact, most) models
-will still definitely break with very strange looking error messages. A
-genuine, quality checked release will be tagged when it is actually
-ready to go. I really don’t suggest using this yet, except to get a feel
-for how the database looks and perhaps give some feedback on things you
-do or do not like.
+The data included in this package are now quality checked and ready for
+use. A genuine, quality checked release will be tagged when it is
+actually ready to go. There are 332 unique IPMs for 30 unique species
+from 18 publications in the internally stored data set.
 
 ## Scope
 
 The goal of this package is basic data management, exploration, and
 porting Padrino’s internal syntax to
-[`ipmr`’s](https://levisc8.github.io/ipmr/) syntax. Ideally, one could
-combine models from here with their own models for synthesis work, using
-the `proto_ipm` as a common data structure to power the analysis.
+[`ipmr`’s](https://levisc8.github.io/ipmr/) syntax. One can combine
+models from here with their own models for synthesis work, using the
+`proto_ipm` as a common data structure to power the analysis.
 
 ### Installation
 
@@ -52,10 +50,10 @@ data("pdb")
 
 The next step is to identify the models we are interested in building.
 At the moment, there is no functionality to do that - you’ll just have
-to explore the *Metadata* table on your own. In the not so distant
-future, there will be a set of functions that actually help query
-specific columns of interest so the process of exploring the database is
-less painful.
+to explore the *Metadata* table on your own. There are accessor
+functions that allow you to extract metadata columns from the `pdb`
+object, which may be helpful. See `?pdb_species_accepted` for a list of
+those.
 
 Once, we’ve identified the model(s) we want, we can build a list of
 [`proto_ipm`’s](https://levisc8.github.io/ipmr/articles/proto-ipms.html).
@@ -74,8 +72,8 @@ proto_list   <- pdb_make_proto_ipm(pdb,
 
 Once the list of `proto_ipm`’s is generated, you can either append your
 own IPMs to it, or you can go ahead to the next chunk. Note that
-`pdb_make_ipm` is still pretty unstable, and it’ll probably mean that
-error messages aren’t the most informative.
+`pdb_make_ipm` will almost always work, but there may still be bugs
+lurking!
 
 ``` r
 ipm_list <- pdb_make_ipm(proto_list)

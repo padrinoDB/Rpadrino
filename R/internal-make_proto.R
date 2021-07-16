@@ -19,44 +19,44 @@
 
 
   # Split out individual tables
-  md_tab <- use_tabs[[1]]
+  md_tab <- use_tabs$Metadata
 
   # All state variables -> define_kernel(states = list(c(these)))
-  sv_tab <- use_tabs[[2]]
+  sv_tab <- use_tabs$StateVariables
 
   # discrete state variables -> Not totally sure why these are needed, but
   # may be useful for... something?
-  ds_tab <- use_tabs[[3]]
+  ds_tab <- use_tabs$DiscreteStates
 
   # continuous domains ->
   # define_domains(rlang::list2(!!nm := list(lower = these, upper = these)))
-  cd_tab <- use_tabs[[4]]
+  cd_tab <- use_tabs$ContinuousDomains
 
   # integration rules -> define_impl(rlang::list2(!! nm := list(int_rule = these)))
-  ir_tab <- use_tabs[[5]]
+  ir_tab <- use_tabs$IntegrationRules
 
   # pop trait distrib vectors/functions. I think these are all pretty much empty,
   # so will need to initialize w/ some random distributions.
-  ps_tab <- use_tabs[[6]]
+  ps_tab <- use_tabs$StateVectors
 
   # ipm kernel exprs -> define_kernel(formula = !! these)
-  ik_tab <- use_tabs[[7]]
+  ik_tab <- use_tabs$IpmKernels
 
   # vital rate exprs -> define_kernel(!!! these)
-  vr_tab <- use_tabs[[8]]
+  vr_tab <- use_tabs$VitalRateExpr
 
   # paramter values -> define_kernel(data_list = as.list(these))
-  pv_tab <- use_tabs[[9]]
+  pv_tab <- use_tabs$ParameterValues
 
   # environmental vars/exprs -> define_env_state(these)
-  es_tab <- use_tabs[[10]]
+  es_tab <- use_tabs$EnvironmentalVariables
 
   # parameter set  vars/exprs - >
   # define_kernel(uses_par_sets = ifelse(dim(this), TRUE, FALSE), levs = list(these))
-  he_tab <- use_tabs[[11]]
+  he_tab <- use_tabs$HierarchTable
 
   # uncertainty (currently not available)
-  un_tab <- use_tabs[[12]]
+  un_tab <- use_tabs$UncertaintyTable
 
   if(!is.na(md_tab$remark)) {
 
@@ -223,277 +223,7 @@
 
 }
 
-
 #' @noRd
-#' @importFrom mvtnorm rmvnorm dmvnorm
-#
-# Generates call to r*pr_fun(1, other_args). Used to sample parameter distributions
-# and/or environmental variables in *_stoch_param models
-
-.prep_ran_fun <- function(data_list, out_nm, call_info) {
-
-  arg_nms <- formals(call_info[[1]]) %>%
-    names(.)[2:length(.)]
-  args     <- c(1, data_list)
-  n_nm     <- ifelse(call_str == "Hgeom", "nn", "n")
-
-  names(args) <- c(n_nm, arg_nms)
-
-  # fun_1 is the actual expression we want to evaluate. it generates a value
-  # from the expression stored in the database.
-
-  fun_1    <- rlang::new_function(args = rlang::pairlist2(... = ),
-                                  body = call_info)
-
-  # Next, we need to wrap this expression so that the returned value is in a list
-  # and its name corresponds to that which is used in the VitalRateExpr
-
-  out_fun  <- rlang::new_function(args = rlang::pairlist2(nm = out_nm,
-                                                          f = fun_1),
-                                  body = quote(rlang::list2(!!nm := f())))
-
-  return(out_fun)
-
-}
-
-.ran_fun_body <- function(ran_call, ev_tab) {
-
-  # Get PADRINO version of the r* function, and the name that it's supposed
-  # to create.
-
-  pdb_name <- ev_tab$vr_expr_name[ev_tab$env_function == ran_call]
-
-  ran_call <- rlang::parse_expr(ran_call)
-
-  fun_call <- rlang::call_name(ran_call)
-
-  # Pull out the arguments from PADRINO
-
-  current_args <- rlang::call_args(ran_call)
-
-  if(fun_call %in% .math_ops()) {
-
-    out_fun      <- fun_call
-
-  } else if(fun_call %in% names(.make_ran_env())) {
-
-    out_fun      <- eval(rlang::sym(fun_call),
-                         envir = .make_ran_env())
-
-    # We don't want to set the name of first argument to out_fun because
-    # that comes later (thanks rhyper!),
-    # but we do want to grab the others formal names. This strategy below assumes
-    # they are entered in PADRINO in the same order that they would appear
-    # in the formal argument list for the R function. Methinks this a dubious
-    # proposition, but will update accordingly when things break
-
-    formal_args         <- formals(eval(rlang::parse_expr(out_fun)))
-    names(current_args) <- names(formal_args)[2:(length(current_args) + 1)]
-
-  }
-
-  # Most of the environmental functions are truncated distributions
-  # We need to format these correctly:
-  # rtrunc(spec = out_fun[-"r" predix],
-  #        n = 1,
-  #        a = env_range[1],
-  #        b = env_range[2],
-  #        !!! current_args)
-  # eval(fun_call, .make_ran_env()) returns a vector w length >= 2 for rtrunc
-  # calls with the names of the possible !!! current_args.
-
-  if(out_fun[1] == "rtrunc") {
-
-    names(current_args) <- out_fun[2:length(out_fun)]
-
-    out_fun <- out_fun[1]
-
-    # Get the spec name. This removes the "T" prefix, then
-    # gets the distribution abbreviation from ran_env, then removes
-    # the "r" prefix to create the correct format of "spec".
-
-    spec    <- rlang::call_name(ran_call) %>%
-      substr(x = ., start = 2, stop = nchar(.)) %>%
-      rlang::parse_expr() %>%
-      eval(., envir = .make_ran_env()) %>%
-      substr(x = ., start = 2, stop = nchar(.))
-
-    current_args <- c(current_args, list(spec = spec))
-
-    # Finally, we need to get the truncation interval. This is stored in the same
-    # line as the sampling function in env_range, with the format: L;U (i.e.
-    # a semi-colon split).
-
-    t_interval <- ev_tab$env_range[ev_tab$env_function == rlang::expr_text(ran_call)]
-
-    a_b        <- strsplit(t_interval, ';') %>%
-      lapply(trimws) %>%
-      unlist() %>%
-      as.numeric()
-
-    a          <- a_b[1]
-    b          <- a_b[2]
-
-    current_args <- c(current_args,
-                      list(a = a,
-                           b = b))
-
-  }
-
-  # For some reason, the rhyper function uses "nn" to specify the
-  # number of samples from the distribution. This makes sure that name
-  # is set correctly.
-
-  if(fun_call == "Hgeom" || fun_call == "THgeom") {
-
-    body_args    <- c(list(nn = 1),
-                      current_args)
-
-    out_fun <- rlang::parse_expr(out_fun)
-
-  } else if(fun_call %in% names(.make_ran_env())) {
-
-    body_args    <- c(list(n = 1),
-                      current_args)
-
-    out_fun <- rlang::parse_expr(out_fun)
-
-  } else {
-
-    # Math_opserations. These almost universally use the names
-    # x,y for their arguments.
-
-    body_args <- current_args
-    names(body_args) <- c("x", "y")
-
-    out_fun   <- rlang::sym(out_fun)
-
-  }
-
-  fun_temp     <- call2(eval(out_fun),
-                      !!! body_args)
-
-  fun_body     <- .new_env_fun(fun_temp, body_args, pdb_nm)
-
-  return(fun_body)
-
-}
-
-.math_ops <- function() {
-
-  c("+", "-", "*", "/")
-
-}
-
-#' @noRd
-
-.ast_from_txt <- function(txt) {
-
-  exprr <- rlang::parse_expr(txt)
-
-  lapply(as.list(exprr),
-         function(x) {
-           ipmr:::.switch_expr(typeof(x),
-                               "constant" = as.character(x),
-                               "symbol"   = as.character(x),
-                               "call" = {
-                                 .ast_from_txt(as.character(x))
-                               })
-         })
-
-
-}
-
-#' @noRd
-
-.group_ran_calls <- function(call_tab, call_asts) {
-
-  any_nested <- matrix(nrow = length(call_asts),
-                       ncol = length(call_asts),
-                       dimnames = list(names(call_asts),
-                                       names(call_asts)))
-
-  for(i in seq_along(call_asts)) {
-
-    any_nested[i, ] <- purrr::map_lgl(
-      .x = call_asts,
-      .f = function(.x, targ) {
-        any(targ %in% .x)
-      },
-      targ = names(call_asts)[i]
-    )
-
-  }
-
-  if(all(!any_nested)) {
-
-    call_tab$model_group <- letters[1:nrow(call_tab)]
-
-    return(call_tab)
-
-  }
-
-  children_expr_nms <- .nest_all_env_exprs(any_nested, call_asts)
-
-}
-
-
-#'@ noRd
-
-.nest_all_env_exprs <- function(lgl_mat, asts) {
-
-  out <- vector("list", length(asts)) %>%
-    setNames(names(asts))
-
-  # first pass
-  for(i in seq_len(nrow(lgl_mat))) {
-
-    out[[i]] <- dimnames(lgl_mat)[[1]][lgl_mat[, i]]
-
-  }
-
-  out <- Filter(function(x) !rlang::is_empty(x), out)
-
-  stp_lgl <- TRUE
-
-  while(stp_lgl) {
-
-    nms <- names(out)
-
-    for(i in seq_along(out)) {
-
-      if(any(nms %in% out[[i]])) {
-
-        add      <- which(nms %in% out[[i]])
-
-        out[[i]] <- c(out[[i]], out[[add]])
-      }
-
-    }
-
-    stp_lgl <- any(
-      vapply(
-        out, rlang::is_empty,
-        logical(1L)
-      )
-    )
-
-    out <- Filter(function(x) !rlang::is_empty(x), out)
-
-  }
-
-  out <- purrr::map2(
-    .x = out,
-    .y = names(out),
-    ~ c(.y, .x)
-  )
-
-  out <- .drop_duplicated_env_index(out)
-
-  return(out)
-
-}
-
 .new_env_fun <- function(env_expr, out_nm, temp_dl, expr_type) {
 
 
@@ -560,6 +290,7 @@
 }
 
 #' @noRd
+#' @importFrom mvtnorm rmvnorm dmvnorm
 
 .args_list <- function() {
 
@@ -615,6 +346,11 @@
   list2env(args)
 }
 
+#' @noRd
+
+.math_ops <- function() {
+  c("+", "-", "*", "/")
+}
 
 #' @noRd
 # Generates an environment to sub various PDFs into an actual function call.

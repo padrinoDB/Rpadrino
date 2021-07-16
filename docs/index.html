@@ -5,17 +5,17 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Interact with the PADRINO and MADRINA IPM Data Bases • RPadrino</title>
+<title>Interact with the PADRINO IPM Database • RPadrino</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
 <script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script><meta property="og:title" content="Interact with the PADRINO and MADRINA IPM Data Bases">
-<meta property="og:description" content='PADRINO and MADRINA house textual representations of
+<script src="pkgdown.js"></script><meta property="og:title" content="Interact with the PADRINO IPM Database">
+<meta property="og:description" content="PADRINO houses textual representations of
     Integral Projection Models which can be converted from their 
-    "elemental" forms into full kernels to reproduce or extend an 
-    already published analysis.'>
+    table format into full kernels to reproduce or extend an 
+    already published analysis.">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -42,7 +42,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -57,7 +57,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="articles/padrino-intro.html">Padrino Introduction</a>
+      <a href="articles/padrino-intro.html">RPadrino Introduction</a>
     </li>
   </ul>
 </li>
@@ -80,61 +80,49 @@
 <h2 class="hasAnchor">
 <a href="#rpadrino" class="anchor"></a>RPadrino</h2>
 <p><code>RPadrino</code> is a package for interacting with the Padrino Integral Projection Model database. This database really only exists as an internal dataset in this package right now. The longer term plan is to migrate it to a set of static, version-controlled tables that are hosted on Zenodo (or similar). For now, you can access it by installing the package, and running <code><a href="https://rdrr.io/r/utils/data.html">data(pdb)</a></code>.</p>
-<p>Data have had some quality checking, but some models will still definitely break with very strange looking error messages. A genuine, quality checked release will be tagged when it is actually ready to go. I really don’t suggest using this yet, except to get a feel for how the database looks and perhaps give some feedback on things you do or do not like.</p>
+<p>The data included in this package are now quality checked and ready for use. A genuine, quality checked release will be tagged when it is actually ready to go. There are 332 unique IPMs for 30 unique species from 18 publications in the internally stored data set.</p>
 </div>
 <div id="scope" class="section level2">
 <h2 class="hasAnchor">
 <a href="#scope" class="anchor"></a>Scope</h2>
-<p>The goal of this package is basic data management, exploration, and porting Padrino’s internal syntax to <a href="https://levisc8.github.io/ipmr/"><code>ipmr</code>’s</a> syntax. Ideally, one could combine models from here with their own models for synthesis work, using the <code>proto_ipm</code> as a common data structure to power the analysis.</p>
+<p>The goal of this package is basic data management, exploration, and porting Padrino’s internal syntax to <a href="https://levisc8.github.io/ipmr/"><code>ipmr</code>’s</a> syntax. One can combine models from here with their own models for synthesis work, using the <code>proto_ipm</code> as a common data structure to power the analysis.</p>
 <div id="installation" class="section level3">
 <h3 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h3>
 <p>You can install RPadrino from github with:</p>
-<div class="sourceCode" id="cb1"><pre class="r">
-<span class="kw">if</span>(!<span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span>(<span class="st">"remotes"</span>, <span class="kw">quietly</span> <span class="kw">=</span> <span class="fl">TRUE</span>)) {
-  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"remotes"</span>)
-}
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"remotes"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span>
+<span class="op">}</span>
 
-<span class="kw pkg">remotes</span><span class="kw ns">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"levisc8/RPadrino"</span>)</pre></div>
+<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"levisc8/RPadrino"</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="usage" class="section level3">
 <h3 class="hasAnchor">
 <a href="#usage" class="anchor"></a>Usage</h3>
 <p>A small-ish copy of the Padrino Database is included as a package data set. You can access it with the following code:</p>
-<div class="sourceCode" id="cb2"><pre class="r">
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"pdb"</span>)</pre></div>
-<p>The next step is to identify the models we are interested in building. At the moment, there is no functionality to do that - you’ll just have to explore the <em>Metadata</em> table on your own. In the not so distant future, there will be a set of functions that actually help query specific columns of interest so the process of exploring the database is less painful.</p>
-<p>Once, we’ve identified the model(s) we want, we can build a list of <a href="https://levisc8.github.io/ipmr/articles/proto-ipms.html"><code>proto_ipm</code>’s</a>. This is an intermediate step between the database representation and a set of kernels. Once we have this, we can build an actual model. Below, we extract a specific study, Levin et al. 2019, and construct an IPM from the database object.</p>
-<div class="sourceCode" id="cb3"><pre class="r">
-<span class="co"># Generate an index to subset the database with</span>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">RPadrino</span><span class="op">)</span>
 
-<span class="no">subset_index</span> <span class="kw">&lt;-</span> <span class="no">pdb_ex</span>$<span class="no">Metadata</span>$<span class="no">ipm_id</span>[<span class="no">pdb_ex</span>$<span class="no">Metadata</span>$<span class="no">corresponding_author</span> <span class="kw">==</span> <span class="st">"Levin"</span>]
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"pdb"</span><span class="op">)</span></code></pre></div>
+<p>The next step is to identify the models we are interested in building. At the moment, there is no functionality to do that - you’ll just have to explore the <em>Metadata</em> table on your own. There are accessor functions that allow you to extract metadata columns from the <code>pdb</code> object, which may be helpful. See <code><a href="reference/pdb_citation.html">?pdb_species_accepted</a></code> for a list of those.</p>
+<p>Once, we’ve identified the model(s) we want, we can build a list of <a href="https://levisc8.github.io/ipmr/articles/proto-ipms.html"><code>proto_ipm</code>’s</a>. This is an intermediate step between the database representation and a set of kernels. Once we have the list of <code>proto_ipm</code>’s, we can build an actual model. Below, we extract a specific study, and construct an IPM from the database object.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># We can construct a single IPM at a time, or make a list of many IPMs</span>
 
-<span class="co"># This lapply statement extracts all rows from the database that correspond to our desired study/studies</span>
+<span class="va">proto_list</span>   <span class="op">&lt;-</span> <span class="fu"><a href="reference/pdb_make_proto_ipm.html">pdb_make_proto_ipm</a></span><span class="op">(</span><span class="va">pdb</span>, 
+                                   ipm_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"aaaa55"</span>, <span class="st">"aaa341"</span>, <span class="st">"aaa342"</span><span class="op">)</span>,
+                                   det_stoch <span class="op">=</span> <span class="st">"det"</span><span class="op">)</span></code></pre></div>
+<p>Once the list of <code>proto_ipm</code>’s is generated, you can either append your own IPMs to it, or you can go ahead to the next chunk. Note that <code>pdb_make_ipm</code> will almost always work, but there may still be bugs lurking!</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">ipm_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/pdb_make_ipm.html">pdb_make_ipm</a></span><span class="op">(</span><span class="va">proto_list</span><span class="op">)</span>
 
-<span class="no">use_db</span>       <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="no">pdb_ex</span>,
-                       <span class="kw">function</span>(<span class="no">x</span>, <span class="no">subset_ind</span>) <span class="no">x</span>[<span class="no">x</span>$<span class="no">ipm_id</span> <span class="kw">%in%</span> <span class="no">subset_ind</span>, ],
-                       <span class="kw">subset_ind</span> <span class="kw">=</span> <span class="no">subset_index</span>)
-
-<span class="co"># We can construct a single IPM at a time, or make a list of many IPMs</span>
-
-<span class="no">proto_list</span>   <span class="kw">&lt;-</span> <span class="fu"><a href="reference/pdb_make_proto_ipm.html">pdb_make_proto_ipm</a></span>(<span class="no">use_db</span>,
-                                   <span class="kw">ipm_id</span> <span class="kw">=</span> <span class="no">subset_index</span>[<span class="fl">1</span>],
-                                   <span class="kw">det_stoch</span> <span class="kw">=</span> <span class="st">"det"</span>)</pre></div>
-<p>Once the list of <code>proto_ipm</code>’s is generated, you can either append your own IPMs to it, or you can go ahead to the next chunk. Note that <code>pdb_make_ipm</code> is not yet implemented, and so the second option is the only one you can use to work with models. Unfortunately, this means you’re restricted to <code><a href="https://rdrr.io/pkg/ipmr/man/make_ipm.html">ipmr::make_ipm</a></code>’s default arguments for each type of model in Padrino. This will change via the <code>addl_args</code> argument in <code>pdb_make_ipm</code>.</p>
-<div class="sourceCode" id="cb4"><pre class="r">
-<span class="co"># pdb_make_ipm not yet implemented</span>
-
-<span class="no">ipm_list</span>     <span class="kw">&lt;-</span> <span class="fu"><a href="reference/pdb_make_ipm.html">pdb_make_ipm</a></span>(<span class="no">proto_list</span>)
-
-<span class="co"># If you're dying to try it out, you can call the following</span>
-
-<span class="no">ipm_list</span>     <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="no">proto_list</span>, <span class="kw pkg">ipmr</span><span class="kw ns">::</span><span class="no"><a href="https://rdrr.io/pkg/ipmr/man/make_ipm.html">make_ipm</a></span>)</pre></div>
+<span class="va">lams</span>     <span class="op">&lt;-</span> <span class="fu">lambda</span><span class="op">(</span><span class="va">ipm_list</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="finding-help" class="section level3">
 <h3 class="hasAnchor">
 <a href="#finding-help" class="anchor"></a>Finding help</h3>
-<p>The package is documented <a href="https://levisc8.github.io/RPadrino/">here</a> and the database is documented <a href="https://levisc8.github.io/Padrino.github.io/">here</a> (though the latter is very out of date).</p>
+<p>The package is documented <a href="https://levisc8.github.io/RPadrino/">here</a>.</p>
 </div>
 <div id="contributing" class="section level3">
 <h3 class="hasAnchor">
@@ -172,8 +160,8 @@
   <div class="dev-status">
 <h2>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://travis-ci.org/levisc8/RPadrino"><img src="https://travis-ci.org/levisc8/RPadrino.svg?branch=master" alt="Travis build status"></a></li>
-<li><a href="https://codecov.io/gh/levisc8/RPadrino?branch=master"><img src="https://codecov.io/gh/levisc8/RPadrino/branch/master/graph/badge.svg" alt="Codecov test coverage"></a></li>
+<li><a href="https://github.com/levisc8/RPadrino/actions"><img src="https://github.com/levisc8/RPadrino/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://codecov.io/gh/levisc8/RPadrino?branch=main"><img src="https://codecov.io/gh/levisc8/RPadrino/branch/main/graph/badge.svg" alt="Codecov test coverage"></a></li>
 </ul>
 </div>
 </div>
@@ -185,7 +173,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>
