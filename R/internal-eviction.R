@@ -1,6 +1,5 @@
 #' @noRd
 # Adds additional arguments to specified eviction correction functions.
-# Right now, only works with truncated_distributions. Need to add discrete_extrema
 
 .add_ev_args <- function(ev_fun, ev_target, dens_fun_exprs, state) {
 
@@ -19,7 +18,7 @@
 
 .add_trunc_dist_args <- function(dens_fun_expr, ev_target) {
 
-  dens_fun <- strsplit(dens_fun_expr, '=')[[1]][2] %>%
+  dens_fun <- strsplit(dens_fun_expr, ' = ')[[1]][2] %>%
     trimws() %>%
     rlang::parse_expr() %>%
     rlang::call_name() %>%

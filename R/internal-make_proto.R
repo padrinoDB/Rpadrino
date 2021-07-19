@@ -400,8 +400,17 @@
 
   current_args <- rlang::call_args(dens_call)
 
-  d_sv <- paste(sv_2, "_2", sep = "") %>%
-    rlang::parse_expr()
+  if("incr" %in% names(current_args) && isTRUE(current_args$incr)) {
+
+    d_sv <- paste(sv_2, "_2 - ", sv_2, "_1", sep = "")
+
+    current_args$incr <- NULL
+
+  } else {
+
+    d_sv <- paste(sv_2, "_2", sep = "")
+
+  }
 
   sub_call <- eval(fun_call, envir = .make_pdf_env())
 
