@@ -90,6 +90,33 @@ parameters.pdb_ipm <- function(object) {
 }
 
 #' @rdname padrino_accessors
+#' @export
+#' @importFrom ipmr parameters<-
+
+`parameters<-.pdb_proto_ipm` <- function(object, values) {
+
+  lapply(object, function(x, values) {
+    parameters(x) <- values
+    return(x)
+  },
+  values = values)
+
+}
+
+#' @rdname padrino_accessors
+#' @export
+
+`parameters<-.pdb_ipm` <- function(object, values) {
+
+  lapply(object, function(x, values) {
+    parameters(x) <- values
+    return(x)
+  },
+  values = values)
+
+}
+
+#' @rdname padrino_accessors
 #' @importFrom ipmr pop_state
 #' @export
 

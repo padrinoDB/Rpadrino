@@ -9,6 +9,8 @@
 \alias{domains.pdb_ipm}
 \alias{parameters.pdb_proto_ipm}
 \alias{parameters.pdb_ipm}
+\alias{parameters<-.pdb_proto_ipm}
+\alias{parameters<-.pdb_ipm}
 \alias{pop_state.pdb_proto_ipm}
 \alias{pop_state.pdb_ipm}
 \title{Accessor functions for (semi) built Padrino objects}
@@ -28,6 +30,10 @@
 \method{parameters}{pdb_proto_ipm}(object)
 
 \method{parameters}{pdb_ipm}(object)
+
+\method{parameters}{pdb_proto_ipm}(object, values) <- value
+
+\method{parameters}{pdb_ipm}(object, values) <- value
 
 \method{pop_state}{pdb_proto_ipm}(object)
 
