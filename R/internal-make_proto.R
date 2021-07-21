@@ -61,7 +61,7 @@
   if(!is.na(md_tab$remark)) {
 
     message("'ipm_id' ", id, " has the following notes that require your attention:\n",
-            .quote_marks(md_tab$remark))
+            .ipmr_strwrap(md_tab$remark, id))
 
   }
 
@@ -70,7 +70,7 @@
 
   kern_ids <- use_tabs$IpmKernels$kernel_id
 
-  if(any(sv_tab$discrete)) {
+  if(any(sv_tab$discrete) || nrow(sv_tab) > 1) {
 
     sim_gen <- "general"
 
@@ -250,9 +250,12 @@
   # These are the formal arguments provided to the R function
   arg_nms   <- call_info[-1]
 
-  fml_args <- c(n = 1, rlang::syms(names(data_list)))
-
-  names(fml_args) <- arg_nms
+  if(!rlang::is_empty(data_list)){
+    fml_args <- c(n = 1, rlang::syms(names(data_list)))
+  } else {
+    fml_args <- c(n = 1, rlang::syms(.args_from_txt(rlang::expr_text(ran_expr))))
+  }
+  names(fml_args) <- arg_nms[seq_along(fml_args)]
 
   .new_ran_call(ran_call, fml_args, out_nm, vals = data_list)
 
@@ -538,4 +541,17 @@
 
 .quote_marks <- function(x) {
   paste("'", x, "'", sep = "")
+}
+
+.ipmr_strwrap <- function(x, ipm_id) {
+
+  strwrap(
+    paste(ipm_id, ": ",
+          .quote_marks(x),
+          sep = ""),
+    prefix = "\n",
+    initial = "",
+    width = 85
+  )
+
 }

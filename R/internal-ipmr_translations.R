@@ -234,7 +234,7 @@
     stop("internal error - too many 'ipm_id's passed to .define_impl().")
   }
 
-  if(is.na(ir_tab$integration_rule[ir_tab$ipm_id == use_id])) {
+  if(any(is.na(ir_tab$integration_rule[ir_tab$ipm_id == use_id]))) {
     stop("No integration rule found for model: ", use_id,
          call. = FALSE)
   }
@@ -382,7 +382,7 @@
 
   env_funs <- list()
 
-  for(i in seq_along(ran_calls)) {
+  for(i in seq_len(nrow(ran_calls))) {
 
     expr_type <- ran_calls$model_type[i]
     env_var   <- ran_calls$env_variable[i]
