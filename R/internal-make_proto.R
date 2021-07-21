@@ -402,24 +402,28 @@
     rlang::parse_expr()
 
   current_args <- rlang::call_args(dens_call)
+  sub_call <- eval(fun_call, envir = .make_pdf_env())
 
-  if("incr" %in% names(current_args) && isTRUE(current_args$incr)) {
 
-    d_sv <- paste(sv_2, "_2 - ", sv_2, "_1", sep = "")
+  if("first_arg" %in% names(current_args) && isTRUE(current_args$first_arg)) {
 
-    current_args$incr <- NULL
+    # call_text <- rlang::expr_text(dens_call)
+    # d_sv      <- rlang::expr_text(rlang::call_args(dens_call)[[1]])
+
+    current_args$first_arg <- NULL
+
+    out <- paste(sub_call, "(",
+                 paste(current_args, collapse = ", "),
+                 ")", sep = "")
 
   } else {
 
     d_sv <- paste(sv_2, "_2", sep = "")
+    out <- paste(sub_call, "(", d_sv, ', ',
+                 paste(current_args, collapse = ", "),
+                 ")", sep = "")
 
   }
-
-  sub_call <- eval(fun_call, envir = .make_pdf_env())
-
-  out <- paste(sub_call, "(", d_sv, ', ',
-               paste(current_args, collapse = ", "),
-               ")", sep = "")
 
   return(out)
 
