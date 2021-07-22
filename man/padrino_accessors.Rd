@@ -31,9 +31,9 @@
 
 \method{parameters}{pdb_ipm}(object)
 
-\method{parameters}{pdb_proto_ipm}(object, values) <- value
+\method{parameters}{pdb_proto_ipm}(object) <- value
 
-\method{parameters}{pdb_ipm}(object, values) <- value
+\method{parameters}{pdb_ipm}(object) <- value
 
 \method{pop_state}{pdb_proto_ipm}(object)
 
@@ -42,6 +42,8 @@
 \arguments{
 \item{object}{An object produced by \code{pdb_make_proto_ipm} or
 \code{pdb_make_ipm}.}
+
+\item{value}{The value to insert}
 }
 \description{
 Padrino versions of \code{\link[ipmr]{accessors}}.

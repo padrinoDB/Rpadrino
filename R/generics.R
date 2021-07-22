@@ -90,29 +90,32 @@ parameters.pdb_ipm <- function(object) {
 }
 
 #' @rdname padrino_accessors
+#'
+#' @param value The value to insert. Should be a named list where the names
+#' correspond to parameter names and the entries are new parameter values.
 #' @export
 #' @importFrom ipmr parameters<-
 
-`parameters<-.pdb_proto_ipm` <- function(object, values) {
+`parameters<-.pdb_proto_ipm` <- function(object) {
 
-  lapply(object, function(x, values) {
-    parameters(x) <- values
+  lapply(object, function(x, value) {
+    parameters(x) <- value
     return(x)
   },
-  values = values)
+  value = value)
 
 }
 
 #' @rdname padrino_accessors
 #' @export
 
-`parameters<-.pdb_ipm` <- function(object, values) {
+`parameters<-.pdb_ipm` <- function(object, value) {
 
-  lapply(object, function(x, values) {
-    parameters(x) <- values
+  lapply(object, function(x, value) {
+    parameters(x) <- value
     return(x)
   },
-  values = values)
+  values = value)
 
 }
 
