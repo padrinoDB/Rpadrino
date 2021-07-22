@@ -96,7 +96,7 @@ parameters.pdb_ipm <- function(object) {
 #' @export
 #' @importFrom ipmr parameters<-
 
-`parameters<-.pdb_proto_ipm` <- function(object) {
+`parameters<-.pdb_proto_ipm` <- function(object, value) {
 
   lapply(object, function(x, value) {
     parameters(x) <- value

@@ -43,7 +43,8 @@
 \item{object}{An object produced by \code{pdb_make_proto_ipm} or
 \code{pdb_make_ipm}.}
 
-\item{value}{The value to insert}
+\item{value}{The value to insert. Should be a named list where the names
+correspond to parameter names and the entries are new parameter values.}
 }
 \description{
 Padrino versions of \code{\link[ipmr]{accessors}}.
