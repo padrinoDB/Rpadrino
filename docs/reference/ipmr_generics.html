@@ -130,10 +130,10 @@ some quantities of interest from <code>pdb_ipm</code>s.</p>
 <span class='fu'>lambda</span><span class='op'>(</span><span class='va'>ipm</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for pdb_ipm</span>
-<span class='fu'>right_ev</span><span class='op'>(</span><span class='va'>ipm</span>, iterations <span class='op'>=</span> <span class='fl'>100</span>, tolerance <span class='op'>=</span> <span class='fl'>100</span><span class='op'>)</span>
+<span class='fu'>right_ev</span><span class='op'>(</span><span class='va'>ipm</span>, iterations <span class='op'>=</span> <span class='fl'>100</span>, tolerance <span class='op'>=</span> <span class='fl'>100</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for pdb_ipm</span>
-<span class='fu'>left_ev</span><span class='op'>(</span><span class='va'>ipm</span>, iterations <span class='op'>=</span> <span class='fl'>100</span>, tolerance <span class='op'>=</span> <span class='fl'>100</span><span class='op'>)</span></pre>
+<span class='fu'>left_ev</span><span class='op'>(</span><span class='va'>ipm</span>, iterations <span class='op'>=</span> <span class='fl'>100</span>, tolerance <span class='op'>=</span> <span class='fl'>100</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -144,7 +144,8 @@ some quantities of interest from <code>pdb_ipm</code>s.</p>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>further arguments passed to <code><a href='https://levisc8.github.io/ipmr/reference/lambda.html'>lambda</a></code>.</p></td>
+      <td><p>further arguments passed to <code><a href='https://levisc8.github.io/ipmr/reference/lambda.html'>lambda</a></code>. Unused for
+<code>left_ev</code> and <code>right_ev</code> - only present for compatibility.</p></td>
     </tr>
     <tr>
       <th>iterations</th>
@@ -169,7 +170,7 @@ convergence. Default is 100.</p></td>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Levin Sam, Childs Dylan, Salguero-Gomez Roberto, Knight Tiffany.</p>
+  <p>Developed by <a href='https://github.com/levisc8'>Sam Levin</a>, Dylan Childs, Sanne Evers, Tomos Potter, Aldo Compagnoni, Roberto Salguero-Gomez, Tiffany Knight.</p>
 </div>
 
 <div class="pkgdown">

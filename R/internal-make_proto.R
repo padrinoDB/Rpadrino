@@ -360,32 +360,55 @@
 
 .make_pdf_env <- function() {
 
-  pdfs <- list(
-    Norm      = "stats::dnorm",
-    Lognorm   = "stats::dlnorm",
-    F_dist    = "stats::df",
-    Gamma     = "stats::dgamma",
-    T_dist    = "stats::dt",
-    Beta      = "stats::dbeta",
-    Chi       = "stats::dchisq",
-    Cauchy    = "stats::dcauchy",
-    Expo      = "stats::dexp",
-    Binom     = "stats::dbinom",
-    Bernoulli = "stats::dbinom",
-    Geom      = "stats::dgeom",
-    Hgeom     = "stats::dhyper",
-    Multinom  = "stats::dmultinom",
-    Negbin    = "stats::dnbinom",
-    Pois      = "stats::dpois",
-    Unif      = "stats::dunif",
-    Weib      = "stats::dweibull",
-    MVN       = "mvtnorm::dmvnorm"
+  args <- list(
+    Norm      = c("stats::dnorm","n", "mean", "sd"),
+    Lognorm   = c("stats::dlnorm","n", "meanlog", "sdlog"),
+    F_dist    = c("stats::df","n", "df1", "df2"),
+    Gamma     = c("stats::dgamma","n", "shape", "rate", "scale"),
+    T_dist    = c("stats::dt","n", "df", "ncp"),
+    Beta      = c("stats::dbeta","n", "shape1", "shape2", "ncp"),
+    Chi       = c("stats::dchisq","n", "df", "ncp"),
+    Cauchy    = c("stats::dcauchy","n", "location", "scale"),
+    Expo      = c("stats::dexp", "n","rate"),
+    Binom     = c("stats::dbinom", "n","size", "prob"),
+    Bernoulli = c("stats::dbinom", "n","size", "prob"),
+    Geom      = c("stats::dgeom", "n","prob"),
+    Hgeom     = c("stats::dhyper", "nn","m", "n", "k"),
+    Multinom  = c("stats::dmultinom","n", "size", "prob"),
+    Negbin    = c("stats::dnbinom", "n","size", "prob", "mu"),
+    Pois      = c("stats::dpois", "n","lambda"),
+    Weib      = c("stats::dweibull", "n","shape", "scale"),
+    MVN       = c("mvtnorm::dmvnorm", "n","mean", "sigma"),
+    Unif      = c("stats::dunif", "n","min", "max"),
 
+    # Truncated distributions - mostly for define_env_state
+
+    TNorm      = c("truncdist::dtrunc", "n", "mean", "sd", "a", "b"),
+    TLognorm   = c("truncdist::dtrunc", "n", "meanlog", "sdlog", "a", "b"),
+    TF_dist    = c("truncdist::dtrunc", "n", "df1", "df2", "a", "b"),
+    TGamma     = c("truncdist::dtrunc", "n", "shape", "rate", "scale", "a", "b"),
+    TT_dist    = c("truncdist::dtrunc", "n", "df", "ncp", "a", "b"),
+    TBeta      = c("truncdist::dtrunc", "n", "shape1", "shape2", "ncp", "a", "b"),
+    TChi       = c("truncdist::dtrunc", "n", "df", "ncp", "a", "b"),
+    TCauchy    = c("truncdist::dtrunc", "n", "location", "scale", "a", "b"),
+    TExpo      = c("truncdist::dtrunc", "n", "rate", "a", "b"),
+    TBinom     = c("truncdist::dtrunc", "n", "size", "prob", "a", "b"),
+    Ternoulli  = c("truncdist::dtrunc", "n", "size", "prob", "a", "b"),
+    TGeom      = c("truncdist::dtrunc", "n", "prob", "a", "b"),
+    THgeom     = c("truncdist::dtrunc", "n", "m", "n", "k", "a", "b"),
+    TMultinom  = c("truncdist::dtrunc", "n", "size", "prob", "a", "b"),
+    TNegbin    = c("truncdist::dtrunc", "n", "size", "prob", "mu", "a", "b"),
+    TPois      = c("truncdist::dtrunc", "n", "lambda", "a", "b"),
+    TWeib      = c("truncdist::dtrunc", "n", "shape", "scale", "a", "b"),
+    TMVN       = c("truncdist::dtrunc", "n", "mean", "sigma", "a", "b")
   )
 
-  pdf_env <- list2env(as.list(pdfs))
+  math_ops <- as.list(.math_ops()) %>%
+    setNames(.math_ops())
 
-  return(pdf_env)
+  args <- c(args, math_ops)
+
+  list2env(args)
 
 }
 
@@ -402,13 +425,41 @@
     rlang::parse_expr()
 
   current_args <- rlang::call_args(dens_call)
-  sub_call <- eval(fun_call, envir = .make_pdf_env())
+  current_nms  <- names(current_args)
+  arg_list <- eval(fun_call, envir = .make_pdf_env())
+  sub_call <- arg_list[1]
+  fml_args <- arg_list[-1]
 
+  # Some density functions have an order to their parameters that aren't
+  # conducive to how we parameterizer them in PADRINO (e.g.
+  # dnbinom(n, theta, *prob*, *mu*), where we want to parameterize via
+  # theta and mu only). Therefore, we have to name them in PADRINO, and then
+  # modify our call accordingly.
+
+  if(any(!current_nms %in% c("", "first_arg"))) {
+
+    ind <- !current_nms %in% c("", "first_arg")
+
+    xx  <- seq_along(current_args)
+
+    current_args <- lapply(xx,
+                           function(i, ind, cur_args, cur_nms) {
+
+                             if(!ind[i]) return(cur_args[[i]])
+
+                             temp <- rlang::expr_text(cur_args[[i]])
+                             temp <- paste(cur_nms[i], "=", temp)
+
+                             rlang::parse_expr(temp)
+
+                           },
+                           ind = ind,
+                           cur_args = current_args,
+                           cur_nms  = current_nms)
+
+  }
 
   if("first_arg" %in% names(current_args) && isTRUE(current_args$first_arg)) {
-
-    # call_text <- rlang::expr_text(dens_call)
-    # d_sv      <- rlang::expr_text(rlang::call_args(dens_call)[[1]])
 
     current_args$first_arg <- NULL
 
@@ -447,7 +498,7 @@
 
   if(ncol(lhs_rhs) > 1) {
 
-    rhs            <- rlang::parse_exprs(lhs_rhs[2, ]) %>%
+    rhs          <- rlang::parse_exprs(lhs_rhs[2, ]) %>%
       unlist()
 
   } else {

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Selected models from the Padrino Database — pdb • RPadrino</title>
+<title>Download PADRINO pdb objects — pdb_download • RPadrino</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Selected models from the Padrino Database — pdb" />
-<meta property="og:description" content="Selected models from the Padrino Database" />
+<meta property="og:title" content="Download PADRINO pdb objects — pdb_download" />
+<meta property="og:description" content="Download PADRINO from Github." />
 
 
 
@@ -115,22 +115,35 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Selected models from the Padrino Database</h1>
+    <h1>Download PADRINO <code>pdb</code> objects</h1>
     
-    <div class="hidden name"><code>pdb.Rd</code></div>
+    <div class="hidden name"><code>download.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Selected models from the Padrino Database</p>
+    <p>Download PADRINO from Github.</p>
     </div>
 
-    <pre class="usage"><span class='va'>pdb</span></pre>
+    <pre class="usage"><span class='fu'>pdb_download</span><span class='op'>(</span>save <span class='op'>=</span> <span class='cn'>TRUE</span>, destination <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>save</th>
+      <td><p>Write the PDB object to a folder of csv files?</p></td>
+    </tr>
+    <tr>
+      <th>destination</th>
+      <td><p>Where to write the <code>pdb</code> object to.</p></td>
+    </tr>
+    </table>
 
-    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>A list of data frames, each corresponding to a different table in the
-Padrino Database.</p>
+    <p>This does not currently support versioning because there is only
+one version. <code>destination</code> should be a folder name. When <code>save = TRUE</code>,
+a set of 12 csv files will be saved in the <code>destination</code> folder.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
