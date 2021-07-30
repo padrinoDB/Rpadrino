@@ -12,10 +12,24 @@ migrate it to a set of static, version-controlled tables that are hosted
 on Zenodo (or similar). For now, you can access it by installing the
 package, and running `data(pdb)`.
 
-The data included in this package are now quality checked and ready for
-use. A genuine, quality checked release will be tagged when it is
-actually ready to go. There are 332 unique IPMs for 30 unique species
-from 18 publications in the internally stored data set.
+The data included in this package are quality checked (see below) and
+ready for use. This is not the complete database - that can be
+downloaded using the `pdb_download` function. See the table below for
+information on the number of models in each.
+
+| Data Source           | \# of Species | \# of Publications | \# of IPM id’s |
+|:----------------------|--------------:|-------------------:|---------------:|
+| Internal Data         |            28 |                 18 |             67 |
+| Full PADRINO Database |            43 |                 32 |            254 |
+
+Above are the current number of unique species, unique publications, and
+unique `ipm_id`s that are in PADRINO and `RPadrino`’s internal dataset.
+These have been quality checked for accuracy. Quality checked means that
+for deterministic models, the asymptotic per-capita growth rate (*λ*) is
+within  ± 0.03 of the published point estimate value. For stochastic
+models, we check for approximately the same stochastic population growth
+rate (*λ*<sub>*s*</sub>), but do not try to replicate the analysis, as
+this usually requires too many computing resources to be feasible.
 
 ## Scope
 
@@ -40,12 +54,17 @@ remotes::install_github("levisc8/RPadrino")
 ### Usage
 
 A small-ish copy of the Padrino Database is included as a package data
-set. You can access it with the following code:
+set. You can download the full database as well. You can access it with
+the following code:
 
 ``` r
 library(RPadrino)
 
-data("pdb")
+data("pdb") # Internal copy, contains a subset of plant species in PADRINO
+
+# Downloads the complete database. The models contained in here have 
+# been tested for accuracy/reasonable results.  
+pdb <- pdb_download(save = FALSE) 
 ```
 
 The next step is to identify the models we are interested in building.

@@ -2,7 +2,8 @@
 output: github_document
 ---
 
-[![R-CMD-check](https://github.com/levisc8/RPadrino/workflows/R-CMD-check/badge.svg)](https://github.com/levisc8/RPadrino/actions) [![Codecov test coverage](https://codecov.io/gh/levisc8/RPadrino/branch/main/graph/badge.svg)](https://codecov.io/gh/levisc8/RPadrino?branch=main)
+[![R-CMD-check](https://github.com/levisc8/RPadrino/workflows/R-CMD-check/badge.svg)](https://github.com/levisc8/RPadrino/actions) 
+[![Codecov test coverage](https://codecov.io/gh/levisc8/RPadrino/branch/main/graph/badge.svg)](https://codecov.io/gh/levisc8/RPadrino?branch=main)
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
 knitr::opts_chunk$set(
@@ -11,20 +12,49 @@ knitr::opts_chunk$set(
   fig.path = "README-"
 )
 
-library(RPadrino)
-
-data(pdb)
-
-sum_tab <- c(length(unique(pdb$Metadata$species_accepted)), 
-             length(unique(pdb$Metadata$apa_citation)),
-             nrow(pdb$Metadata))
 ```
 
 ## RPadrino
 
 `RPadrino` is a package for interacting with the Padrino Integral Projection Model database. This database really only exists as an internal dataset in this package right now. The longer term plan is to migrate it to a set of static, version-controlled tables that are hosted on Zenodo (or similar). For now, you can access it by installing the package, and running `data(pdb)`.
 
-The data included in this package are now quality checked and ready for use. A genuine, quality checked release will be tagged when it is actually ready to go. There are `r sum_tab[3]` unique IPMs for `r sum_tab[1]` unique species from `r sum_tab[2]` publications in the internally stored data set.
+The data included in this package are quality checked (see below) and ready for use. This is not the complete database - that can be downloaded using the `pdb_download` function. See the table below for information on the number of models in each.
+
+```{r echo = FALSE, message = FALSE}
+
+library(RPadrino)
+
+data(pdb)
+
+sum_tab <- data.frame(
+  source = "Internal Data",
+  Number_of_Species      = length(unique(pdb$Metadata$species_accepted)), 
+  Number_of_Publications = length(unique(pdb$Metadata$apa_citation)),
+  Number_of_IPM_ids      = nrow(pdb$Metadata)
+)
+
+pdb <- pdb_download(save = FALSE)
+
+sum_tab_2 <-  data.frame(
+  source = "Full PADRINO Database",
+  Number_of_Species      = length(unique(pdb$Metadata$species_accepted)), 
+  Number_of_Publications = length(unique(pdb$Metadata$apa_citation)),
+  Number_of_IPM_ids      = nrow(pdb$Metadata)
+)
+
+full_tab <- rbind(sum_tab, sum_tab_2)
+names(full_tab) <- gsub("_", " ", names(full_tab))
+
+
+knitr::kable(
+  full_tab,
+  col.names = c("Data Source", "# of Species", "# of Publications", "# of IPM id's")
+)
+
+
+```
+
+Above are the current number of unique species, unique publications, and unique `ipm_id`s that are in PADRINO and `RPadrino`'s internal dataset. These have been quality checked for accuracy. Quality checked means that for deterministic models, the asymptotic per-capita growth rate ($\lambda$) is within $\pm 0.03$ of the published point estimate value. For stochastic models, we check for approximately the same stochastic population growth rate ($\lambda_s$), but do not try to replicate the analysis, as this usually requires too many computing resources to be feasible.  
 
 ## Scope
 
@@ -45,13 +75,17 @@ remotes::install_github("levisc8/RPadrino")
 
 ### Usage
 
-A small-ish copy of the Padrino Database is included as a package data set. You can access it with the following code:
+A small-ish copy of the Padrino Database is included as a package data set. You can download the full database as well. You can access it with the following code:
 
 ```{r eval = FALSE}
 
 library(RPadrino)
 
-data("pdb")
+data("pdb") # Internal copy, contains a subset of plant species in PADRINO
+
+# Downloads the complete database. The models contained in here have 
+# been tested for accuracy/reasonable results.  
+pdb <- pdb_download(save = FALSE) 
 
 ```
 
