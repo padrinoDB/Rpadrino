@@ -17,10 +17,12 @@ Depends:
   R (>= 3.2.0),
   ipmr (>= 0.0.3)
 Imports:
+  ggplot2,
   magrittr,
   mvtnorm,
   purrr,
   rlang (>= 0.3.0),
+  rmarkdown,
   truncdist,
   utils
 License: GPL-3
@@ -30,7 +32,6 @@ RoxygenNote: 7.1.1
 Suggests: 
     testthat,
     knitr,
-    rmarkdown,
     covr,
     roxygen2
 VignetteBuilder: knitr

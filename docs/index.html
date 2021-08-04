@@ -79,7 +79,7 @@
 <div id="rpadrino" class="section level2">
 <h2 class="hasAnchor">
 <a href="#rpadrino" class="anchor"></a>RPadrino</h2>
-<p><code>RPadrino</code> is a package for interacting with the Padrino Integral Projection Model database. This database really only exists as an internal dataset in this package right now. The longer term plan is to migrate it to a set of static, version-controlled tables that are hosted on Zenodo (or similar). For now, you can access it by installing the package, and running <code><a href="https://rdrr.io/r/utils/data.html">data(pdb)</a></code>.</p>
+<p><code>RPadrino</code> is a package for interacting with the PADRINO Integral Projection Model database. Currently, an alpha release of PADRINO exists as a set of version controlled csv files hosted in a GitHub repository. The longer term plan is to migrate it to a set of static, version-controlled tables that are hosted on Zenodo (or similar). For now, you can access it by installing the <code>RPadrino</code> <em>R</em> package from this repository (see below for instructions).</p>
 <p>The data included in this package are quality checked (see below) and ready for use. This is not the complete database - that can be downloaded using the <code>pdb_download</code> function. See the table below for information on the number of models in each.</p>
 <table class="table">
 <thead><tr class="header">
@@ -103,12 +103,38 @@
 </tr>
 </tbody>
 </table>
-<p>Above are the current number of unique species, unique publications, and unique <code>ipm_id</code>s that are in PADRINO and <code>RPadrino</code>’s internal dataset. These have been quality checked for accuracy. Quality checked means that for deterministic models, the asymptotic per-capita growth rate (<em>λ</em>) is within  ± 0.03 of the published point estimate value. For stochastic models, we check for approximately the same stochastic population growth rate (<em>λ</em><sub><em>s</em></sub>), but do not try to replicate the analysis, as this usually requires too many computing resources to be feasible.</p>
+<table class="table">
+<thead><tr class="header">
+<th align="left">Kingdom</th>
+<th align="right"># of Species</th>
+<th align="right"># of Publications</th>
+<th align="right"># of IPM id’s</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Animalia</td>
+<td align="right">9</td>
+<td align="right">9</td>
+<td align="right">15</td>
+</tr>
+<tr class="even">
+<td align="left">Plantae</td>
+<td align="right">34</td>
+<td align="right">23</td>
+<td align="right">239</td>
+</tr>
+</tbody>
+</table>
+<p>Above are the current number of unique species, unique publications, and unique <code>ipm_id</code>s that are in PADRINO and <code>RPadrino</code>’s internal dataset. Table 2 provides a breakdown of how these are distributed amongst taxonomic kingdoms in the <strong>full</strong> database (i.e. not the internal data set). All of the models included in both the internal data set and full database have been quality checked for accuracy. Quality checked means that for deterministic models, the asymptotic per-capita growth rate (<em>λ</em>) is within  ± 0.03 of the published point estimate value. For stochastic models, we check for approximately the same stochastic population growth rate (<em>λ</em><sub><em>s</em></sub>), but do not try to replicate the analysis, as this usually requires too many computing resources to be feasible.</p>
 </div>
 <div id="scope" class="section level2">
 <h2 class="hasAnchor">
 <a href="#scope" class="anchor"></a>Scope</h2>
-<p>The goal of this package is basic data management, exploration, and porting Padrino’s internal syntax to <a href="https://levisc8.github.io/ipmr/"><code>ipmr</code>’s</a> syntax. One can combine models from here with their own models for synthesis work, using the <code>proto_ipm</code> as a common data structure to power the analysis.</p>
+<p>The goal of this package is basic data management, exploration, and porting PADRINO’s internal syntax to <a href="https://levisc8.github.io/ipmr/"><code>ipmr</code>’s</a> syntax. One can combine models from here with their own models for synthesis work, using the <code>proto_ipm</code> as a common data structure to power the analysis.</p>
+</div>
+<div id="usage" class="section level2">
+<h2 class="hasAnchor">
+<a href="#usage" class="anchor"></a>Usage</h2>
 <div id="installation" class="section level3">
 <h3 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h3>
@@ -120,9 +146,9 @@
 
 <span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"levisc8/RPadrino"</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="usage" class="section level3">
+<div id="examples" class="section level3">
 <h3 class="hasAnchor">
-<a href="#usage" class="anchor"></a>Usage</h3>
+<a href="#examples" class="anchor"></a>Examples</h3>
 <p>A small-ish copy of the Padrino Database is included as a package data set. You can download the full database as well. You can access it with the following code:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">RPadrino</span><span class="op">)</span>
@@ -132,7 +158,7 @@
 <span class="co"># Downloads the complete database. The models contained in here have </span>
 <span class="co"># been tested for accuracy/reasonable results.  </span>
 <span class="va">pdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/pdb_download.html">pdb_download</a></span><span class="op">(</span>save <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> </code></pre></div>
-<p>The next step is to identify the models we are interested in building. At the moment, there is no functionality to do that - you’ll just have to explore the <em>Metadata</em> table on your own. There are accessor functions that allow you to extract metadata columns from the <code>pdb</code> object, which may be helpful. See <code><a href="reference/pdb_citation.html">?pdb_species_accepted</a></code> for a list of those.</p>
+<p>The next step is to identify the models we are interested in building. There are accessor functions that allow you to extract metadata columns from the <code>pdb</code> object, which may be helpful in this step. See <code><a href="reference/pdb_citations.html">?pdb_species_accepted</a></code> for a list of those.</p>
 <p>Once, we’ve identified the model(s) we want, we can build a list of <a href="https://levisc8.github.io/ipmr/articles/proto-ipms.html"><code>proto_ipm</code>’s</a>. This is an intermediate step between the database representation and a set of kernels. Once we have the list of <code>proto_ipm</code>’s, we can build an actual model. Below, we extract a specific study, and construct an IPM from the database object.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># We can construct a single IPM at a time, or make a list of many IPMs</span>
@@ -179,9 +205,9 @@
 <ul class="list-unstyled">
 <li>
 <a href="https://github.com/levisc8">Sam Levin</a> <br><small class="roles"> Author, maintainer </small>  </li>
-<li>Dylan Childs <br><small class="roles"> Author </small>  </li>
 <li>Sanne Evers <br><small class="roles"> Author </small>  </li>
 <li>Tomos Potter <br><small class="roles"> Author </small>  </li>
+<li>Dylan Childs <br><small class="roles"> Author </small>  </li>
 <li>Aldo Compagnoni <br><small class="roles"> Author </small>  </li>
 <li>Roberto Salguero-Gomez <br><small class="roles"> Author </small>  </li>
 <li>Tiffany Knight <br><small class="roles"> Author </small>  </li>
@@ -200,7 +226,7 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by <a href="https://github.com/levisc8">Sam Levin</a>, Dylan Childs, Sanne Evers, Tomos Potter, Aldo Compagnoni, Roberto Salguero-Gomez, Tiffany Knight.</p>
+  <p>Developed by <a href="https://github.com/levisc8">Sam Levin</a>, Sanne Evers, Tomos Potter, Dylan Childs, Aldo Compagnoni, Roberto Salguero-Gomez, Tiffany Knight.</p>
 </div>
 
 <div class="pkgdown">

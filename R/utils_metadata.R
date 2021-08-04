@@ -3,7 +3,9 @@
 #' @title Access pieces of metadata from a \code{pdb} object
 #'
 #' @description These functions access pieces of specific pieces metadata from
-#' the \code{Metadata} table of a \code{pdb} object.
+#' the \code{Metadata} table of a \code{pdb} object. The exception is
+#' \code{pdb_report}, which automatically generates a report with summary
+#' statistics and citation information for the \code{pdb} object.
 #'
 #' @param pdb A Padrino Database object.
 #' @param ipm_id The ID of the model. The default (\code{NULL}) returns all
@@ -13,7 +15,7 @@
 #'
 #' @export
 
-pdb_citation <- .make_pdb_accessor("apa_citation")
+pdb_citations <- .make_pdb_accessor("apa_citation")
 
 #' @export
 #' @rdname metadata_utils
@@ -200,3 +202,235 @@ pdb_has_time_lag <- .make_pdb_accessor("has_time_lag")
 
 pdb_has_age <- .make_pdb_accessor("has_age")
 
+
+#' @rdname metadata_utils
+#'
+#' @param keep_rmd Keep the un-rendered Rmd file? Useful for manual editing.
+#' @param rmd_dest The filepath to save the Rmd file at if \code{keep_rmd = TRUE}.
+#' The default is \code{tempfile()}.
+#' @param output_format The output format to create. Options are "html", "pdf",
+#' "word", "odt", "rtf", or "md".
+#' @param render_output A logical - should the document be rendered for inspection?
+#' @param map Create a map of studies included in the \code{pdb} object?
+#'
+#' @importFrom rmarkdown render
+#' @export
+
+pdb_report <- function(pdb,
+                       title = "",
+                       keep_rmd = TRUE,
+                       rmd_dest = NULL,
+                       output_format = "html",
+                       render_output = TRUE,
+                       map = TRUE) {
+
+  if(is.null(rmd_dest) && keep_rmd) {
+
+    rmd_dest <- tempfile(fileext = ".Rmd")
+
+    message("'keep_rmd = TRUE' and 'rmd_dest' is not specified! ",
+            "Saving to a temporary file: \n", rmd_dest)
+  }
+
+  output <- .pdb_rmd_header(title, output_format)
+
+  md       <- pdb$Metadata
+  ev       <- pdb$EnvironmentalVariables
+  par_sets <-pdb$HierarchTable
+
+  any_pi   <- nrow(par_sets) > 0
+  any_disc <- any(pdb$StateVariables$discrete | duplicated(pdb$StateVariables$ipm_id))
+  any_env  <- nrow(ev) > 0
+
+
+  output <- .pdb_rmd_summary_paragraph(md, output)
+
+  output <- .pdb_rmd_spec_info(output, any_pi, any_env, any_disc)
+
+  if(map) output <- .pdb_rmd_map(output, pdb)
+
+  output <- .pdb_rmd_citations(output, pdb)
+
+  sink(file = rmd_dest)
+
+    cat(output)
+
+  sink()
+
+  if(render_output) rmarkdown::render(rmd_dest)
+
+  if(!keep_rmd) unlink(rmd_dest)
+
+  invisible(pdb)
+
+}
+
+#' @importFrom ggplot2 ggplot geom_polygon geom_point theme_bw map_data aes xlab ylab
+#' @noRd
+
+.pdb_rmd_map <- function(output, pdb) {
+
+
+
+  mp_expr <- rlang::expr(
+    ggplot2::ggplot(data = wrld_map,
+                    ggplot2::aes(x = long, y = lat,
+                                 group = group)) +
+      ggplot2::geom_polygon(fill = NA, color = "grey70") +
+      ggplot2::geom_point(data = coords,
+                 ggplot2::aes(x = lon, y = lat,),
+                 inherit.aes = FALSE,
+                 color = "black",
+                 # shape = 1,
+                 size = 3) +
+      ggplot2::theme_bw() +
+      ggplot2::xlab("Longitude") +
+      ggplot2::ylab("Latitude")
+  )
+
+  mp_txt <- paste0("```{r echo = FALSE, message = FALSE}\n\n",
+                   'coords <- data.frame(lat = suppressWarnings(as.numeric(pdb$Metadata$lat)),
+                                         lon = suppressWarnings(as.numeric(pdb$Metadata$lon)))
+                    coords <- coords[complete.cases(coords), ]
+                    wrld_map <- ggplot2::map_data(map = "world")\n\n',
+                   rlang::expr_text(mp_expr),
+                   "\n\n```")
+
+  header <- "\n\n# Map of studies in this `pdb` object\n\n"
+
+  c(output, header, mp_txt)
+
+
+}
+
+#' @noRd
+
+.pdb_rmd_citations <- function(output, pdb) {
+
+  cit_list <- unique(pdb_citations(pdb))
+
+  cit_list <- paste(seq_along(cit_list), ". ", cit_list, sep = "")
+  cit_list <- paste(cit_list, collapse = "\n\n")
+
+  c(output, "\n\n# Citations included in the `pdb` object\n\n", cit_list)
+
+}
+
+#' @noRd
+
+.pdb_rmd_spec_info <- function(output, any_pi, any_env, any_disc) {
+
+  c(
+    output,
+    "\n\n# Information about your version\n\n",
+    paste0("**Contains models with parameter sets**: ", any_pi, "\n\n"),
+    paste0("**Contains models with continuous environmental variation**: ",
+           any_env,
+           "\n\n"),
+    paste0("**Contains general IPMs**: ", any_disc, "\n\n"),
+    .pdb_explain_par_sets(),
+    .pdb_explain_env_vars(),
+    .pdb_explain_general())
+
+}
+
+#' @noRd
+
+.pdb_explain_general <- function() {
+
+  header <- "**Explanation of general IPMs**: "
+
+  msg <- c(
+    "General IPMs are IPMs that contain multiple continuous and/or discrete states.",
+    " These usually don't take much longer to build, but there are some ",
+    "subsequent analyses which may require additional attention. This is why we",
+    " highlight these here.\n\n",
+    "For a more complete introduction to general IPMs, see [Ellner & Rees (2006)",
+    " Integral Projection Models for Species with Complex Demography. _Am Nat_",
+    " 167(3): 410-428.](https://doi.org/10.1086/499438), or Ellner, Childs & Rees",
+    " (2016) Data Driven Modelling of Structured Populations, Chapter 6.\n\n"
+
+  )
+
+  c(header, msg)
+}
+
+#' @noRd
+
+.pdb_explain_env_vars <- function() {
+
+  header <- "**Explanation of continuous environmental variation**: "
+
+  msg <- c(
+    "Continuous environmental variation is handled in PADRINO by sampling from",
+    " random number generators corresponding to the appropriate distribution for",
+    " as reported by the authors. Because these models all include calls to some",
+    " stochastic algorithm, they are always treated as stochastic models at build",
+    " time, regardlessof whether the authors intended for them to be. To circumvent ",
+    "this behavior, you can set the values of the continuouslly varying parameters",
+    " manually and run a deterministic projection using either _RPadrino_ or _ipmr_.\n\n",
+    "It is also worth noting that stochastic models with continuously varying",
+    " environments can take some time to run, due to extra steps of sampling the",
+    " environment and then reconstructing unique kernels for each iteration. Please",
+    " be patient with them!\n\n"
+  )
+
+  c(header, msg)
+}
+
+#' @noRd
+
+.pdb_explain_par_sets <- function() {
+
+  header <- "**Explanation of Parameter Sets**: "
+
+  msg <- c(
+    "This information is reported because models with many parameter sets may ",
+    "take longer to rebuild than one might otherwise expect from looking at the",
+    " model code. ",
+    "Parameter sets refer to situations where a single parameter (e.g. an ",
+    "intercept or slope from a regression model) may take on many values. This",
+    " is often the case with vital rate regressions fit with discrete predictors,",
+    " or with mixed effects models. Common examples include year or site specific",
+    " effects. PADRINO, along with 'ipmr', implements a syntax that allows us ",
+    "concisely represent these models without risking typographical errors or",
+    " retyping an expression many times. \n\n",
+    "For example, the expression `mu_g_yr = alpha_g_yr + beta_g * z_1` may encompass",
+    " many years, suffixed with `'_yr'`. In PADRINO, we store the actual values",
+    " `'_yr'` can take on in a table and automatically perform the substitutions.",
+    " Depending on the number of parameter set indices in the model, this may ",
+    "come at virtually no time cost, or it may substantially increase computation",
+    " times.\n\n")
+
+  c(header, msg)
+}
+
+#' @noRd
+
+.pdb_rmd_summary_paragraph <- function(md_tab, output) {
+
+  c(output,
+    "\n\n# Summary\n\n",
+    "This a PADRINO database object with ",
+    length(unique(md_tab$species_accepted)), " species from ",
+    length(unique(md_tab$apa_citation)), " publications. Please cite all",
+    " publications in either your main text or supplementary materials!",
+    "The citations are included in the 'Citations' section below.")
+
+}
+
+#' @noRd
+
+.pdb_rmd_header <- function(title, output_format) {
+
+  paste("---",
+        paste0("title: '", title, "'"),
+        paste0("output: ", output_format, "_document"),
+        paste0("date: '`r Sys.Date()`'"),
+        paste0("urlcolor: blue"),
+
+        # Other options need to be added here!
+
+        '---\n',
+        sep = "\n")
+}

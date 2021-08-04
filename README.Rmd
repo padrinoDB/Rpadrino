@@ -16,12 +16,12 @@ knitr::opts_chunk$set(
 
 ## RPadrino
 
-`RPadrino` is a package for interacting with the Padrino Integral Projection Model database. This database really only exists as an internal dataset in this package right now. The longer term plan is to migrate it to a set of static, version-controlled tables that are hosted on Zenodo (or similar). For now, you can access it by installing the package, and running `data(pdb)`.
+`RPadrino` is a package for interacting with the PADRINO Integral Projection Model database. Currently, an alpha release of PADRINO exists as a set of version controlled csv files hosted in a GitHub repository. The longer term plan is to migrate it to a set of static, version-controlled tables that are hosted on Zenodo (or similar). For now, you can access it by installing the `RPadrino` _R_ package from this repository (see below for instructions).
 
 The data included in this package are quality checked (see below) and ready for use. This is not the complete database - that can be downloaded using the `pdb_download` function. See the table below for information on the number of models in each.
 
 ```{r echo = FALSE, message = FALSE}
-
+library(dplyr)
 library(RPadrino)
 
 data(pdb)
@@ -51,14 +51,28 @@ knitr::kable(
   col.names = c("Data Source", "# of Species", "# of Publications", "# of IPM id's")
 )
 
+king_tab <- pdb$Metadata %>%
+  group_by(kingdom) %>% 
+  summarise(
+    Number_of_Species      = length(unique(species_accepted)), 
+    Number_of_Publications = length(unique(apa_citation)),
+    Number_of_IPM_ids      = n()
+  )
+
+knitr::kable(
+  king_tab,
+  col.names = c("Kingdom", "# of Species", "# of Publications", "# of IPM id's")
+)
 
 ```
 
-Above are the current number of unique species, unique publications, and unique `ipm_id`s that are in PADRINO and `RPadrino`'s internal dataset. These have been quality checked for accuracy. Quality checked means that for deterministic models, the asymptotic per-capita growth rate ($\lambda$) is within $\pm 0.03$ of the published point estimate value. For stochastic models, we check for approximately the same stochastic population growth rate ($\lambda_s$), but do not try to replicate the analysis, as this usually requires too many computing resources to be feasible.  
+Above are the current number of unique species, unique publications, and unique `ipm_id`s that are in PADRINO and `RPadrino`'s internal dataset. Table 2 provides a breakdown of how these are distributed amongst taxonomic kingdoms in the **full** database (i.e. not the internal data set). All of the models included in both the internal data set and full database have been quality checked for accuracy. Quality checked means that for deterministic models, the asymptotic per-capita growth rate ($\lambda$) is within $\pm 0.03$ of the published point estimate value. For stochastic models, we check for approximately the same stochastic population growth rate ($\lambda_s$), but do not try to replicate the analysis, as this usually requires too many computing resources to be feasible.  
 
 ## Scope
 
-The goal of this package is basic data management, exploration, and porting Padrino's internal syntax to [`ipmr`'s](https://levisc8.github.io/ipmr/) syntax. One can combine models from here with their own models for synthesis work, using the `proto_ipm` as a common data structure to power the analysis.
+The goal of this package is basic data management, exploration, and porting PADRINO's internal syntax to [`ipmr`'s](https://levisc8.github.io/ipmr/) syntax. One can combine models from here with their own models for synthesis work, using the `proto_ipm` as a common data structure to power the analysis.
+
+## Usage
 
 ### Installation
 
@@ -73,7 +87,7 @@ if(!requireNamespace("remotes", quietly = TRUE)) {
 remotes::install_github("levisc8/RPadrino")
 ```
 
-### Usage
+### Examples
 
 A small-ish copy of the Padrino Database is included as a package data set. You can download the full database as well. You can access it with the following code:
 
@@ -89,7 +103,7 @@ pdb <- pdb_download(save = FALSE)
 
 ```
 
-The next step is to identify the models we are interested in building. At the moment, there is no functionality to do that - you'll just have to explore the *Metadata* table on your own. There are accessor functions that allow you to extract metadata columns from the `pdb` object, which may be helpful. See `?pdb_species_accepted` for a list of those.
+The next step is to identify the models we are interested in building. There are accessor functions that allow you to extract metadata columns from the `pdb` object, which may be helpful in this step. See `?pdb_species_accepted` for a list of those.
 
 Once, we've identified the model(s) we want, we can build a list of [`proto_ipm`'s](https://levisc8.github.io/ipmr/articles/proto-ipms.html). This is an intermediate step between the database representation and a set of kernels. Once we have the list of `proto_ipm`'s, we can build an actual model. Below, we extract a specific study, and construct an IPM from the database object.
 
@@ -98,7 +112,7 @@ Once, we've identified the model(s) we want, we can build a list of [`proto_ipm`
 # We can construct a single IPM at a time, or make a list of many IPMs
 
 proto_list   <- pdb_make_proto_ipm(pdb, 
-                                   ipm_id = c("aaaa55", "aaa341", "aaa342"),
+                                   ipm_id = c("aaa310", "ddddd7", "aaaa17"),
                                    det_stoch = "det")
 
 ```

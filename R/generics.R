@@ -1,5 +1,50 @@
 # Generic functions
 
+#' @rdname print
+#' @title Print a \code{pdb} object.
+#'
+#' @param x A \code{pdb} object.
+#' @param ... ignored
+#' @export
+
+print.pdb <- function(x, ...) {
+
+  md <- x$Metadata
+
+  if(nrow(md) == 0) {
+
+    return("This 'pdb' object is empty!")
+
+  }
+
+  n_sp <- length(unique(md$species_accepted))
+  n_pu <- length(unique(md$apa_citation))
+  n_mo <- nrow(md)
+
+  msg <- c("A 'pdb' object with ", n_sp, " unique species, ", n_pu, " publications,",
+           " and ", n_mo, " models.\nPlease cite all publications used in an analysis!",
+           " These can be accessed with\n'pdb_citations()'.\n\n")
+
+  ev_tab <- x$EnvironmentalVariables
+
+  if(nrow(ev_tab) > 0 ) {
+
+    n_stoch <- length(unique(ev_tab$ipm_id))
+    ids     <- unique(ev_tab$ipm_id)
+
+    mods <- paste(ids, collapse = ", ")
+
+    msg <- c(msg,
+             "The following models have continuously varying environments: \n",
+             mods,
+             "\nThese can take longer to re-build - adjust your expectations accordingly!\n")
+
+  }
+
+  cat(msg, sep = "")
+  invisible(x)
+}
+
 #' @rdname padrino_accessors
 #'
 #' @title Accessor functions for (semi) built Padrino objects

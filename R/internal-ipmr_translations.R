@@ -165,7 +165,19 @@
 
     ev_fun <- md_tab$evict_type
 
-    if(ev_fun == "stretched_domain") {
+    if(is.na(md_tab$evict_kernels)) {
+
+      kerns <- FALSE
+
+    } else {
+
+      kerns <- strsplit(md_tab$evict_kernels, "; ") %>%
+        unlist() %>%
+        trimws()
+    }
+
+    if(ev_fun == "stretched_domain" ||
+       !kernel_id %in% kerns) {
 
       ev_call <- NULL
       ev_cor <- FALSE
@@ -189,6 +201,20 @@
                                 use_state)
 
       ev_call <- rlang::call2(ev_fun, !!! ev_target)
+
+      # discrete_extrema performs the integration internally, rather than
+      # letting it happen in the sub-kernel formula evaluation. So we have to remove
+      # that so that it isn't double integrated
+
+      if(ev_fun == "discrete_extrema") {
+
+        kern_txt <- rlang::expr_text(kern_form)
+        rm_dz <- paste("\\* d_", use_state, sep = "")
+        kern_txt <- gsub(rm_dz, "", kern_txt)
+
+        kern_form <- rlang::parse_expr(kern_txt)
+
+      }
 
     }
 

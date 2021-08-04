@@ -21,6 +21,11 @@
   # Split out individual tables
   md_tab <- use_tabs$Metadata
 
+  if(isTRUE(md_tab$is_periodic)) {
+    stop("Periodic models are not possible with Padrino yet. ipm_id: ", id,
+         call. = FALSE)
+  }
+
   # All state variables -> define_kernel(states = list(c(these)))
   sv_tab <- use_tabs$StateVariables
 

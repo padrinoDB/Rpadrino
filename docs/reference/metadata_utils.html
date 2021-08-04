@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Access pieces of metadata from a pdb object — pdb_citation • RPadrino</title>
+<title>Access pieces of metadata from a pdb object — pdb_citations • RPadrino</title>
 
 
 <!-- jquery -->
@@ -39,9 +39,11 @@
 
 
 
-<meta property="og:title" content="Access pieces of metadata from a pdb object — pdb_citation" />
+<meta property="og:title" content="Access pieces of metadata from a pdb object — pdb_citations" />
 <meta property="og:description" content="These functions access pieces of specific pieces metadata from
-the Metadata table of a pdb object." />
+the Metadata table of a pdb object. The exception is
+pdb_report, which automatically generates a report with summary
+statistics and citation information for the pdb object." />
 
 
 
@@ -123,10 +125,12 @@ the Metadata table of a pdb object." />
 
     <div class="ref-description">
     <p>These functions access pieces of specific pieces metadata from
-the <code>Metadata</code> table of a <code>pdb</code> object.</p>
+the <code>Metadata</code> table of a <code>pdb</code> object. The exception is
+<code>pdb_report</code>, which automatically generates a report with summary
+statistics and citation information for the <code>pdb</code> object.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>pdb_citation</span><span class='op'>(</span><span class='va'>pdb</span>, ipm_id <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
+    <pre class="usage"><span class='fu'>pdb_citations</span><span class='op'>(</span><span class='va'>pdb</span>, ipm_id <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
 
 <span class='fu'>pdb_species_accepted</span><span class='op'>(</span><span class='va'>pdb</span>, ipm_id <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
 
@@ -200,7 +204,17 @@ the <code>Metadata</code> table of a <code>pdb</code> object.</p>
 
 <span class='fu'>pdb_has_time_lag</span><span class='op'>(</span><span class='va'>pdb</span>, ipm_id <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
 
-<span class='fu'>pdb_has_age</span><span class='op'>(</span><span class='va'>pdb</span>, ipm_id <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
+<span class='fu'>pdb_has_age</span><span class='op'>(</span><span class='va'>pdb</span>, ipm_id <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
+
+<span class='fu'>pdb_report</span><span class='op'>(</span>
+  <span class='va'>pdb</span>,
+  title <span class='op'>=</span> <span class='st'>""</span>,
+  keep_rmd <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  rmd_dest <span class='op'>=</span> <span class='cn'>NULL</span>,
+  output_format <span class='op'>=</span> <span class='st'>"html"</span>,
+  render_output <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  map <span class='op'>=</span> <span class='cn'>TRUE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -213,6 +227,28 @@ the <code>Metadata</code> table of a <code>pdb</code> object.</p>
       <th>ipm_id</th>
       <td><p>The ID of the model. The default (<code>NULL</code>) returns all
 values in the <code>pdb</code> object.</p></td>
+    </tr>
+    <tr>
+      <th>keep_rmd</th>
+      <td><p>Keep the un-rendered Rmd file? Useful for manual editing.</p></td>
+    </tr>
+    <tr>
+      <th>rmd_dest</th>
+      <td><p>The filepath to save the Rmd file at if <code>keep_rmd = TRUE</code>.
+The default is <code><a href='https://rdrr.io/r/base/tempfile.html'>tempfile()</a></code>.</p></td>
+    </tr>
+    <tr>
+      <th>output_format</th>
+      <td><p>The output format to create. Options are "html", "pdf",
+"word", "odt", "rtf", or "md".</p></td>
+    </tr>
+    <tr>
+      <th>render_output</th>
+      <td><p>A logical - should the document be rendered for inspection?</p></td>
+    </tr>
+    <tr>
+      <th>map</th>
+      <td><p>Create a map of studies included in the <code>pdb</code> object?</p></td>
     </tr>
     </table>
 
@@ -231,7 +267,7 @@ values in the <code>pdb</code> object.</p></td>
 
       <footer>
       <div class="copyright">
-  <p>Developed by <a href='https://github.com/levisc8'>Sam Levin</a>, Dylan Childs, Sanne Evers, Tomos Potter, Aldo Compagnoni, Roberto Salguero-Gomez, Tiffany Knight.</p>
+  <p>Developed by <a href='https://github.com/levisc8'>Sam Levin</a>, Sanne Evers, Tomos Potter, Dylan Childs, Aldo Compagnoni, Roberto Salguero-Gomez, Tiffany Knight.</p>
 </div>
 
 <div class="pkgdown">
