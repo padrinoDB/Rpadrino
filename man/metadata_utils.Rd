@@ -134,6 +134,8 @@ pdb_report(
 \item{ipm_id}{The ID of the model. The default (\code{NULL}) returns all
 values in the \code{pdb} object.}
 
+\item{title}{The title for the created report.}
+
 \item{keep_rmd}{Keep the un-rendered Rmd file? Useful for manual editing.}
 
 \item{rmd_dest}{The filepath to save the Rmd file at if \code{keep_rmd = TRUE}.

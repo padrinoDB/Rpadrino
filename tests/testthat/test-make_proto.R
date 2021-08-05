@@ -29,7 +29,7 @@ test_that("ipmr recognizes outputs from pdb_make_proto", {
 
 # pdb$Metadata$evict_type[pdb$Metadata$ipm_id == 'aaa341'] <- 'truncated_distributions'
 
-id <- c("aaa341", "aaaa55")
+id <- c("aaa310", "aaaa55")
 
 proto_2 <- pdb_make_proto_ipm(pdb, ipm_id = id, det_stoch = c("det", "det"))
 
@@ -42,7 +42,7 @@ test_that("building multiple protos works", {
   expect_equal(as.vector(cls[1, ]),
                c("general_di_det_ipm", "simple_di_det_ipm"))
 
-  expect_equal(names(x_2), c("aaaa55", "aaa341"))
+  expect_equal(names(x_2), c("aaaa55", "aaa310"))
 
 })
 

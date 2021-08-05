@@ -1,17 +1,15 @@
-context("pdb_subset")
-
 
 data(pdb)
 
 test_that("pdb_subset works", {
 
-  sub_ind <- paste("aaa", 337:341, sep = "")
+  sub_ind <- paste("aaaa",15:20 , sep = "")
 
   sub_db <- pdb_subset(pdb, sub_ind)
 
   expect_s3_class(sub_db, "pdb")
 
-  expect_equal(dim(sub_db$Metadata)[1], 3L)
+  expect_equal(dim(sub_db$Metadata)[1], 6L)
 
 
   sub_ind <- "xyz"

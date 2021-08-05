@@ -205,6 +205,7 @@ pdb_has_age <- .make_pdb_accessor("has_age")
 
 #' @rdname metadata_utils
 #'
+#' @param title The title for the created report.
 #' @param keep_rmd Keep the un-rendered Rmd file? Useful for manual editing.
 #' @param rmd_dest The filepath to save the Rmd file at if \code{keep_rmd = TRUE}.
 #' The default is \code{tempfile()}.
@@ -434,3 +435,8 @@ pdb_report <- function(pdb,
         '---\n',
         sep = "\n")
 }
+
+#' @importFrom utils globalVariables
+#'
+utils::globalVariables(c("wrld_map",
+                         "long", "lat", "group", "coords", "lon"))

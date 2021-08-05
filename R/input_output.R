@@ -98,9 +98,9 @@ pdb_save <- function(pdb, destination = NULL) {
   destination <- paste(destination, tab_nms, ".csv", sep = "")
 
 
-  for(i in seq_along(out)) {
+  for(i in seq_along(pdb)) {
 
-    utils::write.csv(out[[i]],
+    utils::write.csv(pdb[[i]],
                      file = destination[i],
                      quote = FALSE,
                      na = "",
@@ -139,7 +139,7 @@ pdb_load <- function(path) {
 
   pdb <- list()
 
-  for(i in seq_along(out)) {
+  for(i in seq_along(tab_nms)) {
 
     pdb[[i]] <- utils::read.csv(file = path[i],
                                 stringsAsFactors = FALSE)
