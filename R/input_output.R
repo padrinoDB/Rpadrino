@@ -1,4 +1,4 @@
-#' @rdname download
+#' @rdname in_out
 #' @title Download PADRINO \code{pdb} objects
 #'
 #' @description Download PADRINO from Github.
@@ -42,8 +42,6 @@ pdb_download <- function(save = TRUE, destination = NULL) {
     tab_nms,
     ".csv", sep = "")
 
-  destination <- paste(destination, tab_nms, ".csv", sep = "")
-
   out <- list()
 
   for(i in seq_along(urls)) {
@@ -55,6 +53,8 @@ pdb_download <- function(save = TRUE, destination = NULL) {
   }
 
   if(save) {
+
+    destination <- paste(destination, tab_nms, ".csv", sep = "")
 
     for(i in seq_along(out)) {
 
@@ -68,6 +68,87 @@ pdb_download <- function(save = TRUE, destination = NULL) {
 
   }
 
+  class(out) <- c("pdb", "list")
+
   return(out)
 
+}
+
+#' @rdname in_out
+#'
+#' @param pdb A \code{pdb} object.
+#' @export
+
+pdb_save <- function(pdb, destination = NULL) {
+
+  if(!is.null(destination)) {
+
+    if(substr(destination,
+              start = nchar(destination),
+              stop = nchar(destination)) != "/") {
+
+      destination <- paste(destination, "/", sep = "")
+
+    }
+
+  }
+
+  tab_nms     <- names(pdb)
+
+  destination <- paste(destination, tab_nms, ".csv", sep = "")
+
+
+  for(i in seq_along(out)) {
+
+    utils::write.csv(out[[i]],
+                     file = destination[i],
+                     quote = FALSE,
+                     na = "",
+                     row.names = FALSE)
+
+  }
+
+  invisible(pdb)
+}
+
+
+#' @rdname in_out
+#' @param path The directory where the PADRINO tables are stored
+#' @export
+
+pdb_load <- function(path) {
+
+  if(!is.null(path)) {
+
+    if(substr(path,
+              start = nchar(path),
+              stop = nchar(path)) != "/") {
+
+      path <- paste(path, "/", sep = "")
+
+    }
+
+  }
+
+  tab_nms <- c("Metadata", "StateVariables", "DiscreteStates", "ContinuousDomains",
+               "IntegrationRules", "StateVectors", "IpmKernels", "VitalRateExpr",
+               "ParameterValues", "EnvironmentalVariables", "HierarchTable",
+               "UncertaintyTable")
+
+  path    <- paste(path, tab_nms, ".csv", sep = "")
+
+  pdb <- list()
+
+  for(i in seq_along(out)) {
+
+    pdb[[i]] <- utils::read.csv(file = path[i],
+                                stringsAsFactors = FALSE)
+
+  }
+
+  names(pdb) <- tab_nms
+
+  class(pdb) <- c("pdb", "list")
+
+  return(pdb)
 }

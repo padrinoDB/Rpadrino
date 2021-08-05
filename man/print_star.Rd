@@ -2,9 +2,12 @@
 % Please edit documentation in R/generics.R
 \name{print.pdb}
 \alias{print.pdb}
+\alias{print.pdb_proto_ipm_list}
 \title{Print a \code{pdb} object.}
 \usage{
 \method{print}{pdb}(x, ...)
+
+\method{print}{pdb_proto_ipm_list}(x, ...)
 }
 \arguments{
 \item{x}{A \code{pdb} object.}

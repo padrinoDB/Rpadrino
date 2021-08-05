@@ -1,6 +1,6 @@
 # Generic functions
 
-#' @rdname print
+#' @rdname print_star
 #' @title Print a \code{pdb} object.
 #'
 #' @param x A \code{pdb} object.
@@ -43,6 +43,22 @@ print.pdb <- function(x, ...) {
 
   cat(msg, sep = "")
   invisible(x)
+}
+
+#' @rdname print_star
+#' @export
+
+print.pdb_proto_ipm_list <- function(x, ...) {
+
+  spps <- vapply(x, function(x) attr(x, "species_accepted"), character(1L)) %>%
+    gsub(pattern = "_", replacement = " ", x = .)
+
+  cat("This list of 'proto_ipm's contains the following species: ", spps, sep = "\n")
+
+  cat("\nYou can inspect each model by printing it individually.")
+
+  invisible(x)
+
 }
 
 #' @rdname padrino_accessors

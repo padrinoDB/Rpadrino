@@ -97,13 +97,15 @@ pdb_make_proto_ipm <- function(pdb,
                                  kern_param[i],
                                  stop_on_failure)
 
+    attr(out[[i]], "species_accepted") <- pdb$Metadata$species_accepted[i]
+
     names(out)[i] <- unique_ids[i]
 
     out[[i]]$id   <- unique_ids[i]
 
   }
 
-  class(out) <- c("pdb_proto_ipm", "list")
+  class(out) <- c("pdb_proto_ipm_list", "list")
 
   return(out)
 
