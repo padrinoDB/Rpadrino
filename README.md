@@ -21,12 +21,12 @@ information on the number of models in each.
 | Data Source           | \# of Species | \# of Publications | \# of IPM id’s |
 |:----------------------|--------------:|-------------------:|---------------:|
 | Internal Data         |            28 |                 18 |             67 |
-| Full PADRINO Database |            43 |                 32 |            254 |
+| Full PADRINO Database |            41 |                 32 |            250 |
 
 | Kingdom  | \# of Species | \# of Publications | \# of IPM id’s |
 |:---------|--------------:|-------------------:|---------------:|
 | Animalia |             9 |                  9 |             15 |
-| Plantae  |            34 |                 23 |            239 |
+| Plantae  |            32 |                 23 |            235 |
 
 Above are the current number of unique species, unique publications, and
 unique `ipm_id`s that are in PADRINO and `RPadrino`’s internal dataset.
@@ -95,7 +95,7 @@ from the database object.
 # We can construct a single IPM at a time, or make a list of many IPMs
 
 proto_list   <- pdb_make_proto_ipm(pdb, 
-                                   ipm_id = c("aaaa55", "aaa341", "aaa342"),
+                                   ipm_id = c("aaa310", "ddddd7", "aaaa17"),
                                    det_stoch = "det")
 ```
 
