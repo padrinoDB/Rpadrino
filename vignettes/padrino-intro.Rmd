@@ -10,4 +10,83 @@ vignette: >
 
 # Package Overview
 
-WIP
+_RPadrino_ provides an interface to the PADRINO database. PADRINO houses metadata on published Integral Projection Models, and all the information needed to rebuild them. _RPadrino_ provides a set of functions that wrap around [ipmr](https://levisc8.github.io/ipmr/) so that you can rebuild these models using _R_. Additionally, there's some data downloading and management functionality, as well as tools to help report and cite studies used in an analysis.
+
+# Usage
+
+Below are some very brief examples of how to select data based on the Metadata table, rebuild those models, and conduct an analysis. The first step for any of this is to access PADRINO. For first time users, this will always mean downloading it. For returning users, you may save and re-load PADRINO, but this example will not make use of the saving/loading functionality provided in `pdb_load()` and `pdb_save()`. 
+
+```{r message = FALSE}
+
+library(RPadrino)
+
+pdb <- pdb_download(save = FALSE)
+
+
+```
+
+We've now downloaded the PADRINO database. It consists of 10-12 tables, all linked by `ipm_id`. 
+
+>NB: Right now, all of _RPadrino_'s functionality depends on these tables remaining in the order they're downloaded/re-loaded in. Therefore, do not try to re-arrange the `pdb` object (e.g. change the order of the tables in the list). You can sort individual tables in any way you like, but altering the order in which they appear in the list will break pretty much everything. 
+
+We can get a brief overview of the information using the `print` method:
+
+```{r}
+
+pdb
+
+```
+
+
+We see that some of the IPMs have continuously varying environments - we don't want to use those for now because they take a while to run. We can use the `pdb_subset()` function to get only deterministic models. Because of the way PADRINO is structured, `pdb_subset()` only accepts a set of `ipm_id`'s that we want to **keep** (as opposed to other subset functions, which may accept some arbitrary logic). Thus, we need to create an index of those, which we can pass to `pdb_subset()` like so: 
+
+```{r}
+sub_ind <- setdiff(pdb$Metadata$ipm_id, 
+                   c("aaaa15", "aaaa16", "aaaa21", "aaaa54", "aaaa59"))
+
+det_pdb <- pdb_subset(pdb, ipm_ids = sub_ind)
+
+```
+
+Great! Say we want to find all the _Asteraceae_ in PADRINO. We can first check and see which `ipm_id`s correspond to those by querying the `tax_family` column of `pdb$Metadata`.
+
+```{r}
+
+aster_ind <- det_pdb$Metadata$ipm_id[det_pdb$Metadata$tax_family == "Asteraceae"]
+
+aster_pdb <- pdb_subset(pdb, ipm_ids = aster_ind)
+
+```
+
+Next, we can rebuild their IPMs. This is a two step process in _RPadrino_. The first is to create `proto_ipm`s with `pdb_make_proto_ipm()`. This function takes a database object and, optionally, a subset of `ipm_id`s, and constructs a list of `proto_ipm`s. `proto_ipm`s are a common data structure used to represent IPM objects before they are actually constructed. One advantage of this extra step is that you can combine `proto_ipm`s generated from your own data with `ipmr` with `proto_ipm`s generated from PADRINO, so you can augment syntheses with your own data. An example of that is provided further down. 
+
+The simplest way to make `proto_ipm`s for a whole `pdb` object is:
+
+```{r}
+
+proto_list <- pdb_make_proto_ipm(aster_pdb)
+
+```
+
+We see that there are some notes that require our attention. The first tells us that this IPM is using data from another publication. The second warns us that GPS coordinates aren't exact, so we should be cautious if we wanted to merge the outputs from this analysis with other spatially referenced datasets (e.g. gridded climate data). We can inspect the IPM structure by printing each `proto_ipm` object:
+
+```{r}
+
+proto_list 
+
+```
+
+Next, we can reconstruct the IPMs using `pdb_make_ipm()`. There are a variety of different options we can specify here, and we'll get into how that works in the next example. 
+
+```{r}
+
+cirsiums <- pdb_make_ipm(proto_list)
+
+lambdas  <- lambda(cirsiums)
+
+cirsiums
+```
+
+We've rebuilt our first set of IPMs! Next, we'll explore how to extract a bit more information from these.
+
+# More complicated analyses
