@@ -38,6 +38,7 @@ jobs:
         run: |
           install.packages(c("remotes"))
           remotes::install_deps(dependencies = TRUE)
+          remotes::install_github('levisc8/ipmr', force = TRUE)
           remotes::install_cran("covr")
         shell: Rscript {0}
 
