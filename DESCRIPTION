@@ -14,8 +14,8 @@ Description: PADRINO houses textual representations of
     table format into full kernels to reproduce or extend an 
     already published analysis. RPadrino is an R interface to this database. 
 Depends: 
-  R (>= 3.2.0),
-  ipmr (>= 0.0.3)
+  R (>= 3.3.0),
+  ipmr 
 Imports:
   ggplot2,
   magrittr,
@@ -34,6 +34,7 @@ Suggests:
     knitr,
     covr,
     roxygen2
+Remotes: levisc8/ipmr
 VignetteBuilder: knitr
 Config/testthat/parallel: true
 Config/testthat/edition: 3
