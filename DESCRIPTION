@@ -36,5 +36,6 @@ Suggests:
     covr,
     roxygen2
 VignetteBuilder: knitr
+Remotes: levisc8/ipmr
 Config/testthat/parallel: true
 Config/testthat/edition: 3
