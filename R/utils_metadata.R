@@ -436,7 +436,3 @@ pdb_report <- function(pdb,
         sep = "\n")
 }
 
-#' @importFrom utils globalVariables
-#'
-utils::globalVariables(c("wrld_map",
-                         "long", "lat", "group", "coords", "lon"))

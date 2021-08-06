@@ -37,7 +37,9 @@
 
 #' @importFrom utils globalVariables
 
-utils::globalVariables(c("."), add = FALSE)
+utils::globalVariables(c(".",
+                         "wrld_map",  "long", "lat",
+                         "group", "coords", "lon"), add = FALSE)
 
 #' @importFrom utils getFromNamespace
 #' @importFrom purrr flatten
