@@ -74,7 +74,7 @@ print.pdb_proto_ipm_list <- function(x, ...) {
 #' @export
 
 
-vital_rate_exprs.pdb_proto_ipm <- function(object) {
+vital_rate_exprs.pdb_proto_ipm_list <- function(object) {
 
   lapply(object, ipmr::vital_rate_exprs)
 
@@ -94,7 +94,7 @@ vital_rate_exprs.pdb_ipm <- function(object) {
 #' @importFrom ipmr kernel_formulae
 #' @export
 
-kernel_formulae.pdb_proto_ipm <- function(object) {
+kernel_formulae.pdb_proto_ipm_list <- function(object) {
 
   lapply(object, ipmr::kernel_formulae)
 
@@ -115,7 +115,7 @@ kernel_formulae.pdb_ipm <- function(object) {
 #' @export
 #' @importFrom ipmr domains
 
-domains.pdb_proto_ipm <- function(object) {
+domains.pdb_proto_ipm_list <- function(object) {
 
   lapply(object, ipmr::domains)
 
@@ -135,7 +135,7 @@ domains.pdb_ipm <- function(object) {
 #' @importFrom ipmr parameters
 #' @export
 
-parameters.pdb_proto_ipm <- function(object) {
+parameters.pdb_proto_ipm_list <- function(object) {
 
   lapply(object, ipmr::parameters)
 
@@ -157,7 +157,7 @@ parameters.pdb_ipm <- function(object) {
 #' @export
 #' @importFrom ipmr parameters<-
 
-`parameters<-.pdb_proto_ipm` <- function(object, value) {
+`parameters<-.pdb_proto_ipm_list` <- function(object, value) {
 
   lapply(object, function(x, value) {
     parameters(x) <- value
@@ -184,7 +184,7 @@ parameters.pdb_ipm <- function(object) {
 #' @importFrom ipmr pop_state
 #' @export
 
-pop_state.pdb_proto_ipm <- function(object) {
+pop_state.pdb_proto_ipm_list <- function(object) {
 
   lapply(object, ipmr::pop_state)
 

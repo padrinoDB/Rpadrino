@@ -29,6 +29,13 @@ test_that("pdb_make_ipm is doing what it should do" ,{
   expect_s3_class(ipms$aaaa18, "general_di_det_ipm")
 
 
+  ev_ind <- which(pdb$Metadata$eviction_used)
+
+  ipm <- pdb_make_proto_ipm(pdb, "aaaa34") %>%
+    pdb_make_ipm()
+
+  expect_s3_class(ipm$aaaa34, "simple_di_det_ipm")
+  expect_equal(round(lambda(ipm)[[1]], 2), 0.86, ignore_attr = TRUE)
 
 })
 

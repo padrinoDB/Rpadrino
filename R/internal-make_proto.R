@@ -180,55 +180,6 @@
 }
 
 #' @noRd
-# removes bracket notation to create an expression that can actually be evaluated
-
-.prep_exprs <- function(form) {
-
-  out <- .rm_brackets(form) %>%
-    unlist() %>%
-    rlang::parse_expr()
-
-  return(out)
-
-}
-
-#' @noRd
-#' @importFrom rlang new_function pairlist2 :=
-
-.prep_sample_fun <- function(data_list, out_nm, call_info) {
-
-  # Get the string form of the function call. Since sample is a special case,
-  # this is always just going to be "sample"
-
-  call_str <- call_info[1]
-
-  # Sample size should always be 1, and x corresponds to the first argument
-  # to sample. This function gets called every model iteration, so no need
-  # to pre-generate a vector of selected values.
-
-  args     <- list(x    = eval(parse(text = data_list)),
-                   size = 1)
-
-  body     <- rlang::call2(rlang::parse_expr(call_str), !!! args)
-
-  # fun_1 is the actual expression we want to evaluate. it generates a value
-  # from the expression stored in the database.
-
-  fun_1    <- rlang::new_function(args = rlang::pairlist2(... = ),
-                                  body = body)
-
-  # Next, we need to wrap this expression so that the returned value is in a list
-  # and its name corresponds to that which is used in the VitalRateExpr
-
-  out_fun  <- rlang::new_function(args = rlang::pairlist2(nm = out_nm,
-                                                          f = fun_1),
-                                  body = quote(rlang::list2(!!nm := f())))
-
-  return(out_fun)
-
-}
-
-#' @noRd
 .new_env_fun <- function(env_expr, out_nm, temp_dl, expr_type) {
 
 
@@ -527,43 +478,6 @@
 
 }
 
-
-#' @noRd
-# Appends par_sets suffixes to pop_state vars in iteration_procedure calls when
-# the model is deterministic. This needs to happen because otherwise, ipmr::make_ipm
-# will not be able to generate deterministic simulations for each level of the grouping
-# variable, which is probably what the user wants if they select a model with
-# par_sets and specify the deterministic format.
-
-.append_pop_state_suffixes <- function(textprs, ps_tab, he_tab, det_stoch) {
-
-  # if it's a stochastic model, then the suffix-less format is correct. If
-  # there are no par_sets, then there are no suffixes to append. In either or
-  # both cases, return early and skip the rest.
-
-  if(det_stoch == "stoch" || dim(he_tab)[1] == 0) return(textprs)
-
-  # Now, generate the base suffix. This is just the combination of the different
-  # grouping variable names collapsed into a single string. Next, append those
-  # to the various population states.
-
-  base_suff   <- paste(he_tab$vr_expr_name, collapse = "_")
-  for_replace <- paste(ps_tab$expression, base_suff, sep = "_")
-
-  # We are now ready to substitute. Going with fuzzy matching gsub for now
-  # but this could come back and bite me if it turns out some var names match
-  # each other somehow (e.g. something like n_b -> n_b_yr and n_b1 -> n_b_yr1)
-
-  for(i in seq_along(for_replace)) {
-
-    textprs <- gsub(ps_tab$expression[i], for_replace[i], textprs)
-
-  }
-
-  return(textprs)
-
-}
-
 #' @noRd
 
 .rm_dz_simple_ipm <- function(ik_tab, cd_tab) {
@@ -591,17 +505,11 @@
 
 #' @noRd
 
-.can_be_number <- function(x) {
-
-  out <- suppressWarnings(is.na(as.numeric(x)))
-
-  return(!out)
-
-}
-
 .quote_marks <- function(x) {
   paste("'", x, "'", sep = "")
 }
+
+#' @noRd
 
 .ipmr_strwrap <- function(x, ipm_id) {
 
