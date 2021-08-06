@@ -167,7 +167,7 @@
 
     if(is.na(md_tab$evict_kernels)) {
 
-      kerns <- FALSE
+      kerns <- unique(ik_tab$kernel_id)
 
     } else {
 
