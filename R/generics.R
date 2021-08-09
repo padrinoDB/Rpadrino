@@ -238,7 +238,7 @@ lambda.pdb_ipm <- function(ipm, ...) {
 #' @importFrom ipmr right_ev left_ev
 #' @export
 
-right_ev.pdb_ipm <- function(ipm, iterations = 100, tolerance = 100, ...) {
+right_ev.pdb_ipm <- function(ipm, iterations = 100, tolerance = 1e-10, ...) {
 
   lapply(ipm,
          function(x, iterations, tolerance) {
@@ -252,7 +252,7 @@ right_ev.pdb_ipm <- function(ipm, iterations = 100, tolerance = 100, ...) {
 #' @rdname ipmr_generics
 #' @export
 
-left_ev.pdb_ipm <- function(ipm, iterations = 100, tolerance = 100, ...) {
+left_ev.pdb_ipm <- function(ipm, iterations = 100, tolerance = 1e-10, ...) {
 
   lapply(ipm,
          function(x, iterations, tolerance) {
