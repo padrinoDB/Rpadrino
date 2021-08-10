@@ -8,9 +8,9 @@
 \usage{
 \method{lambda}{pdb_ipm}(ipm, ...)
 
-\method{right_ev}{pdb_ipm}(ipm, iterations = 100, tolerance = 100, ...)
+\method{right_ev}{pdb_ipm}(ipm, iterations = 100, tolerance = 1e-10, ...)
 
-\method{left_ev}{pdb_ipm}(ipm, iterations = 100, tolerance = 100, ...)
+\method{left_ev}{pdb_ipm}(ipm, iterations = 100, tolerance = 1e-10, ...)
 }
 \arguments{
 \item{ipm}{A \code{pdb_ipm}.}
