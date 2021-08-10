@@ -37,7 +37,7 @@ x_2 <- pdb_make_ipm(proto_2)
 
 test_that("building multiple protos works", {
 
-  cls <- vapply(x_2, class, character(2L))
+  cls <- vapply(x_2, class, character(3L))
 
   expect_equal(as.vector(cls[1, ]),
                c("general_di_det_ipm", "simple_di_det_ipm"))

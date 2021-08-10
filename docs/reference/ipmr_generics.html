@@ -130,10 +130,22 @@ some quantities of interest from <code>pdb_ipm</code>s.</p>
 <span class='fu'>lambda</span><span class='op'>(</span><span class='va'>ipm</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for pdb_ipm</span>
-<span class='fu'>right_ev</span><span class='op'>(</span><span class='va'>ipm</span>, iterations <span class='op'>=</span> <span class='fl'>100</span>, tolerance <span class='op'>=</span> <span class='fl'>100</span>, <span class='va'>...</span><span class='op'>)</span>
+<span class='fu'>right_ev</span><span class='op'>(</span><span class='va'>ipm</span>, iterations <span class='op'>=</span> <span class='fl'>100</span>, tolerance <span class='op'>=</span> <span class='fl'>1e-10</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for pdb_ipm</span>
-<span class='fu'>left_ev</span><span class='op'>(</span><span class='va'>ipm</span>, iterations <span class='op'>=</span> <span class='fl'>100</span>, tolerance <span class='op'>=</span> <span class='fl'>100</span>, <span class='va'>...</span><span class='op'>)</span></pre>
+<span class='fu'>left_ev</span><span class='op'>(</span><span class='va'>ipm</span>, iterations <span class='op'>=</span> <span class='fl'>100</span>, tolerance <span class='op'>=</span> <span class='fl'>1e-10</span>, <span class='va'>...</span><span class='op'>)</span>
+
+<span class='co'># S3 method for pdb_ipm</span>
+<span class='fu'>is_conv_to_asymptotic</span><span class='op'>(</span><span class='va'>ipm</span>, tolerance <span class='op'>=</span> <span class='fl'>1e-10</span><span class='op'>)</span>
+
+<span class='co'># S3 method for pdb_ipm</span>
+<span class='fu'>conv_plot</span><span class='op'>(</span><span class='va'>ipm</span>, iterations <span class='op'>=</span> <span class='cn'>NULL</span>, log <span class='op'>=</span> <span class='cn'>FALSE</span>, show_stable <span class='op'>=</span> <span class='cn'>TRUE</span>, <span class='va'>...</span><span class='op'>)</span>
+
+<span class='co'># S3 method for pdb_ipm</span>
+<span class='fu'>make_iter_kernel</span><span class='op'>(</span><span class='va'>ipm</span>, <span class='va'>...</span>, name_ps <span class='op'>=</span> <span class='cn'>NULL</span>, f_forms <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
+
+<span class='co'># S3 method for pdb_ipm</span>
+<span class='fu'>mean_kernel</span><span class='op'>(</span><span class='va'>ipm</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -144,8 +156,11 @@ some quantities of interest from <code>pdb_ipm</code>s.</p>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>further arguments passed to <code><a href='https://levisc8.github.io/ipmr/reference/lambda.html'>lambda</a></code>. Unused for
-<code>left_ev</code> and <code>right_ev</code> - only present for compatibility.</p></td>
+      <td><p>Named expressions representing the block kernel of the
+IPMs in question. The names of each expression should be the <code>ipm_id</code>,
+and the expressions should take the form of <code>c(&lt;upper_left&gt;, &lt;upper_right&gt;,
+&lt;lower_left&gt;, &lt;lower_right&gt;)</code> (i.e. a vector of symbols would create a matrix
+in <strong>row-major order</strong>). See examples.</p></td>
     </tr>
     <tr>
       <th>iterations</th>
@@ -155,6 +170,22 @@ convergence. Default is 100.</p></td>
     <tr>
       <th>tolerance</th>
       <td><p>Tolerance to evaluate convergence to asymptotic dynamics.</p></td>
+    </tr>
+    <tr>
+      <th>name_ps</th>
+      <td><p>For <code>pdb_ipm</code> objects that contain <code>age_x_size</code> IPMs,
+a named list. The names of the list should be the <code>ipm_id</code>s that are
+<code>age_x_size</code> models, and the values in the list should be the the name
+of the survival/growth kernels.</p></td>
+    </tr>
+    <tr>
+      <th>f_forms</th>
+      <td><p>For <code>pdb_ipm</code> objects that contain <code>age_x_size</code> IPMs,
+a named list. The names of the list should be the <code>ipm_id</code>s that are
+<code>age_x_size</code> models, and the values in the list should be the the name
+of the fecundity kernels. If multiple sub-kernels contribute to fecundity, we
+can also supply a string specifying how they are combined (e.g.
+<code>f_forms = "F + C"</code>).</p></td>
     </tr>
     </table>
 

@@ -4,6 +4,10 @@
 \alias{lambda.pdb_ipm}
 \alias{right_ev.pdb_ipm}
 \alias{left_ev.pdb_ipm}
+\alias{is_conv_to_asymptotic.pdb_ipm}
+\alias{conv_plot.pdb_ipm}
+\alias{make_iter_kernel.pdb_ipm}
+\alias{mean_kernel.pdb_ipm}
 \title{Padrino methods for \code{ipmr} generics}
 \usage{
 \method{lambda}{pdb_ipm}(ipm, ...)
@@ -11,17 +15,44 @@
 \method{right_ev}{pdb_ipm}(ipm, iterations = 100, tolerance = 1e-10, ...)
 
 \method{left_ev}{pdb_ipm}(ipm, iterations = 100, tolerance = 1e-10, ...)
+
+\method{is_conv_to_asymptotic}{pdb_ipm}(ipm, tolerance = 1e-10)
+
+\method{conv_plot}{pdb_ipm}(ipm, iterations = NULL, log = FALSE, show_stable = TRUE, ...)
+
+\method{make_iter_kernel}{pdb_ipm}(ipm, ..., name_ps = NULL, f_forms = NULL)
+
+\method{mean_kernel}{pdb_ipm}(ipm)
 }
 \arguments{
 \item{ipm}{A \code{pdb_ipm}.}
 
-\item{...}{further arguments passed to \code{\link[ipmr]{lambda}}. Unused for
-\code{left_ev} and \code{right_ev} - only present for compatibility.}
+\item{...}{Named expressions representing the block kernel of the
+IPMs in question. The names of each expression should be the \code{ipm_id},
+and the expressions should take the form of \code{c(<upper_left>, <upper_right>,
+<lower_left>, <lower_right>)} (i.e. a vector of symbols would create a matrix
+in \strong{row-major order}). See examples.}
 
 \item{iterations}{The number of times to iterate the model to reach
 convergence. Default is 100.}
 
 \item{tolerance}{Tolerance to evaluate convergence to asymptotic dynamics.}
+
+\item{log}{Log-transform lambdas?}
+
+\item{show_stable}{Show horizontal line denoting stable population growth?}
+
+\item{name_ps}{For \code{pdb_ipm} objects that contain \code{age_x_size} IPMs,
+a named list. The names of the list should be the \code{ipm_id}s that are
+\code{age_x_size} models, and the values in the list should be the the name
+of the survival/growth kernels.}
+
+\item{f_forms}{For \code{pdb_ipm} objects that contain \code{age_x_size} IPMs,
+a named list. The names of the list should be the \code{ipm_id}s that are
+\code{age_x_size} models, and the values in the list should be the the name
+of the fecundity kernels. If multiple sub-kernels contribute to fecundity, we
+can also supply a string specifying how they are combined (e.g.
+\code{f_forms = "F + C"}).}
 }
 \description{
 Provides wrappers around \code{ipmr} generic functions to extract

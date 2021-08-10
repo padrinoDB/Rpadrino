@@ -206,7 +206,8 @@ pop_state.pdb_ipm <- function(object) {
 #' some quantities of interest from \code{pdb_ipm}s.
 #'
 #' @param ipm A \code{pdb_ipm}.
-#' @param ... further arguments passed to \code{\link[ipmr]{lambda}}. Unused for
+#' @param ... further arguments passed to \code{\link[ipmr]{lambda}} and to
+#' \code{\link[ipmr]{conv_plot}}. Unused for
 #' \code{left_ev} and \code{right_ev} - only present for compatibility.
 #' @param iterations The number of times to iterate the model to reach
 #' convergence. Default is 100.
@@ -235,7 +236,8 @@ lambda.pdb_ipm <- function(ipm, ...) {
 }
 
 #' @rdname ipmr_generics
-#' @importFrom ipmr right_ev left_ev
+#' @importFrom ipmr right_ev left_ev mean_kernel
+#' @importFrom ipmr make_iter_kernel is_conv_to_asymptotic conv_plot
 #' @export
 
 right_ev.pdb_ipm <- function(ipm, iterations = 100, tolerance = 1e-10, ...) {
@@ -260,5 +262,165 @@ left_ev.pdb_ipm <- function(ipm, iterations = 100, tolerance = 1e-10, ...) {
          },
          iterations = iterations,
          tolerance = tolerance)
+
+}
+
+#' @rdname ipmr_generics
+#' @export
+
+is_conv_to_asymptotic.pdb_ipm <- function(ipm, tolerance = 1e-10) {
+
+  test_ind <- vapply(ipm, function(x, tol) {
+    all(ipmr::is_conv_to_asymptotic(x, tolerance = tol))
+  },
+  logical(1L),
+  tol = tolerance)
+
+  if(!all(test_ind)) {
+
+    msg <- paste0(paste(names(test_ind[!test_ind]), collapse = ", "),
+                 " did not converge!")
+
+    message(msg)
+
+    return(FALSE)
+
+  }
+
+  return(TRUE)
+
+}
+
+#' @rdname ipmr_generics
+#' @param log Log-transform lambdas?
+#' @param show_stable Show horizontal line denoting stable population growth?
+#' @export
+
+conv_plot.pdb_ipm <- function(ipm,
+                              iterations = NULL,
+                              log = FALSE,
+                              show_stable = TRUE,
+                              ...) {
+
+  for(i in seq_along(ipm)) {
+
+    ipmr::conv_plot(ipm[[i]],
+                    iterations = iterations,
+                    log = log,
+                    show_stable = show_stable,
+                    main = names(ipm)[i],
+                    ...)
+  }
+
+  invisible(ipm)
+}
+
+#' @rdname ipmr_generics
+#' @param ... Named expressions representing the block kernel of the
+#' IPMs in question. The names of each expression should be the \code{ipm_id},
+#' and the expressions should take the form of \code{c(<upper_left>, <upper_right>,
+#' <lower_left>, <lower_right>)} (i.e. a vector of symbols would create a matrix
+#' in \strong{row-major order}). See examples.
+#' @param name_ps For \code{pdb_ipm} objects that contain \code{age_x_size} IPMs,
+#' a named list. The names of the list should be the \code{ipm_id}s that are
+#' \code{age_x_size} models, and the values in the list should be the the name
+#' of the survival/growth kernels.
+#' @param f_forms For \code{pdb_ipm} objects that contain \code{age_x_size} IPMs,
+#' a named list. The names of the list should be the \code{ipm_id}s that are
+#' \code{age_x_size} models, and the values in the list should be the the name
+#' of the fecundity kernels. If multiple sub-kernels contribute to fecundity, we
+#' can also supply a string specifying how they are combined (e.g.
+#' \code{f_forms = "F + C"}).
+#' @export
+
+make_iter_kernel.pdb_ipm <- function(ipm,
+                                     ...,
+                                     name_ps = NULL,
+                                     f_forms = NULL) {
+
+  mega_mat <- rlang::enexprs(...)
+
+  .check_make_iter_kernel_args(ipm, mega_mat, name_ps, f_forms)
+
+  out <- vector("list", length(ipm))
+
+  for(i in seq_along(ipm)) {
+
+    if(grepl("simple", class(ipm[[i]])[1])) {
+
+      out[[i]] <- ipmr::make_iter_kernel(ipm[[i]])
+
+    } else {
+
+      use_mat <- rlang::expr(!! mega_mat[[names(ipm)[i]]])
+
+      if("age_x_size" %in% class(ipm[[i]])) {
+        use_ps <- name_ps[[names(ipm)[i]]]
+        use_fs <- f_forms[[names(ipm)[i]]]
+      } else {
+        use_ps <- NULL
+        use_fs <- NULL
+      }
+
+      out[[i]] <- ipmr::make_iter_kernel(ipm[[i]],
+                                         mega_mat = !! use_mat,
+                                         name_ps  = use_ps,
+                                         f_forms  = use_fs)
+    }
+
+  }
+
+  names(out) <- names(ipm)
+  return(out)
+
+}
+
+#' @noRd
+
+.check_make_iter_kernel_args <- function(ipm, mega_mat, name_ps, f_forms) {
+
+  if(!all(names(mega_mat) %in% names(ipm)) && !rlang::is_empty(mega_mat)) {
+    stop("Mis-matched names between '...' and 'ipm' object!")
+  }
+
+  if(!all(names(f_forms) %in% names(ipm)) && !is.null(f_forms)) {
+    stop("Mis-matched names between 'f_forms' and 'ipm' object!")
+  }
+
+  if(!all(names(mega_mat) %in% names(ipm)) && !is.null(name_ps)) {
+    stop("Mis-matched names between 'name_ps' and 'ipm' object!")
+  }
+
+  if(!all(names(name_ps) %in% names(f_forms)) ||
+     !all(names(f_forms) %in% names(name_ps))) {
+    stop("All names 'f_forms' must also be in 'name_ps' (and vice versa)")
+  }
+
+  invisible(TRUE)
+}
+
+
+#' @rdname ipmr_generics
+#' @export
+
+mean_kernel.pdb_ipm <- function(ipm) {
+
+  keep_ind <- vapply(ipm, function(x) grepl("stoch", class(x)[1]), logical(1L))
+
+  use_ipms <- ipm[keep_ind]
+
+  if(!any(keep_ind)) {
+
+    simple_nms <- paste(names(!keep_ind), collapse = ", ")
+
+    message("The following IPMs are determinstic and mean kernels",
+            " will not be computed: \n",
+            simple_nms)
+
+  }
+
+  out <- lapply(use_ipms, ipmr::mean_kernel)
+
+  return(out)
 
 }
