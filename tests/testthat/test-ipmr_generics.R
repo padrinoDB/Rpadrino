@@ -167,3 +167,194 @@ test_that("convergence diagnostics", {
   expect_true(is_conv_to_asymptotic(y, tolerance = 1e-7))
 
 })
+
+test_that("print methods produce expected outputs", {
+
+
+  ind <- c("aaaa15", "aaaa16", "aaaa17", "aaa310")
+
+  x <- pdb_subset(pdb, ind)
+
+  regex_1 <- "A 'pdb' object with 4 unique species, 3 publications, and 4 models"
+  regex_2 <- "The following models have continuously varying environments:"
+
+  expect_output(print(x), regex_1)
+  expect_output(print(x), regex_2)
+
+  proto_list <- pdb_make_proto_ipm(x)
+
+  regex_1 <- "This list of 'proto_ipm's contains the following species"
+  regex_2 <- gsub("_", " ", paste(x$Metadata$species_accepted, collapse = "\\n"))
+
+  expect_output(print(proto_list), regex_1)
+  expect_output(print(proto_list), regex_2)
+})
+
+test_that("getters and setters work as expected", {
+
+  # Vital Rate exprs
+  ind <- c("aaaa15", "aaaa16", "aaaa17", "aaa310")
+
+  x <- pdb_subset(pdb, ind)
+  y <- pdb_make_proto_ipm(x)
+
+  pdb_exprs <- vital_rate_exprs(y)
+
+  expect_s3_class(pdb_exprs$aaaa15, "ipmr_vital_rate_exprs")
+  expect_s3_class(pdb_exprs$aaaa16, "ipmr_vital_rate_exprs")
+  expect_s3_class(pdb_exprs$aaaa17, "ipmr_vital_rate_exprs")
+  expect_s3_class(pdb_exprs$aaa310, "ipmr_vital_rate_exprs")
+
+  test_exprs <- exprs(
+    s = exp(s_i + s_s * size_1) / (1 + exp(s_i + s_s * size_1)),
+    mu_g = g_int + g_slope * size_1,
+    f_d_1 = stats::dunif(size_2, 0.15, 0.25),
+    f_d_2 = stats::dnorm(size_2, mu_f_d_2, sd_f_d_2)
+  )
+
+  easterling_test <- pdb_exprs$aaa310[c("s", "mu_g", "f_d_1", "f_d_2")]
+
+  expect_equal(easterling_test, test_exprs, ignore_attr = TRUE)
+
+  z <- pdb_make_ipm(y["aaa310"])
+
+  pdb_exprs <- vital_rate_exprs(z)
+
+  easterling_test <- pdb_exprs$aaa310[c("s", "mu_g", "f_d_1", "f_d_2")]
+
+  expect_s3_class(pdb_exprs$aaa310, "ipmr_vital_rate_exprs")
+  expect_equal(easterling_test, test_exprs, ignore_attr = TRUE)
+
+  # kernel formulae
+
+  pdb_exprs <- kernel_formulae(y)
+
+  expect_s3_class(pdb_exprs$aaaa15, "ipmr_kernel_exprs")
+  expect_s3_class(pdb_exprs$aaaa16, "ipmr_kernel_exprs")
+  expect_s3_class(pdb_exprs$aaaa17, "ipmr_kernel_exprs")
+  expect_s3_class(pdb_exprs$aaa310, "ipmr_kernel_exprs")
+
+  test_exprs <- exprs(
+    P_yr = s_yr * g_yr * d_size,
+    Y = recr_size * yearling_s * d_size,
+    F_yr = f_yr
+  )
+
+  geum_exprs <- pdb_exprs$aaaa17
+
+  expect_equal(geum_exprs, test_exprs, ignore_attr = TRUE)
+
+  test_exprs <- exprs(
+    P = s * g,
+    F = f_n * f_d
+  )
+
+  easterling_exprs <- pdb_exprs$aaa310
+
+  expect_equal(easterling_exprs, test_exprs, ignore_attr = TRUE)
+
+  pdb_exprs <- kernel_formulae(z)
+
+  expect_equal(easterling_exprs, test_exprs, ignore_attr = TRUE)
+
+  # Domains
+
+  pdb_doms <- domains(y)
+
+  expect_s3_class(pdb_doms$aaaa15, "ipmr_domains")
+  expect_s3_class(pdb_doms$aaaa16, "ipmr_domains")
+  expect_s3_class(pdb_doms$aaaa17, "ipmr_domains")
+  expect_s3_class(pdb_doms$aaa310, "ipmr_domains")
+
+  test_doms <- list(aaaa15 = list(leafarea = c(lower_bound  = 0.57,
+                                               upper_bound  = 11.9,
+                                               n_meshpoints = 50)),
+                    aaa310 = list(size = c(lower_bound  = 0,
+                                           upper_bound  = 5.83,
+                                           n_meshpoints = 1000)))
+
+  dom_list <- pdb_doms[c("aaaa15", "aaa310")]
+
+  expect_equal(dom_list, test_doms, ignore_attr = TRUE)
+
+  z <- pdb_make_ipm(y[c(1, 4)])
+
+  dom_list <- domains(z)
+
+  expect_equal(dom_list, test_doms, ignore_attr = TRUE)
+
+  # Parameters
+
+  pdb_pars <- parameters(y)
+
+  expect_s3_class(pdb_pars$aaaa15, "ipmr_parameters")
+  expect_s3_class(pdb_pars$aaaa16, "ipmr_parameters")
+  expect_s3_class(pdb_pars$aaaa17, "ipmr_parameters")
+  expect_s3_class(pdb_pars$aaa310, "ipmr_parameters")
+
+  expect_equal(pdb_pars$aaa310$s_i, 1.34, ignore_attr = "flat_protect")
+
+  parameters(y, ipm_id = "aaa310") <- list(s_i = 1.6)
+
+  new_pars <- parameters(y)$aaa310
+
+  expect_equal(new_pars$s_i, 1.6, ignore_attr = "flat_protect")
+
+  # pop_state
+
+  pdb_pops <- pop_state(y)
+
+  expect_equal(pdb_pops$aaaa15$pop_state_leafarea,
+               "Pre-defined population state.")
+  expect_equal(pdb_pops$aaaa16$pop_state_leafarea,
+               "Pre-defined population state.")
+  expect_equal(pdb_pops$aaaa17$pop_state_size_yr,
+               "Pre-defined population state.")
+  expect_equal(pdb_pops$aaa310$pop_state_size,
+               "Pre-defined population state.")
+
+  z <- pdb_make_ipm(y)
+
+  pdb_pops <- pop_state(z)
+
+  expect_equal(dim(pdb_pops$aaaa15$n_leafarea), c(50, 51))
+  expect_equal(dim(pdb_pops$aaaa16$n_leafarea), c(50, 51))
+  expect_equal(dim(pdb_pops$aaaa17$n_size_2004), c(100, 51))
+  expect_equal(dim(pdb_pops$aaa310$n_size), c(1000, 51))
+
+  # Right/left_ev
+
+  pdb_w <- suppressWarnings(right_ev(z))
+
+  expect_s3_class(pdb_w$aaaa15, "ipmr_w")
+  expect_s3_class(pdb_w$aaaa16, "ipmr_w")
+  expect_s3_class(pdb_w$aaa310, "ipmr_w")
+
+  expect_type(pdb_w$aaaa15$leafarea_w, "double")
+  expect_type(pdb_w$aaaa16$leafarea_w, "double")
+  expect_type(pdb_w$aaaa17, "double")
+  expect_type(pdb_w$aaa310$size_w, "double")
+
+  expect_equal(pdb_w$aaaa17, NA_real_)
+
+  y  <- pdb_make_proto_ipm(pdb, ind[1:2])
+  y1 <- pdb_make_proto_ipm(pdb, ind[3:4])
+
+  z  <- pdb_make_ipm(y)
+  z1 <- pdb_make_ipm(y1)
+
+  pdb_v  <- suppressWarnings(left_ev(z, iterations = 50))
+  pdb_v1 <- suppressWarnings(left_ev(z1, iterations = 200))
+
+  expect_s3_class(pdb_v$aaaa15, "ipmr_v")
+  expect_s3_class(pdb_v$aaaa16, "ipmr_v")
+  expect_s3_class(pdb_v1$aaa310, "ipmr_v")
+
+  expect_type(pdb_v$aaaa15$leafarea_v, "double")
+  expect_type(pdb_v$aaaa16$leafarea_v, "double")
+  expect_type(pdb_v1$aaaa17, "double")
+  expect_type(pdb_v1$aaa310$size_v, "double")
+
+  expect_equal(pdb_v1$aaaa17, NA_real_)
+
+})

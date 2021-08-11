@@ -154,29 +154,28 @@ parameters.pdb_ipm <- function(object) {
 #'
 #' @param value The value to insert. Should be a named list where the names
 #' correspond to parameter names and the entries are new parameter values.
+#' @param ... Ignored
+#' @param ipm_id The \code{ipm_id} to set the new parameter values for
 #' @export
 #' @importFrom ipmr parameters<-
 
-`parameters<-.pdb_proto_ipm_list` <- function(object, value) {
+`parameters<-.pdb_proto_ipm_list` <- function(object, ...,  ipm_id = NULL, value) {
 
-  lapply(object, function(x, value) {
+  if(is.null(ipm_id)) ipm_id <- names(object)
+
+  mod_list <- object[ipm_id]
+  others   <- object[!names(object) %in% ipm_id]
+  temp     <- lapply(mod_list, function(x, value) {
     parameters(x) <- value
     return(x)
   },
   value = value)
 
-}
+  out <- c(temp, others)
 
-#' @rdname padrino_accessors
-#' @export
-
-`parameters<-.pdb_ipm` <- function(object, value) {
-
-  lapply(object, function(x, value) {
-    parameters(x) <- value
-    return(x)
-  },
-  values = value)
+  out <- out[sort(names(out))]
+  class(out) <- c("pdb_proto_ipm_list", "list")
+  return(out)
 
 }
 
@@ -207,8 +206,7 @@ pop_state.pdb_ipm <- function(object) {
 #'
 #' @param ipm A \code{pdb_ipm}.
 #' @param ... further arguments passed to \code{\link[ipmr]{lambda}} and to
-#' \code{\link[ipmr]{conv_plot}}. Unused for
-#' \code{left_ev} and \code{right_ev} - only present for compatibility.
+#' \code{\link[ipmr]{conv_plot}}. Unused for other functions.
 #' @param iterations The number of times to iterate the model to reach
 #' convergence. Default is 100.
 #' @param tolerance Tolerance to evaluate convergence to asymptotic dynamics.
@@ -237,7 +235,6 @@ lambda.pdb_ipm <- function(ipm, ...) {
 
 #' @rdname ipmr_generics
 #' @importFrom ipmr right_ev left_ev mean_kernel
-#' @importFrom ipmr make_iter_kernel is_conv_to_asymptotic conv_plot
 #' @export
 
 right_ev.pdb_ipm <- function(ipm, iterations = 100, tolerance = 1e-10, ...) {
@@ -257,15 +254,23 @@ right_ev.pdb_ipm <- function(ipm, iterations = 100, tolerance = 1e-10, ...) {
 left_ev.pdb_ipm <- function(ipm, iterations = 100, tolerance = 1e-10, ...) {
 
   lapply(ipm,
-         function(x, iterations, tolerance) {
-           ipmr::left_ev(x, iterations = iterations, tolerance = tolerance)
+         function(x, iterations, tolerance, dots) {
+           rlang::exec(
+             ipmr::left_ev,
+             ipm        = x,
+             iterations = iterations,
+             tolerance  = tolerance,
+             !!! dots
+           )
          },
          iterations = iterations,
-         tolerance = tolerance)
+         tolerance = tolerance,
+         dots = list(...))
 
 }
 
 #' @rdname ipmr_generics
+#' @importFrom ipmr make_iter_kernel is_conv_to_asymptotic conv_plot
 #' @export
 
 is_conv_to_asymptotic.pdb_ipm <- function(ipm, tolerance = 1e-10) {

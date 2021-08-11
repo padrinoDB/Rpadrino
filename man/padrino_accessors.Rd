@@ -10,7 +10,6 @@
 \alias{parameters.pdb_proto_ipm_list}
 \alias{parameters.pdb_ipm}
 \alias{parameters<-.pdb_proto_ipm_list}
-\alias{parameters<-.pdb_ipm}
 \alias{pop_state.pdb_proto_ipm_list}
 \alias{pop_state.pdb_ipm}
 \title{Accessor functions for (semi) built Padrino objects}
@@ -31,9 +30,7 @@
 
 \method{parameters}{pdb_ipm}(object)
 
-\method{parameters}{pdb_proto_ipm_list}(object) <- value
-
-\method{parameters}{pdb_ipm}(object) <- value
+\method{parameters}{pdb_proto_ipm_list}(object, ..., ipm_id = NULL) <- value
 
 \method{pop_state}{pdb_proto_ipm_list}(object)
 
@@ -42,6 +39,10 @@
 \arguments{
 \item{object}{An object produced by \code{pdb_make_proto_ipm} or
 \code{pdb_make_ipm}.}
+
+\item{...}{Ignored}
+
+\item{ipm_id}{The \code{ipm_id} to set the new parameter values for}
 
 \item{value}{The value to insert. Should be a named list where the names
 correspond to parameter names and the entries are new parameter values.}
