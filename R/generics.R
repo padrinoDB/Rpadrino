@@ -208,6 +208,16 @@ vital_rate_funs.pdb_ipm <- function(ipm) {
 
 }
 
+#' @rdname padrino_accessors
+#' @importFrom ipmr int_mesh
+#' @export
+
+int_mesh.pdb_ipm <- function(ipm, full_mesh = TRUE) {
+  lapply(ipm,
+         function(x, f_m) ipmr::int_mesh(x, full_mesh = f_m),
+         f_m = full_mesh)
+}
+
 #' @rdname ipmr_generics
 #' @title Padrino methods for \code{ipmr} generics
 #'
