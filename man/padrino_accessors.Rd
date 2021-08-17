@@ -12,6 +12,7 @@
 \alias{parameters<-.pdb_proto_ipm_list}
 \alias{pop_state.pdb_proto_ipm_list}
 \alias{pop_state.pdb_ipm}
+\alias{vital_rate_funs.pdb_ipm}
 \title{Accessor functions for (semi) built Padrino objects}
 \usage{
 \method{vital_rate_exprs}{pdb_proto_ipm_list}(object)
@@ -35,6 +36,8 @@
 \method{pop_state}{pdb_proto_ipm_list}(object)
 
 \method{pop_state}{pdb_ipm}(object)
+
+\method{vital_rate_funs}{pdb_ipm}(ipm)
 }
 \arguments{
 \item{object}{An object produced by \code{pdb_make_proto_ipm} or

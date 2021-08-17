@@ -149,16 +149,16 @@
 <span class='fu'>parameters</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span>
 
 <span class='co'># S3 method for pdb_proto_ipm_list</span>
-<span class='fu'>parameters</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='va'>value</span>
-
-<span class='co'># S3 method for pdb_ipm</span>
-<span class='fu'>parameters</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='va'>value</span>
+<span class='fu'>parameters</span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>...</span>, ipm_id <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='va'>value</span>
 
 <span class='co'># S3 method for pdb_proto_ipm_list</span>
 <span class='fu'>pop_state</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span>
 
 <span class='co'># S3 method for pdb_ipm</span>
-<span class='fu'>pop_state</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span></pre>
+<span class='fu'>pop_state</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span>
+
+<span class='co'># S3 method for pdb_ipm</span>
+<span class='fu'>vital_rate_funs</span><span class='op'>(</span><span class='va'>ipm</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -167,6 +167,14 @@
       <th>object</th>
       <td><p>An object produced by <code>pdb_make_proto_ipm</code> or
 <code>pdb_make_ipm</code>.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Ignored</p></td>
+    </tr>
+    <tr>
+      <th>ipm_id</th>
+      <td><p>The <code>ipm_id</code> to set the new parameter values for</p></td>
     </tr>
     <tr>
       <th>value</th>

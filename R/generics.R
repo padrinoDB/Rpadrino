@@ -198,6 +198,16 @@ pop_state.pdb_ipm <- function(object) {
 
 }
 
+#' @rdname padrino_accessors
+#' @importFrom ipmr vital_rate_funs
+#' @export
+
+vital_rate_funs.pdb_ipm <- function(ipm) {
+
+  lapply(ipm, ipmr::vital_rate_funs)
+
+}
+
 #' @rdname ipmr_generics
 #' @title Padrino methods for \code{ipmr} generics
 #'
