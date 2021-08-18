@@ -4,7 +4,8 @@
 #' @title Print a \code{pdb} object.
 #'
 #' @param x A \code{pdb} object.
-#' @param ... ignored
+#' @param ... Only used by \code{pdb_new_fun_form}, otherwise ignored. See details
+#' and examples for usage in \code{pdb_new_fun_form}.
 #' @export
 
 print.pdb <- function(x, ...) {
@@ -89,6 +90,63 @@ vital_rate_exprs.pdb_ipm <- function(object) {
 
 }
 
+#' @rdname padrino_accessors
+#' @param kernel Ignored, present for compatibility with \code{ipmr}.
+#' @param vital_rate Ignored, present for compatibility with \code{ipmr}.
+#' @importFrom ipmr vital_rate_exprs<-
+#' @export
+
+`vital_rate_exprs<-.pdb_proto_ipm_list` <- function(object,
+                                                    kernel = NULL,
+                                                    vital_rate = NULL,
+                                                    value) {
+
+  # Outermost layer should be list of ipm_ids
+  for(i in seq_along(value)) {
+
+    # This is now a list of bare expressions, with names matching kernel names.
+    use_forms <- value[[i]]
+
+    use_obj   <- object[[names(value)[i]]]
+
+    # ipmr::vital_rate_exprs only works on one kernel at a time, so loop over
+    # fun forms to insert them all (if users want to modify many at once).
+
+    for(j in seq_along(use_forms)) {
+
+      vr_nm <- names(use_forms)[j]
+
+      # Finally, we have to find the kernels that the requested vital rates appear
+      # in. Similar to above, a user may wish to modify a vital rate that appears
+      # in multiple kernels. Thus, we need to modify all of those, necessitating
+      # the third for loop (for k in ...)
+
+      all_vrs <- lapply(use_obj$params, function(x) names(x$vr_text))
+
+      nm_ind <- vapply(all_vrs, function(all_vrs, vr) {
+        vr %in% all_vrs
+      }, logical(1L),
+      vr = vr_nm)
+
+      nm <- use_obj$kernel_id[nm_ind]
+
+      for(k in seq_along(nm)) {
+
+        ipmr::vital_rate_exprs(use_obj, kernel = nm[k], vr_nm) <- ipmr::new_fun_form(
+          !! use_forms[[j]]
+        )
+      }
+    }
+
+    # re-insert modified kernel
+
+    object[[names(value)[i]]] <- use_obj
+  }
+
+  return(object)
+
+}
+
 
 #' @rdname padrino_accessors
 #' @importFrom ipmr kernel_formulae
@@ -109,7 +167,39 @@ kernel_formulae.pdb_ipm <- function(object) {
 
 }
 
+#' @rdname padrino_accessors
+#' @importFrom ipmr kernel_formulae<-
+#' @export
 
+`kernel_formulae<-.pdb_proto_ipm_list` <- function(object, kernel, value) {
+
+  # Outermost layer should be list of ipm_ids
+  for(i in seq_along(value)) {
+
+    # This is now a list of bare expressions, with names matching kernel names.
+    use_forms <- value[[i]]
+
+    use_obj   <- object[[names(value)[i]]]
+
+    # ipmr::kernel_formulae only works on one kernel at a time, so loop over
+    # fun forms to insert them all (if users want to modify many at once).
+
+    for(j in seq_along(use_forms)) {
+
+      nm <- names(use_forms)[j]
+      ipmr::kernel_formulae(use_obj, kernel = nm) <- ipmr::new_fun_form(
+        !!use_forms[[j]]
+      )
+
+    }
+
+    # re-insert modified kernel
+
+    object[[names(value)[i]]] <- use_obj
+  }
+
+  return(object)
+}
 
 #' @rdname padrino_accessors
 #' @export
@@ -209,6 +299,9 @@ vital_rate_funs.pdb_ipm <- function(ipm) {
 }
 
 #' @rdname padrino_accessors
+#' @param ipm A \code{pdb_ipm} object.
+#' @param full_mesh Logical. Return the complete set of meshpoints or only the
+#' unique ones.
 #' @importFrom ipmr int_mesh
 #' @export
 
@@ -448,4 +541,61 @@ mean_kernel.pdb_ipm <- function(ipm) {
 
   return(out)
 
+}
+
+#' @rdname padrino_accessors
+#'
+#' @details \code{pdb_new_fun_form} must be used when setting new expressions for
+#' vital rates and kernel formulae. The \code{...} argument should be a named list
+#' of named lists. The top most layer should be \code{ipm_id}'s. The next layer
+#' should be a list where the names are vital rates you wish to modify, and the
+#' values are the expressions you want to insert. See examples..
+#'
+#' @examples
+#'
+#'  data(pdb)
+#'  my_pdb <- pdb_make_proto_ipm(pdb, c("aaaa17", "aaa310"))
+#'
+#'   # These expressions won't be useful unless new parameter values are also
+#'   # set:
+#'
+#' vital_rate_exprs(my_pdb) <- pdb_new_fun_form(
+#'     list(
+#'       aaa310 = list(mu_g = g_int + g_slope * size_1 + g_slope_2 * size_1^2),
+#'       aaaa17 = list(sigmax2 = sqrt(g_var * exp(cfv1 + cfv2 * size_1))
+#'      )
+#'    )
+#'  )
+#'
+#'  kernel_formulae(my_pdb) <- pdb_new_fun_form(
+#'    list(
+#'      aaaa17 = list(Y = recr_size * yearling_s * germ_prob * d_size),
+#'      aaa310 = list(F = f_n * f_d * establishment_prob)
+#'    )
+#'  )
+#'
+#' @export
+
+pdb_new_fun_form <- function(...) {
+
+  dots <- enquos(...)
+  out <- lapply(dots, function(x) .quo_to_bares(!! x)) %>%
+    .flatten_to_depth(1L)
+
+  lapply(out, call_args)
+
+}
+
+#' @noRd
+#' @importFrom rlang quo_squash
+# Function captures many nested expressions and converts them into a nested list.
+# top level is ipm_id with expression names nested within those, and the expressions
+# themselves as the values.
+
+.quo_to_bares <- function(exprr) {
+
+  exprr <- rlang::enquo(exprr)
+  exprr <- rlang::quo_squash(exprr)
+
+  rlang::call_args(exprr)
 }

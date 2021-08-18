@@ -12,7 +12,8 @@
 \arguments{
 \item{x}{A \code{pdb} object.}
 
-\item{...}{ignored}
+\item{...}{Only used by \code{pdb_new_fun_form}, otherwise ignored. See details
+and examples for usage in \code{pdb_new_fun_form}.}
 }
 \description{
 Print a \code{pdb} object.

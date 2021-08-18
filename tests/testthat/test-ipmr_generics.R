@@ -225,6 +225,22 @@ test_that("getters and setters work as expected", {
   expect_s3_class(pdb_exprs$aaa310, "ipmr_vital_rate_exprs")
   expect_equal(easterling_test, test_exprs, ignore_attr = TRUE)
 
+  vital_rate_exprs(y) <- pdb_new_fun_form(
+    list(
+      aaa310 = list(
+        mu_g = g_int + g_slope_1 * size_1 + g_slope_3 * size_1 ^(1/3)
+      )
+    )
+  )
+
+  test_expr <- rlang::exprs(
+    mu_g = g_int + g_slope_1 * size_1 + g_slope_3 * size_1 ^(1/3)
+  )
+
+  pdb_exprs <- vital_rate_exprs(y)
+
+  expect_equal(pdb_exprs$aaa310$mu_g, test_expr[[1]], ignore_attr = TRUE)
+
   # kernel formulae
 
   pdb_exprs <- kernel_formulae(y)
@@ -253,9 +269,40 @@ test_that("getters and setters work as expected", {
 
   expect_equal(easterling_exprs, test_exprs, ignore_attr = TRUE)
 
+  kernel_formulae(y) <- pdb_new_fun_form(
+    list(
+      aaa310 = list(
+        P = s * g * z,
+        F = f_n * f_d * germ_prob
+      ),
+      aaaa17 = list(
+        P_yr = s_yr * g_yr * z_yr * d_size
+      )
+    )
+  )
+
+  test_exprs <- exprs(
+      P = s * g * z,
+      F = f_n * f_d * germ_prob,
+      P_yr = s_yr * g_yr * z_yr * d_size
+    )
+
+  pdb_exprs <- kernel_formulae(y)
+
+  expect_equal(pdb_exprs$aaa310, test_exprs[1:2], ignore_attr = TRUE)
+  expect_equal(pdb_exprs$aaaa17$P_yr, test_exprs[[3]], ignore_attr = TRUE)
+
+  y <- pdb_make_proto_ipm(x)
+
   pdb_exprs <- kernel_formulae(z)
 
+  test_exprs <- exprs(
+    P = s * g,
+    F = f_n * f_d
+  )
+
   expect_equal(easterling_exprs, test_exprs, ignore_attr = TRUE)
+
 
   # Domains
 
