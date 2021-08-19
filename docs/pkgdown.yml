@@ -3,8 +3,8 @@ pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
   padrino-intro: padrino-intro.html
-last_built: 2021-08-19T16:09Z
+last_built: 2021-08-19T17:46Z
 urls:
-  reference: https://levisc8.github.io/Rpadrino/reference
-  article: https://levisc8.github.io/Rpadrino/articles
+  reference: https://levisc8.github.io/RPadrino/reference
+  article: https://levisc8.github.io/RPadrino/articles
 
