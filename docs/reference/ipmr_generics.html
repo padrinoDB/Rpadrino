@@ -6,14 +6,14 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Padrino methods for ipmr generics — lambda.pdb_ipm • RPadrino</title>
+<title>Padrino methods for `ipmr` generic functions — vital_rate_exprs.pdb_proto_ipm_list • RPadrino</title>
 
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/yeti/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
 
@@ -39,9 +39,9 @@
 
 
 
-<meta property="og:title" content="Padrino methods for ipmr generics — lambda.pdb_ipm" />
+<meta property="og:title" content="Padrino methods for `ipmr` generic functions — vital_rate_exprs.pdb_proto_ipm_list" />
 <meta property="og:description" content="Provides wrappers around ipmr generic functions to extract
-some quantities of interest from pdb_ipms." />
+some quantities of interest from pdb_proto_ipm_lists and pdb_ipms." />
 
 
 
@@ -86,17 +86,17 @@ some quantities of interest from pdb_ipms." />
   </a>
 </li>
 <li>
-  <a href="../reference/index.html">Reference</a>
+  <a href="../reference/index.html">Functions</a>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
+    Vignettes
      
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/padrino-intro.html">RPadrino Introduction</a>
+      <a href="../articles/padrino-introduction">Introduction to RPadrino</a>
     </li>
   </ul>
 </li>
@@ -116,17 +116,53 @@ some quantities of interest from pdb_ipms." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Padrino methods for <code>ipmr</code> generics</h1>
+    <h1>Padrino methods for `ipmr` generic functions</h1>
     
     <div class="hidden name"><code>ipmr_generics.Rd</code></div>
     </div>
 
     <div class="ref-description">
     <p>Provides wrappers around <code>ipmr</code> generic functions to extract
-some quantities of interest from <code>pdb_ipm</code>s.</p>
+some quantities of interest from <code>pdb_proto_ipm_list</code>s and <code>pdb_ipm</code>s.</p>
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for pdb_ipm</span>
+    <pre class="usage"><span class='co'># S3 method for pdb_proto_ipm_list</span>
+<span class='fu'>vital_rate_exprs</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span>
+
+<span class='co'># S3 method for pdb_ipm</span>
+<span class='fu'>vital_rate_exprs</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span>
+
+<span class='co'># S3 method for pdb_proto_ipm_list</span>
+<span class='fu'>kernel_formulae</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span>
+
+<span class='co'># S3 method for pdb_ipm</span>
+<span class='fu'>kernel_formulae</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span>
+
+<span class='co'># S3 method for pdb_proto_ipm_list</span>
+<span class='fu'>domains</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span>
+
+<span class='co'># S3 method for pdb_ipm</span>
+<span class='fu'>domains</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span>
+
+<span class='co'># S3 method for pdb_proto_ipm_list</span>
+<span class='fu'>parameters</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span>
+
+<span class='co'># S3 method for pdb_ipm</span>
+<span class='fu'>parameters</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span>
+
+<span class='co'># S3 method for pdb_proto_ipm_list</span>
+<span class='fu'>pop_state</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span>
+
+<span class='co'># S3 method for pdb_ipm</span>
+<span class='fu'>pop_state</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span>
+
+<span class='co'># S3 method for pdb_ipm</span>
+<span class='fu'>vital_rate_funs</span><span class='op'>(</span><span class='va'>ipm</span><span class='op'>)</span>
+
+<span class='co'># S3 method for pdb_ipm</span>
+<span class='fu'>int_mesh</span><span class='op'>(</span><span class='va'>ipm</span>, full_mesh <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+
+<span class='co'># S3 method for pdb_ipm</span>
 <span class='fu'>lambda</span><span class='op'>(</span><span class='va'>ipm</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for pdb_ipm</span>
@@ -145,22 +181,39 @@ some quantities of interest from <code>pdb_ipm</code>s.</p>
 <span class='fu'>make_iter_kernel</span><span class='op'>(</span><span class='va'>ipm</span>, <span class='va'>...</span>, name_ps <span class='op'>=</span> <span class='cn'>NULL</span>, f_forms <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
 
 <span class='co'># S3 method for pdb_ipm</span>
-<span class='fu'>mean_kernel</span><span class='op'>(</span><span class='va'>ipm</span><span class='op'>)</span></pre>
+<span class='fu'>mean_kernel</span><span class='op'>(</span><span class='va'>ipm</span><span class='op'>)</span>
+
+<span class='fu'>pdb_new_fun_form</span><span class='op'>(</span><span class='va'>...</span><span class='op'>)</span>
+
+<span class='co'># S3 method for pdb_proto_ipm_list</span>
+<span class='fu'>parameters</span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>...</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='va'>value</span>
+
+<span class='co'># S3 method for pdb_proto_ipm_list</span>
+<span class='fu'>vital_rate_exprs</span><span class='op'>(</span><span class='va'>object</span>, kernel <span class='op'>=</span> <span class='cn'>NULL</span>, vital_rate <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='va'>value</span>
+
+<span class='co'># S3 method for pdb_proto_ipm_list</span>
+<span class='fu'>kernel_formulae</span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>kernel</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='va'>value</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
+      <th>object</th>
+      <td><p>An object produced by <code>pdb_make_proto_ipm</code> or
+<code>pdb_make_ipm</code>.</p></td>
+    </tr>
+    <tr>
       <th>ipm</th>
       <td><p>A <code>pdb_ipm</code>.</p></td>
     </tr>
     <tr>
+      <th>full_mesh</th>
+      <td><p>Logical. Return the complete set of meshpoints or only the
+unique ones.</p></td>
+    </tr>
+    <tr>
       <th>...</th>
-      <td><p>Named expressions representing the block kernel of the
-IPMs in question. The names of each expression should be the <code>ipm_id</code>,
-and the expressions should take the form of <code>c(&lt;upper_left&gt;, &lt;upper_right&gt;,
-&lt;lower_left&gt;, &lt;lower_right&gt;)</code> (i.e. a vector of symbols would create a matrix
-in <strong>row-major order</strong>). See examples.</p></td>
+      <td><p>Usage depends on the function - see Details and Examples.</p></td>
     </tr>
     <tr>
       <th>iterations</th>
@@ -195,9 +248,99 @@ of the fecundity kernels. If multiple sub-kernels contribute to fecundity, we
 can also supply a string specifying how they are combined (e.g.
 <code>f_forms = "F + C"</code>).</p></td>
     </tr>
+    <tr>
+      <th>value</th>
+      <td><p>The value to insert. See details and Examples.</p></td>
+    </tr>
+    <tr>
+      <th>kernel</th>
+      <td><p>Ignored, present for compatibility with <code>ipmr</code>.</p></td>
+    </tr>
+    <tr>
+      <th>vital_rate</th>
+      <td><p>Ignored, present for compatibility with <code>ipmr</code>.</p></td>
+    </tr>
     </table>
 
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
+    <p>There are number of uses for <code>...</code> which depend on the function
+used for them. These are described below.</p>
+    <h2 class="hasAnchor" id="pdb-new-fun-form"><a class="anchor" href="#pdb-new-fun-form"></a><code>pdb_new_fun_form</code></h2>
+
+    
+
+
+<p>This must be used when setting new expressions for
+vital rates and kernel formulae. The <code>...</code> argument should be a named list
+of named lists. The top most layer should be <code>ipm_id</code>'s. The next layer
+should be a list where the names are vital rates you wish to modify, and the
+values are the expressions you want to insert. See examples.</p>
+    <h2 class="hasAnchor" id="make-iter-kernel"><a class="anchor" href="#make-iter-kernel"></a><code>make_iter_kernel</code></h2>
+
+    
+
+
+<p>The <code>...</code> here should be expressions representing the block kernel of
+the IPMs in question. The names of each expression should be the ipm_id,
+and the expressions should take the form of <code>c(&lt;upper_left&gt;,
+&lt;upper_right&gt;, &lt;lower_left&gt;, &lt;lower_right&gt;)</code>
+(i.e. a vector of symbols would create a matrix in row-major order).
+See examples.</p>
+    <h2 class="hasAnchor" id="conv-plot-lambda"><a class="anchor" href="#conv-plot-lambda"></a><code>conv_plot</code>/<code>lambda</code></h2>
+
+    
+
+
+<p>The <code>...</code> are used pass additional arguments to <code><a href='https://levisc8.github.io/ipmr/reference/lambda.html'>lambda</a></code>
+and <code><a href='https://levisc8.github.io/ipmr/reference/check_convergence.html'>conv_plot</a></code>.</p>
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>pdb</span><span class='op'>)</span>
+<span class='va'>my_pdb</span> <span class='op'>&lt;-</span> <span class='fu'><a href='pdb_make_proto_ipm.html'>pdb_make_proto_ipm</a></span><span class='op'>(</span><span class='va'>pdb</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"aaaa17"</span>, <span class='st'>"aaa310"</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>'ipm_id' aaa310 has the following notes that require your attention:</span>
+#&gt; <span class='message'>aaa310: 'Geo and time info retrieved from COMPADRE (v.X.X.X.4)'</span></div><div class='input'>
+<span class='co'># These values will be appended to the parameter list for each IPM, as they</span>
+<span class='co'># aren't currently present in them.</span>
+
+<span class='fu'>parameters</span><span class='op'>(</span><span class='va'>my_pdb</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
+  aaa310 <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
+    g_slope_2 <span class='op'>=</span> <span class='fl'>0.0001</span>,
+    establishment_prob <span class='op'>=</span> <span class='fl'>0.02</span>
+  <span class='op'>)</span>,
+  aaaa17 <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
+    g_var <span class='op'>=</span> <span class='fl'>4.2</span>,
+    germ_prob <span class='op'>=</span> <span class='fl'>0.3</span>
+  <span class='op'>)</span>
+<span class='op'>)</span>
+
+<span class='co'># We can overwrite a parameter value with a new one as well. Old values aren't</span>
+<span class='co'># saved anywhere except in the pdb object, so be careful!</span>
+
+<span class='fu'>parameters</span><span class='op'>(</span><span class='va'>my_pdb</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
+  aaa310 <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
+    s_s    <span class='op'>=</span> <span class='fl'>0.93</span>, <span class='co'># old value is 0.92</span>
+    gvar_i <span class='op'>=</span> <span class='fl'>0.13</span> <span class='co'># old value is 0.127</span>
+  <span class='op'>)</span>
+<span class='op'>)</span>
+
+<span class='fu'>vital_rate_exprs</span><span class='op'>(</span><span class='va'>my_pdb</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='fu'>pdb_new_fun_form</span><span class='op'>(</span>
+    <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
+      aaa310 <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>mu_g <span class='op'>=</span> <span class='va'>g_int</span> <span class='op'>+</span> <span class='va'>g_slope</span> <span class='op'>*</span> <span class='va'>size_1</span> <span class='op'>+</span> <span class='va'>g_slope_2</span> <span class='op'>*</span> <span class='va'>size_1</span><span class='op'>^</span><span class='fl'>2</span><span class='op'>)</span>,
+      aaaa17 <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>sigmax2 <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/MathFun.html'>sqrt</a></span><span class='op'>(</span><span class='va'>g_var</span> <span class='op'>*</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='va'>cfv1</span> <span class='op'>+</span> <span class='va'>cfv2</span> <span class='op'>*</span> <span class='va'>size_1</span><span class='op'>)</span><span class='op'>)</span>
+     <span class='op'>)</span>
+   <span class='op'>)</span>
+ <span class='op'>)</span>
+
+ <span class='fu'>kernel_formulae</span><span class='op'>(</span><span class='va'>my_pdb</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='fu'>pdb_new_fun_form</span><span class='op'>(</span>
+   <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
+     aaaa17 <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>Y <span class='op'>=</span> <span class='va'>recr_size</span> <span class='op'>*</span> <span class='va'>yearling_s</span> <span class='op'>*</span> <span class='va'>germ_prob</span> <span class='op'>*</span> <span class='va'>d_size</span><span class='op'>)</span>,
+     aaa310 <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>F <span class='op'>=</span> <span class='va'>f_n</span> <span class='op'>*</span> <span class='va'>f_d</span> <span class='op'>*</span> <span class='va'>establishment_prob</span><span class='op'>)</span>
+   <span class='op'>)</span>
+ <span class='op'>)</span>
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

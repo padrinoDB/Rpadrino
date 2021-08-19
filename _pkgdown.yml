@@ -4,3 +4,50 @@ url: https://levisc8.github.io/Rpadrino
 authors:
   Sam Levin:
     href: https://github.com/levisc8
+template:
+  params:
+    bootswatch: yeti
+navbar:
+  title: "RPadrino"
+  left:
+    - icon: fa-home fa-lg
+      href: index.html
+    - text: "Functions"
+      href: reference/index.html
+    - text: "Vignettes"
+      menu:
+        - text: "Introduction to RPadrino"
+          href: articles/padrino-introduction
+reference:
+  - title: "Data Input/Output"
+    desc: >
+      Functions for PADRINO loading and saving (includes internet download and
+      local versions).
+  - contents:
+      - pdb_download
+  - title: "Metadata Accessors and Data Management"
+    desc: >
+      Functions to access columns from PADRINO's Metadata table and subset database
+      objects.
+  - contents:
+      - pdb_species_accepted
+      - pdb_subset
+  - title: "Model Reconstruction"
+    desc: >
+      Functions to reconstruct published models based on their representations
+      in PADRINO
+  - contents:
+      - pdb_make_proto_ipm
+      - pdb_make_ipm
+  - title: "PADRINO Methods for ipmr Generics"
+    desc: >
+      `pdb_proto_ipm_list` and `pdb_ipm` methods for generic `ipmr` functions.
+  - contents:
+      - lambda.pdb_ipm
+      - starts_with("print")
+  - title: "PADRINO"
+    desc: >
+      A subset of PADRINO data stored as part of the `RPadrino` package.
+  - contents:
+      - pdb
+

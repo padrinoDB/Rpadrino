@@ -12,8 +12,8 @@
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/yeti/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
 
@@ -84,17 +84,17 @@
   </a>
 </li>
 <li>
-  <a href="../reference/index.html">Reference</a>
+  <a href="../reference/index.html">Functions</a>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
+    Vignettes
      
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/padrino-intro.html">RPadrino Introduction</a>
+      <a href="../articles/padrino-introduction">Introduction to RPadrino</a>
     </li>
   </ul>
 </li>
@@ -128,8 +128,8 @@
     <tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
+          <h2 id="section-data-input-output" class="hasAnchor"><a href="#section-data-input-output" class="anchor"></a>Data Input/Output</h2>
+          <p class="section-desc"><p>Functions for PADRINO loading and saving (includes internet download and local versions).</p></p>
         </th>
       </tr>
       
@@ -143,13 +143,20 @@
           <p><code><a href="in_out.html">pdb_download()</a></code> <code><a href="in_out.html">pdb_save()</a></code> <code><a href="in_out.html">pdb_load()</a></code> </p>
         </td>
         <td><p>Download PADRINO <code>pdb</code> objects</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="ipmr_generics.html">lambda(<i>&lt;pdb_ipm&gt;</i>)</a></code> <code><a href="ipmr_generics.html">right_ev(<i>&lt;pdb_ipm&gt;</i>)</a></code> <code><a href="ipmr_generics.html">left_ev(<i>&lt;pdb_ipm&gt;</i>)</a></code> <code><a href="ipmr_generics.html">is_conv_to_asymptotic(<i>&lt;pdb_ipm&gt;</i>)</a></code> <code><a href="ipmr_generics.html">conv_plot(<i>&lt;pdb_ipm&gt;</i>)</a></code> <code><a href="ipmr_generics.html">make_iter_kernel(<i>&lt;pdb_ipm&gt;</i>)</a></code> <code><a href="ipmr_generics.html">mean_kernel(<i>&lt;pdb_ipm&gt;</i>)</a></code> </p>
-        </td>
-        <td><p>Padrino methods for <code>ipmr</code> generics</p></td>
-      </tr><tr>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-metadata-accessors-and-data-management" class="hasAnchor"><a href="#section-metadata-accessors-and-data-management" class="anchor"></a>Metadata Accessors and Data Management</h2>
+          <p class="section-desc"><p>Functions to access columns from PADRINO’s Metadata table and subset database objects.</p></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
         
         <td>
           <p><code><a href="metadata_utils.html">pdb_citations()</a></code> <code><a href="metadata_utils.html">pdb_species_accepted()</a></code> <code><a href="metadata_utils.html">pdb_species_author()</a></code> <code><a href="metadata_utils.html">pdb_genus()</a></code> <code><a href="metadata_utils.html">pdb_family()</a></code> <code><a href="metadata_utils.html">pdb_order()</a></code> <code><a href="metadata_utils.html">pdb_class()</a></code> <code><a href="metadata_utils.html">pdb_phylum()</a></code> <code><a href="metadata_utils.html">pdb_kingdom()</a></code> <code><a href="metadata_utils.html">pdb_org_type()</a></code> <code><a href="metadata_utils.html">pdb_dicot_monocot()</a></code> <code><a href="metadata_utils.html">pdb_angio_gymon()</a></code> <code><a href="metadata_utils.html">pdb_authors()</a></code> <code><a href="metadata_utils.html">pdb_journal()</a></code> <code><a href="metadata_utils.html">pdb_pub_year()</a></code> <code><a href="metadata_utils.html">pdb_doi()</a></code> <code><a href="metadata_utils.html">pdb_comments()</a></code> <code><a href="metadata_utils.html">pdb_appendix_link()</a></code> <code><a href="metadata_utils.html">pdb_duration()</a></code> <code><a href="metadata_utils.html">pdb_start_year()</a></code> <code><a href="metadata_utils.html">pdb_start_month()</a></code> <code><a href="metadata_utils.html">pdb_end_year()</a></code> <code><a href="metadata_utils.html">pdb_end_month()</a></code> <code><a href="metadata_utils.html">pdb_periodicity()</a></code> <code><a href="metadata_utils.html">pdb_population_name()</a></code> <code><a href="metadata_utils.html">pdb_number_populations()</a></code> <code><a href="metadata_utils.html">pdb_lat()</a></code> <code><a href="metadata_utils.html">pdb_lon()</a></code> <code><a href="metadata_utils.html">pdb_altitude()</a></code> <code><a href="metadata_utils.html">pdb_country()</a></code> <code><a href="metadata_utils.html">pdb_continent()</a></code> <code><a href="metadata_utils.html">pdb_ecoregion()</a></code> <code><a href="metadata_utils.html">pdb_studied_sex()</a></code> <code><a href="metadata_utils.html">pdb_eviction_used()</a></code> <code><a href="metadata_utils.html">pdb_evict_type()</a></code> <code><a href="metadata_utils.html">pdb_treatment()</a></code> <code><a href="metadata_utils.html">pdb_has_time_lag()</a></code> <code><a href="metadata_utils.html">pdb_has_age()</a></code> <code><a href="metadata_utils.html">pdb_report()</a></code> </p>
@@ -158,22 +165,23 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="padrino_accessors.html">vital_rate_exprs(<i>&lt;pdb_proto_ipm_list&gt;</i>)</a></code> <code><a href="padrino_accessors.html">vital_rate_exprs(<i>&lt;pdb_ipm&gt;</i>)</a></code> <code><a href="padrino_accessors.html">kernel_formulae(<i>&lt;pdb_proto_ipm_list&gt;</i>)</a></code> <code><a href="padrino_accessors.html">kernel_formulae(<i>&lt;pdb_ipm&gt;</i>)</a></code> <code><a href="padrino_accessors.html">domains(<i>&lt;pdb_proto_ipm_list&gt;</i>)</a></code> <code><a href="padrino_accessors.html">domains(<i>&lt;pdb_ipm&gt;</i>)</a></code> <code><a href="padrino_accessors.html">parameters(<i>&lt;pdb_proto_ipm_list&gt;</i>)</a></code> <code><a href="padrino_accessors.html">parameters(<i>&lt;pdb_ipm&gt;</i>)</a></code> <code><a href="padrino_accessors.html">`parameters&lt;-`(<i>&lt;pdb_proto_ipm_list&gt;</i>)</a></code> <code><a href="padrino_accessors.html">pop_state(<i>&lt;pdb_proto_ipm_list&gt;</i>)</a></code> <code><a href="padrino_accessors.html">pop_state(<i>&lt;pdb_ipm&gt;</i>)</a></code> <code><a href="padrino_accessors.html">vital_rate_funs(<i>&lt;pdb_ipm&gt;</i>)</a></code> <code><a href="padrino_accessors.html">int_mesh(<i>&lt;pdb_ipm&gt;</i>)</a></code> </p>
+          <p><code><a href="pdb_subset.html">pdb_subset()</a></code> </p>
         </td>
-        <td><p>Accessor functions for (semi) built Padrino objects</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="pdb.html">pdb</a></code> </p>
-        </td>
-        <td><p>Selected models from the Padrino Database</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="pdb_make_ipm.html">pdb_make_ipm()</a></code> </p>
-        </td>
-        <td><p>Generate IPMs from Padrino objects</p></td>
-      </tr><tr>
+        <td><p>Subset a Padrino database object</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-model-reconstruction" class="hasAnchor"><a href="#section-model-reconstruction" class="anchor"></a>Model Reconstruction</h2>
+          <p class="section-desc"><p>Functions to reconstruct published models based on their representations in PADRINO</p></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
         
         <td>
           <p><code><a href="pdb_make_proto_ipm.html">pdb_make_proto_ipm()</a></code> </p>
@@ -182,15 +190,53 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="pdb_subset.html">pdb_subset()</a></code> </p>
+          <p><code><a href="pdb_make_ipm.html">pdb_make_ipm()</a></code> </p>
         </td>
-        <td><p>Subset a Padrino database object</p></td>
+        <td><p>Generate IPMs from Padrino objects</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-padrino-methods-for-ipmr-generics" class="hasAnchor"><a href="#section-padrino-methods-for-ipmr-generics" class="anchor"></a>PADRINO Methods for ipmr Generics</h2>
+          <p class="section-desc"><p><code>pdb_proto_ipm_list</code> and <code>pdb_ipm</code> methods for generic <code>ipmr</code> functions.</p></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="ipmr_generics.html">vital_rate_exprs(<i>&lt;pdb_proto_ipm_list&gt;</i>)</a></code> <code><a href="ipmr_generics.html">vital_rate_exprs(<i>&lt;pdb_ipm&gt;</i>)</a></code> <code><a href="ipmr_generics.html">kernel_formulae(<i>&lt;pdb_proto_ipm_list&gt;</i>)</a></code> <code><a href="ipmr_generics.html">kernel_formulae(<i>&lt;pdb_ipm&gt;</i>)</a></code> <code><a href="ipmr_generics.html">domains(<i>&lt;pdb_proto_ipm_list&gt;</i>)</a></code> <code><a href="ipmr_generics.html">domains(<i>&lt;pdb_ipm&gt;</i>)</a></code> <code><a href="ipmr_generics.html">parameters(<i>&lt;pdb_proto_ipm_list&gt;</i>)</a></code> <code><a href="ipmr_generics.html">parameters(<i>&lt;pdb_ipm&gt;</i>)</a></code> <code><a href="ipmr_generics.html">pop_state(<i>&lt;pdb_proto_ipm_list&gt;</i>)</a></code> <code><a href="ipmr_generics.html">pop_state(<i>&lt;pdb_ipm&gt;</i>)</a></code> <code><a href="ipmr_generics.html">vital_rate_funs(<i>&lt;pdb_ipm&gt;</i>)</a></code> <code><a href="ipmr_generics.html">int_mesh(<i>&lt;pdb_ipm&gt;</i>)</a></code> <code><a href="ipmr_generics.html">lambda(<i>&lt;pdb_ipm&gt;</i>)</a></code> <code><a href="ipmr_generics.html">right_ev(<i>&lt;pdb_ipm&gt;</i>)</a></code> <code><a href="ipmr_generics.html">left_ev(<i>&lt;pdb_ipm&gt;</i>)</a></code> <code><a href="ipmr_generics.html">is_conv_to_asymptotic(<i>&lt;pdb_ipm&gt;</i>)</a></code> <code><a href="ipmr_generics.html">conv_plot(<i>&lt;pdb_ipm&gt;</i>)</a></code> <code><a href="ipmr_generics.html">make_iter_kernel(<i>&lt;pdb_ipm&gt;</i>)</a></code> <code><a href="ipmr_generics.html">mean_kernel(<i>&lt;pdb_ipm&gt;</i>)</a></code> <code><a href="ipmr_generics.html">pdb_new_fun_form()</a></code> <code><a href="ipmr_generics.html">`parameters&lt;-`(<i>&lt;pdb_proto_ipm_list&gt;</i>)</a></code> <code><a href="ipmr_generics.html">`vital_rate_exprs&lt;-`(<i>&lt;pdb_proto_ipm_list&gt;</i>)</a></code> <code><a href="ipmr_generics.html">`kernel_formulae&lt;-`(<i>&lt;pdb_proto_ipm_list&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Padrino methods for `ipmr` generic functions</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="print_star.html">print(<i>&lt;pdb&gt;</i>)</a></code> <code><a href="print_star.html">print(<i>&lt;pdb_proto_ipm_list&gt;</i>)</a></code> </p>
         </td>
         <td><p>Print a <code>pdb</code> object.</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-padrino" class="hasAnchor"><a href="#section-padrino" class="anchor"></a>PADRINO</h2>
+          <p class="section-desc"><p>A subset of PADRINO data stored as part of the <code>RPadrino</code> package.</p></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="pdb.html">pdb</a></code> </p>
+        </td>
+        <td><p>Selected models from the Padrino Database</p></td>
       </tr>
     </tbody>
     </table>
