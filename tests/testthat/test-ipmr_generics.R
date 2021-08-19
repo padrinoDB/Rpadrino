@@ -341,11 +341,18 @@ test_that("getters and setters work as expected", {
 
   expect_equal(pdb_pars$aaa310$s_i, 1.34, ignore_attr = "flat_protect")
 
-  parameters(y, ipm_id = "aaa310") <- list(s_i = 1.6)
+  parameters(y) <- list(aaa310 = list(s_i = 1.6),
+                        aaaa16 = list(g_i = 12,
+                                      g_s = 14))
 
   new_pars <- parameters(y)$aaa310
 
   expect_equal(new_pars$s_i, 1.6, ignore_attr = "flat_protect")
+
+  new_pars <- parameters(y)$aaaa16
+
+  expect_equal(new_pars$g_i, 12, ignore_attr = "flat_protect")
+  expect_equal(new_pars$g_s, 14, ignore_attr = "flat_protect")
 
   # pop_state
 

@@ -62,14 +62,108 @@ print.pdb_proto_ipm_list <- function(x, ...) {
 
 }
 
-#' @rdname padrino_accessors
+#' @rdname ipmr_generics
 #'
-#' @title Accessor functions for (semi) built Padrino objects
+#' @title Padrino methods for `ipmr` generic functions
 #'
-#' @description Padrino versions of \code{\link[ipmr]{accessors}}.
+#' @description Provides wrappers around \code{ipmr} generic functions to extract
+#' some quantities of interest from \code{pdb_proto_ipm_list}s and \code{pdb_ipm}s.
 #'
 #' @param object An object produced by \code{pdb_make_proto_ipm} or
 #' \code{pdb_make_ipm}.
+#' @param ipm A \code{pdb_ipm} object.
+#' @param ... Usage depends on the function - see Details and Examples.
+#' @param value The value to insert. See details and Examples.
+#' @param full_mesh Logical. Return the complete set of meshpoints or only the
+#' unique ones.
+#' @param name_ps For \code{pdb_ipm} objects that contain \code{age_x_size} IPMs,
+#' a named list. The names of the list should be the \code{ipm_id}s that are
+#' \code{age_x_size} models, and the values in the list should be the the name
+#' of the survival/growth kernels.
+#' @param f_forms For \code{pdb_ipm} objects that contain \code{age_x_size} IPMs,
+#' a named list. The names of the list should be the \code{ipm_id}s that are
+#' \code{age_x_size} models, and the values in the list should be the the name
+#' of the fecundity kernels. If multiple sub-kernels contribute to fecundity, we
+#' can also supply a string specifying how they are combined (e.g.
+#' \code{f_forms = "F + C"}).
+#' @param log Log-transform lambdas?
+#' @param show_stable Show horizontal line denoting stable population growth?
+#' @param ipm A \code{pdb_ipm}.
+#' @param iterations The number of times to iterate the model to reach
+#' convergence. Default is 100.
+#' @param tolerance Tolerance to evaluate convergence to asymptotic dynamics.
+#' @param kernel Ignored, present for compatibility with \code{ipmr}.
+#' @param vital_rate Ignored, present for compatibility with \code{ipmr}.
+#'
+#'
+#' @details There are number of uses for \code{...} which depend on the function
+#' used for them. These are described below.
+#'
+#' @section \code{pdb_new_fun_form}:
+#'
+#' This must be used when setting new expressions for
+#' vital rates and kernel formulae. The \code{...} argument should be a named list
+#' of named lists. The top most layer should be \code{ipm_id}'s. The next layer
+#' should be a list where the names are vital rates you wish to modify, and the
+#' values are the expressions you want to insert. See examples.
+#'
+#' @section \code{make_iter_kernel}:
+#'
+#' The \code{...} here should be expressions representing the block kernel of
+#' the IPMs in question. The names of each expression should be the ipm_id,
+#' and the expressions should take the form of \code{c(<upper_left>,
+#' <upper_right>, <lower_left>, <lower_right>)}
+#' (i.e. a vector of symbols would create a matrix in row-major order).
+#' See examples.
+#'
+#' @section \code{conv_plot}/\code{lambda}:
+#'
+#' The \code{...} are used pass additional arguments to \code{\link[ipmr]{lambda}}
+#' and \code{\link[ipmr]{conv_plot}}.
+#'
+#' @examples
+#'
+#' data(pdb)
+#' my_pdb <- pdb_make_proto_ipm(pdb, c("aaaa17", "aaa310"))
+#'
+#' # These values will be appended to the parameter list for each IPM, as they
+#' # aren't currently present in them.
+#'
+#' parameters(my_pdb) <- list(
+#'   aaa310 = list(
+#'     g_slope_2 = 0.0001,
+#'     establishment_prob = 0.02
+#'   ),
+#'   aaaa17 = list(
+#'     g_var = 4.2,
+#'     germ_prob = 0.3
+#'   )
+#' )
+#'
+#' # We can overwrite a parameter value with a new one as well. Old values aren't
+#' # saved anywhere except in the pdb object, so be careful!
+#'
+#' parameters(my_pdb) <- list(
+#'   aaa310 = list(
+#'     s_s    = 0.93, # old value is 0.92
+#'     gvar_i = 0.13 # old value is 0.127
+#'   )
+#' )
+#'
+#' vital_rate_exprs(my_pdb) <- pdb_new_fun_form(
+#'     list(
+#'       aaa310 = list(mu_g = g_int + g_slope * size_1 + g_slope_2 * size_1^2),
+#'       aaaa17 = list(sigmax2 = sqrt(g_var * exp(cfv1 + cfv2 * size_1))
+#'      )
+#'    )
+#'  )
+#'
+#'  kernel_formulae(my_pdb) <- pdb_new_fun_form(
+#'    list(
+#'      aaaa17 = list(Y = recr_size * yearling_s * germ_prob * d_size),
+#'      aaa310 = list(F = f_n * f_d * establishment_prob)
+#'    )
+#'  )
 #'
 #' @importFrom ipmr vital_rate_exprs
 #' @export
@@ -81,7 +175,7 @@ vital_rate_exprs.pdb_proto_ipm_list <- function(object) {
 
 }
 
-#' @rdname padrino_accessors
+#' @rdname ipmr_generics
 #' @export
 
 vital_rate_exprs.pdb_ipm <- function(object) {
@@ -90,65 +184,7 @@ vital_rate_exprs.pdb_ipm <- function(object) {
 
 }
 
-#' @rdname padrino_accessors
-#' @param kernel Ignored, present for compatibility with \code{ipmr}.
-#' @param vital_rate Ignored, present for compatibility with \code{ipmr}.
-#' @importFrom ipmr vital_rate_exprs<-
-#' @export
-
-`vital_rate_exprs<-.pdb_proto_ipm_list` <- function(object,
-                                                    kernel = NULL,
-                                                    vital_rate = NULL,
-                                                    value) {
-
-  # Outermost layer should be list of ipm_ids
-  for(i in seq_along(value)) {
-
-    # This is now a list of bare expressions, with names matching kernel names.
-    use_forms <- value[[i]]
-
-    use_obj   <- object[[names(value)[i]]]
-
-    # ipmr::vital_rate_exprs only works on one kernel at a time, so loop over
-    # fun forms to insert them all (if users want to modify many at once).
-
-    for(j in seq_along(use_forms)) {
-
-      vr_nm <- names(use_forms)[j]
-
-      # Finally, we have to find the kernels that the requested vital rates appear
-      # in. Similar to above, a user may wish to modify a vital rate that appears
-      # in multiple kernels. Thus, we need to modify all of those, necessitating
-      # the third for loop (for k in ...)
-
-      all_vrs <- lapply(use_obj$params, function(x) names(x$vr_text))
-
-      nm_ind <- vapply(all_vrs, function(all_vrs, vr) {
-        vr %in% all_vrs
-      }, logical(1L),
-      vr = vr_nm)
-
-      nm <- use_obj$kernel_id[nm_ind]
-
-      for(k in seq_along(nm)) {
-
-        ipmr::vital_rate_exprs(use_obj, kernel = nm[k], vr_nm) <- ipmr::new_fun_form(
-          !! use_forms[[j]]
-        )
-      }
-    }
-
-    # re-insert modified kernel
-
-    object[[names(value)[i]]] <- use_obj
-  }
-
-  return(object)
-
-}
-
-
-#' @rdname padrino_accessors
+#' @rdname ipmr_generics
 #' @importFrom ipmr kernel_formulae
 #' @export
 
@@ -158,7 +194,7 @@ kernel_formulae.pdb_proto_ipm_list <- function(object) {
 
 }
 
-#' @rdname padrino_accessors
+#' @rdname ipmr_generics
 #' @export
 
 kernel_formulae.pdb_ipm <- function(object) {
@@ -167,41 +203,7 @@ kernel_formulae.pdb_ipm <- function(object) {
 
 }
 
-#' @rdname padrino_accessors
-#' @importFrom ipmr kernel_formulae<-
-#' @export
-
-`kernel_formulae<-.pdb_proto_ipm_list` <- function(object, kernel, value) {
-
-  # Outermost layer should be list of ipm_ids
-  for(i in seq_along(value)) {
-
-    # This is now a list of bare expressions, with names matching kernel names.
-    use_forms <- value[[i]]
-
-    use_obj   <- object[[names(value)[i]]]
-
-    # ipmr::kernel_formulae only works on one kernel at a time, so loop over
-    # fun forms to insert them all (if users want to modify many at once).
-
-    for(j in seq_along(use_forms)) {
-
-      nm <- names(use_forms)[j]
-      ipmr::kernel_formulae(use_obj, kernel = nm) <- ipmr::new_fun_form(
-        !!use_forms[[j]]
-      )
-
-    }
-
-    # re-insert modified kernel
-
-    object[[names(value)[i]]] <- use_obj
-  }
-
-  return(object)
-}
-
-#' @rdname padrino_accessors
+#' @rdname ipmr_generics
 #' @export
 #' @importFrom ipmr domains
 
@@ -211,7 +213,7 @@ domains.pdb_proto_ipm_list <- function(object) {
 
 }
 
-#' @rdname padrino_accessors
+#' @rdname ipmr_generics
 #' @export
 
 domains.pdb_ipm <- function(object) {
@@ -221,7 +223,7 @@ domains.pdb_ipm <- function(object) {
 }
 
 
-#' @rdname padrino_accessors
+#' @rdname ipmr_generics
 #' @importFrom ipmr parameters
 #' @export
 
@@ -231,7 +233,7 @@ parameters.pdb_proto_ipm_list <- function(object) {
 
 }
 
-#' @rdname padrino_accessors
+#' @rdname ipmr_generics
 #' @export
 
 parameters.pdb_ipm <- function(object) {
@@ -240,36 +242,7 @@ parameters.pdb_ipm <- function(object) {
 
 }
 
-#' @rdname padrino_accessors
-#'
-#' @param value The value to insert. Should be a named list where the names
-#' correspond to parameter names and the entries are new parameter values.
-#' @param ... Ignored
-#' @param ipm_id The \code{ipm_id} to set the new parameter values for
-#' @export
-#' @importFrom ipmr parameters<-
-
-`parameters<-.pdb_proto_ipm_list` <- function(object, ...,  ipm_id = NULL, value) {
-
-  if(is.null(ipm_id)) ipm_id <- names(object)
-
-  mod_list <- object[ipm_id]
-  others   <- object[!names(object) %in% ipm_id]
-  temp     <- lapply(mod_list, function(x, value) {
-    parameters(x) <- value
-    return(x)
-  },
-  value = value)
-
-  out <- c(temp, others)
-
-  out <- out[sort(names(out))]
-  class(out) <- c("pdb_proto_ipm_list", "list")
-  return(out)
-
-}
-
-#' @rdname padrino_accessors
+#' @rdname ipmr_generics
 #' @importFrom ipmr pop_state
 #' @export
 
@@ -279,7 +252,7 @@ pop_state.pdb_proto_ipm_list <- function(object) {
 
 }
 
-#' @rdname padrino_accessors
+#' @rdname ipmr_generics
 #' @export
 
 pop_state.pdb_ipm <- function(object) {
@@ -288,7 +261,7 @@ pop_state.pdb_ipm <- function(object) {
 
 }
 
-#' @rdname padrino_accessors
+#' @rdname ipmr_generics
 #' @importFrom ipmr vital_rate_funs
 #' @export
 
@@ -298,10 +271,7 @@ vital_rate_funs.pdb_ipm <- function(ipm) {
 
 }
 
-#' @rdname padrino_accessors
-#' @param ipm A \code{pdb_ipm} object.
-#' @param full_mesh Logical. Return the complete set of meshpoints or only the
-#' unique ones.
+#' @rdname ipmr_generics
 #' @importFrom ipmr int_mesh
 #' @export
 
@@ -312,18 +282,6 @@ int_mesh.pdb_ipm <- function(ipm, full_mesh = TRUE) {
 }
 
 #' @rdname ipmr_generics
-#' @title Padrino methods for \code{ipmr} generics
-#'
-#' @description Provides wrappers around \code{ipmr} generic functions to extract
-#' some quantities of interest from \code{pdb_ipm}s.
-#'
-#' @param ipm A \code{pdb_ipm}.
-#' @param ... further arguments passed to \code{\link[ipmr]{lambda}} and to
-#' \code{\link[ipmr]{conv_plot}}. Unused for other functions.
-#' @param iterations The number of times to iterate the model to reach
-#' convergence. Default is 100.
-#' @param tolerance Tolerance to evaluate convergence to asymptotic dynamics.
-#'
 #' @importFrom ipmr lambda
 #' @export
 
@@ -410,8 +368,6 @@ is_conv_to_asymptotic.pdb_ipm <- function(ipm, tolerance = 1e-10) {
 }
 
 #' @rdname ipmr_generics
-#' @param log Log-transform lambdas?
-#' @param show_stable Show horizontal line denoting stable population growth?
 #' @export
 
 conv_plot.pdb_ipm <- function(ipm,
@@ -434,21 +390,6 @@ conv_plot.pdb_ipm <- function(ipm,
 }
 
 #' @rdname ipmr_generics
-#' @param ... Named expressions representing the block kernel of the
-#' IPMs in question. The names of each expression should be the \code{ipm_id},
-#' and the expressions should take the form of \code{c(<upper_left>, <upper_right>,
-#' <lower_left>, <lower_right>)} (i.e. a vector of symbols would create a matrix
-#' in \strong{row-major order}). See examples.
-#' @param name_ps For \code{pdb_ipm} objects that contain \code{age_x_size} IPMs,
-#' a named list. The names of the list should be the \code{ipm_id}s that are
-#' \code{age_x_size} models, and the values in the list should be the the name
-#' of the survival/growth kernels.
-#' @param f_forms For \code{pdb_ipm} objects that contain \code{age_x_size} IPMs,
-#' a named list. The names of the list should be the \code{ipm_id}s that are
-#' \code{age_x_size} models, and the values in the list should be the the name
-#' of the fecundity kernels. If multiple sub-kernels contribute to fecundity, we
-#' can also supply a string specifying how they are combined (e.g.
-#' \code{f_forms = "F + C"}).
 #' @export
 
 make_iter_kernel.pdb_ipm <- function(ipm,
@@ -493,31 +434,6 @@ make_iter_kernel.pdb_ipm <- function(ipm,
 
 }
 
-#' @noRd
-
-.check_make_iter_kernel_args <- function(ipm, mega_mat, name_ps, f_forms) {
-
-  if(!all(names(mega_mat) %in% names(ipm)) && !rlang::is_empty(mega_mat)) {
-    stop("Mis-matched names between '...' and 'ipm' object!")
-  }
-
-  if(!all(names(f_forms) %in% names(ipm)) && !is.null(f_forms)) {
-    stop("Mis-matched names between 'f_forms' and 'ipm' object!")
-  }
-
-  if(!all(names(mega_mat) %in% names(ipm)) && !is.null(name_ps)) {
-    stop("Mis-matched names between 'name_ps' and 'ipm' object!")
-  }
-
-  if(!all(names(name_ps) %in% names(f_forms)) ||
-     !all(names(f_forms) %in% names(name_ps))) {
-    stop("All names 'f_forms' must also be in 'name_ps' (and vice versa)")
-  }
-
-  invisible(TRUE)
-}
-
-
 #' @rdname ipmr_generics
 #' @export
 
@@ -543,37 +459,7 @@ mean_kernel.pdb_ipm <- function(ipm) {
 
 }
 
-#' @rdname padrino_accessors
-#'
-#' @details \code{pdb_new_fun_form} must be used when setting new expressions for
-#' vital rates and kernel formulae. The \code{...} argument should be a named list
-#' of named lists. The top most layer should be \code{ipm_id}'s. The next layer
-#' should be a list where the names are vital rates you wish to modify, and the
-#' values are the expressions you want to insert. See examples..
-#'
-#' @examples
-#'
-#'  data(pdb)
-#'  my_pdb <- pdb_make_proto_ipm(pdb, c("aaaa17", "aaa310"))
-#'
-#'   # These expressions won't be useful unless new parameter values are also
-#'   # set:
-#'
-#' vital_rate_exprs(my_pdb) <- pdb_new_fun_form(
-#'     list(
-#'       aaa310 = list(mu_g = g_int + g_slope * size_1 + g_slope_2 * size_1^2),
-#'       aaaa17 = list(sigmax2 = sqrt(g_var * exp(cfv1 + cfv2 * size_1))
-#'      )
-#'    )
-#'  )
-#'
-#'  kernel_formulae(my_pdb) <- pdb_new_fun_form(
-#'    list(
-#'      aaaa17 = list(Y = recr_size * yearling_s * germ_prob * d_size),
-#'      aaa310 = list(F = f_n * f_d * establishment_prob)
-#'    )
-#'  )
-#'
+#' @rdname ipmr_generics
 #' @export
 
 pdb_new_fun_form <- function(...) {
@@ -584,6 +470,141 @@ pdb_new_fun_form <- function(...) {
 
   lapply(out, call_args)
 
+}
+
+#' @rdname ipmr_generics
+#' @export
+#' @importFrom ipmr parameters<-
+
+`parameters<-.pdb_proto_ipm_list` <- function(object, ..., value) {
+
+  for(i in seq_along(value)) {
+
+    use_obj <- object[[names(value)[i]]]
+
+    parameters(use_obj) <- value[[i]]
+
+    object[[names(value)[i]]] <- use_obj
+  }
+
+  return(object)
+
+}
+
+
+#' @rdname ipmr_generics
+#' @importFrom ipmr vital_rate_exprs<-
+#' @export
+
+`vital_rate_exprs<-.pdb_proto_ipm_list` <- function(object,
+                                                    kernel = NULL,
+                                                    vital_rate = NULL,
+                                                    value) {
+
+  # Outermost layer should be list of ipm_ids
+  for(i in seq_along(value)) {
+
+    # This is now a list of bare expressions, with names matching kernel names.
+    use_forms <- value[[i]]
+
+    use_obj   <- object[[names(value)[i]]]
+
+    # ipmr::vital_rate_exprs only works on one kernel at a time, so loop over
+    # fun forms to insert them all (if users want to modify many at once).
+
+    for(j in seq_along(use_forms)) {
+
+      vr_nm <- names(use_forms)[j]
+
+      # Finally, we have to find the kernels that the requested vital rates appear
+      # in. Similar to above, a user may wish to modify a vital rate that appears
+      # in multiple kernels. Thus, we need to modify all of those, necessitating
+      # the third for loop (for k in ...)
+
+      all_vrs <- lapply(use_obj$params, function(x) names(x$vr_text))
+
+      nm_ind <- vapply(all_vrs, function(all_vrs, vr) {
+        vr %in% all_vrs
+      }, logical(1L),
+      vr = vr_nm)
+
+      nm <- use_obj$kernel_id[nm_ind]
+
+      for(k in seq_along(nm)) {
+
+        ipmr::vital_rate_exprs(use_obj, kernel = nm[k], vr_nm) <- ipmr::new_fun_form(
+          !! use_forms[[j]]
+        )
+      }
+    }
+
+    # re-insert modified kernel
+
+    object[[names(value)[i]]] <- use_obj
+  }
+
+  return(object)
+
+}
+
+
+#' @rdname ipmr_generics
+#' @importFrom ipmr kernel_formulae<-
+#' @export
+
+`kernel_formulae<-.pdb_proto_ipm_list` <- function(object, kernel, value) {
+
+  # Outermost layer should be list of ipm_ids
+  for(i in seq_along(value)) {
+
+    # This is now a list of bare expressions, with names matching kernel names.
+    use_forms <- value[[i]]
+
+    use_obj   <- object[[names(value)[i]]]
+
+    # ipmr::kernel_formulae only works on one kernel at a time, so loop over
+    # fun forms to insert them all (if users want to modify many at once).
+
+    for(j in seq_along(use_forms)) {
+
+      nm <- names(use_forms)[j]
+      ipmr::kernel_formulae(use_obj, kernel = nm) <- ipmr::new_fun_form(
+        !!use_forms[[j]]
+      )
+
+    }
+
+    # re-insert modified kernel
+
+    object[[names(value)[i]]] <- use_obj
+  }
+
+  return(object)
+}
+
+
+#' @noRd
+
+.check_make_iter_kernel_args <- function(ipm, mega_mat, name_ps, f_forms) {
+
+  if(!all(names(mega_mat) %in% names(ipm)) && !rlang::is_empty(mega_mat)) {
+    stop("Mis-matched names between '...' and 'ipm' object!")
+  }
+
+  if(!all(names(f_forms) %in% names(ipm)) && !is.null(f_forms)) {
+    stop("Mis-matched names between 'f_forms' and 'ipm' object!")
+  }
+
+  if(!all(names(mega_mat) %in% names(ipm)) && !is.null(name_ps)) {
+    stop("Mis-matched names between 'name_ps' and 'ipm' object!")
+  }
+
+  if(!all(names(name_ps) %in% names(f_forms)) ||
+     !all(names(f_forms) %in% names(name_ps))) {
+    stop("All names 'f_forms' must also be in 'name_ps' (and vice versa)")
+  }
+
+  invisible(TRUE)
 }
 
 #' @noRd

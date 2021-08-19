@@ -13,7 +13,7 @@ pdb_save(pdb, destination = NULL)
 pdb_load(path)
 }
 \arguments{
-\item{save}{Write the PDB object to a folder of csv files?}
+\item{save}{Write the PDB object to a folder of text files?}
 
 \item{destination}{Where to write the \code{pdb} object to.}
 
@@ -27,5 +27,6 @@ Download PADRINO from Github.
 \details{
 This does not currently support versioning because there is only
 one version. \code{destination} should be a folder name. When \code{save = TRUE},
-a set of 12 csv files will be saved in the \code{destination} folder.
+a set of 12 text files will be saved in the \code{destination} folder. The files
+are tab-delimited
 }
