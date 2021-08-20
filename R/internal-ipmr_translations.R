@@ -8,7 +8,6 @@
                            kernel_id,
                            md_tab,
                            sv_tab,
-                           ds_tab,
                            cd_tab,
                            ir_tab,
                            ps_tab,
@@ -16,8 +15,7 @@
                            vr_tab,
                            pv_tab,
                            es_tab,
-                           he_tab,
-                           un_tab) {
+                           he_tab) {
 
 
   # We don't want to define_k here, that comes next .make_proto

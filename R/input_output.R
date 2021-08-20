@@ -11,7 +11,7 @@
 #' a set of 12 text files will be saved in the \code{destination} folder. The files
 #' are tab-delimited.
 #'
-#' @importFrom utils read.csv write.csv
+#' @importFrom utils read.table write.table
 #' @export
 
 pdb_download <- function(save = TRUE, destination = NULL) {
@@ -33,21 +33,25 @@ pdb_download <- function(save = TRUE, destination = NULL) {
 
   }
 
-  tab_nms <- c("Metadata", "StateVariables", "DiscreteStates", "ContinuousDomains",
+  tab_nms <- c("Metadata", "StateVariables", "ContinuousDomains",
                "IntegrationRules", "StateVectors", "IpmKernels", "VitalRateExpr",
-               "ParameterValues", "EnvironmentalVariables", "HierarchTable",
-               "UncertaintyTable")
+               "ParameterValues", "EnvironmentalVariables", "ParSetIndices")
 
   urls <- paste(
     "https://raw.githubusercontent.com/levisc8/Padrino/main/padrino-database/clean/",
     tab_nms,
-    ".csv", sep = "")
+    ".txt", sep = "")
 
   out <- list()
 
   for(i in seq_along(urls)) {
 
-    out[[i]] <- utils::read.csv(file = url(urls[i]), stringsAsFactors = FALSE)
+    out[[i]] <- utils::read.table(file = url(urls[i]),
+                                  stringsAsFactors = FALSE,
+                                  sep              = "\t",
+                                  fileEncoding     = "UTF-8",
+                                  quote            = "\"",
+                                  header           = TRUE)
 
 
     names(out)[i] <- tab_nms[i]
@@ -60,15 +64,19 @@ pdb_download <- function(save = TRUE, destination = NULL) {
     for(i in seq_along(out)) {
 
       utils::write.table(out[[i]],
-                       file = destination[i],
-                       sep = "\t",
-                       quote = FALSE,
-                       na = "",
-                       row.names = FALSE)
+                         file = destination[i],
+                         row.names    = FALSE,
+                         sep          = "\t",
+                         quote        = TRUE,
+                         na           = "NA",
+                         fileEncoding = "UTF-8")
 
     }
 
   }
+
+  # Quote = TRUE messes up some of the ParSetIndex values
+  pdb$ParSetIndices$range <- gsub("\\\\", "'", pdb$ParSetIndices$range)
 
   class(out) <- c("pdb", "list")
 
@@ -104,10 +112,11 @@ pdb_save <- function(pdb, destination = NULL) {
 
     utils::write.table(pdb[[i]],
                        file = destination[i],
-                       sep  = "\t",
-                       quote = FALSE,
-                       na = "",
-                       row.names = FALSE)
+                       row.names    = FALSE,
+                       sep          = "\t",
+                       quote        = TRUE,
+                       na           = "NA",
+                       fileEncoding = "UTF-8")
 
   }
 
@@ -133,10 +142,9 @@ pdb_load <- function(path) {
 
   }
 
-  tab_nms <- c("Metadata", "StateVariables", "DiscreteStates", "ContinuousDomains",
+  tab_nms <- c("Metadata", "StateVariables", "ContinuousDomains",
                "IntegrationRules", "StateVectors", "IpmKernels", "VitalRateExpr",
-               "ParameterValues", "EnvironmentalVariables", "HierarchTable",
-               "UncertaintyTable")
+               "ParameterValues", "EnvironmentalVariables", "ParSetIndices")
 
   path    <- paste(path, tab_nms, ".txt", sep = "")
 
@@ -144,13 +152,17 @@ pdb_load <- function(path) {
 
   for(i in seq_along(tab_nms)) {
 
-    pdb[[i]] <- utils::read.csv(file = path[i],
-                                stringsAsFactors = FALSE,
-                                sep = "\t")
-
+    pdb[[i]] <- utils::read.table(file = path[i],
+                                  stringsAsFactors = FALSE,
+                                  sep              = "\t",
+                                  fileEncoding     = "UTF-8",
+                                  quote            = "\"",
+                                  header           = TRUE)
   }
 
   names(pdb) <- tab_nms
+
+  pdb$ParSetIndices$range <- gsub("\\\\", "'", pdb$ParSetIndices$range)
 
   class(pdb) <- c("pdb", "list")
 

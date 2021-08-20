@@ -29,11 +29,7 @@
   # All state variables -> define_kernel(states = list(c(these)))
   sv_tab <- use_tabs$StateVariables
 
-  # discrete state variables -> Not totally sure why these are needed, but
-  # may be useful for... something?
-  ds_tab <- use_tabs$DiscreteStates
-
-  # continuous domains ->
+   # continuous domains ->
   # define_domains(rlang::list2(!!nm := list(lower = these, upper = these)))
   cd_tab <- use_tabs$ContinuousDomains
 
@@ -58,10 +54,7 @@
 
   # parameter set  vars/exprs - >
   # define_kernel(uses_par_sets = ifelse(dim(this), TRUE, FALSE), levs = list(these))
-  he_tab <- use_tabs$HierarchTable
-
-  # uncertainty (currently not available)
-  un_tab <- use_tabs$UncertaintyTable
+  he_tab <- use_tabs$ParSetIndices
 
   if(!is.na(md_tab$remark)) {
 
@@ -134,7 +127,6 @@
                           kern_ids[i],
                           md_tab,
                           sv_tab,
-                          ds_tab,
                           cd_tab,
                           ir_tab,
                           ps_tab,
@@ -142,8 +134,7 @@
                           vr_tab,
                           pv_tab,
                           es_tab,
-                          he_tab,
-                          un_tab)
+                          he_tab)
 
 
   }

@@ -2,7 +2,7 @@
 
 data(pdb)
 
-id <- "aaaa55"
+id <- "aaa312"
 
 proto <- pdb_make_proto_ipm(pdb,
                             ipm_id = id,
@@ -11,7 +11,7 @@ proto <- pdb_make_proto_ipm(pdb,
 
 test_that("proto_ipm is named and classed right", {
 
-  expect_true("aaaa55" %in% names(proto))
+  expect_true("aaa312" %in% names(proto))
   expect_s3_class(proto[[1]], "general_di_det")
 
 })
@@ -29,7 +29,7 @@ test_that("ipmr recognizes outputs from pdb_make_proto", {
 
 # pdb$Metadata$evict_type[pdb$Metadata$ipm_id == 'aaa341'] <- 'truncated_distributions'
 
-id <- c("aaa310", "aaaa55")
+id <- c("aaa310", "aaa313")
 
 proto_2 <- pdb_make_proto_ipm(pdb, ipm_id = id, det_stoch = c("det", "det"))
 
@@ -40,9 +40,9 @@ test_that("building multiple protos works", {
   cls <- vapply(x_2, class, character(3L))
 
   expect_equal(as.vector(cls[1, ]),
-               c("general_di_det_ipm", "simple_di_det_ipm"))
+               c("simple_di_det_ipm", "general_di_det_ipm"))
 
-  expect_equal(names(x_2), c("aaaa55", "aaa310"))
+  expect_equal(names(x_2), c("aaa310", "aaa313"))
 
 })
 

@@ -112,7 +112,7 @@ test_that("make_iter_kernel works", {
 
 test_that("mean_kernel works", {
 
-  stoch_mods <- pdb$HierarchTable$ipm_id[1]
+  stoch_mods <- pdb$ParSetIndices$ipm_id[1]
 
   x <- pdb_make_proto_ipm(pdb, stoch_mods,
                           det_stoch = "stoch",
