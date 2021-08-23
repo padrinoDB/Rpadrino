@@ -212,7 +212,7 @@
 #' @noRd
 #' @importFrom truncdist rtrunc
 #
-# Creates a function given a set of formal argument names, symbols representing
+# Creates an expression given a set of formal argument names, symbols representing
 # variables in padrino, and a name to set for the output (which is used in the
 # vital rate/kernel expressions)
 

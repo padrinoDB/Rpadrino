@@ -1,0 +1,26 @@
+---
+title: "Using PADRINO with Other Databases"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Using PADRINO with Other Databases}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Introduction
+
+Often times, one database will not be sufficient to answer the questions we are asking. For example, we can learn a great deal by combining demographic information with gridded climate data to investigate the effects of environmental variation. We can gain insight into evolutionary processes by examining how demographic processes vary across phylogeny. Therefore PADRINO and _RPadrino_ are designed to facilitate combination with other data sources. In this vignette, we'll cover how to combine them with COMPADRE, a matrix population model database, sources of climate data (NOAA), and functional traits (BIEN).
+
+# COMPADRE
+
+[COMPADRE](https://compadre-db.org/) is an open access database of matrix population models (MPMs). 
+
+```{r setup}
+library(RPadrino)
+```
+
+
+# NOAA Weather Data
+
+
+# BIEN Traits database

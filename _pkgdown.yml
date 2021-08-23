@@ -15,7 +15,11 @@ navbar:
     - text: "Functions"
       href: reference/index.html
     - text: "Vignettes"
-      href: articles/padrino-intro.html
+      menu:
+        - text: "Introduction to RPadrino"
+          href: articles/padrino-intro.html
+        - text: "PADRINO and Other Databases"
+          href: articles/interop.html
 
 reference:
   - title: "Data Input/Output"

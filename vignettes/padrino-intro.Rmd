@@ -27,8 +27,6 @@ pdb <- pdb_download(save = FALSE)
 
 We've now downloaded the PADRINO database. It consists of 10-12 tables, all linked by `ipm_id`. 
 
->NB: Right now, all of _RPadrino_'s functionality depends on these tables remaining in the order they're downloaded/re-loaded in. Therefore, do not try to re-arrange the `pdb` object (e.g. change the order of the tables in the list). You can sort individual tables in any way you like, but altering the order in which they appear in the list will break pretty much everything. 
-
 We can get a brief overview of the information using the `print` method:
 
 ```{r}
