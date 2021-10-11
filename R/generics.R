@@ -56,7 +56,7 @@ print.pdb_proto_ipm_list <- function(x, ...) {
 
   cat("This list of 'proto_ipm's contains the following species: ", spps, sep = "\n")
 
-  cat("\nYou can inspect each model by printing it individually.")
+  cat("\nYou can inspect each model by printing it individually.\n\n")
 
   invisible(x)
 
