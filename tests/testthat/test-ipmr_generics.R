@@ -394,7 +394,8 @@ test_that("getters and setters work as expected", {
   y  <- pdb_make_proto_ipm(pdb, ind[1:2])
   y1 <- pdb_make_proto_ipm(pdb, ind[3:4])
 
-  z  <- pdb_make_ipm(y)
+  z  <- pdb_make_ipm(y, addl_args = list(aaaa15 = list(return_sub_kernels = TRUE),
+                                         aaaa16 = list(return_sub_kernels = TRUE)))
   z1 <- pdb_make_ipm(y1)
 
   pdb_v  <- suppressWarnings(left_ev(z, iterations = 50))
@@ -409,6 +410,7 @@ test_that("getters and setters work as expected", {
   expect_type(pdb_v1$aaaa17, "double")
   expect_type(pdb_v1$aaa310$size_v, "double")
 
+  # lack of convergence should return NA
   expect_equal(pdb_v1$aaaa17, NA_real_)
 
 })

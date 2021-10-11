@@ -215,6 +215,7 @@ pdb_has_age <- .make_pdb_accessor("has_age")
 #' @param map Create a map of studies included in the \code{pdb} object?
 #'
 #' @importFrom rmarkdown render
+#' @importFrom stats complete.cases
 #' @export
 
 pdb_report <- function(pdb,
@@ -237,7 +238,7 @@ pdb_report <- function(pdb,
 
   md       <- pdb$Metadata
   ev       <- pdb$EnvironmentalVariables
-  par_sets <-pdb$HierarchTable
+  par_sets <- pdb$ParSetIndices
 
   any_pi   <- nrow(par_sets) > 0
   any_disc <- any(pdb$StateVariables$discrete | duplicated(pdb$StateVariables$ipm_id))
@@ -248,7 +249,18 @@ pdb_report <- function(pdb,
 
   output <- .pdb_rmd_spec_info(output, any_pi, any_env, any_disc)
 
-  if(map) output <- .pdb_rmd_map(output, pdb)
+  if(map) {
+    output <- .pdb_rmd_map(output, pdb)
+
+    coords <- data.frame(lat = suppressWarnings(as.numeric(pdb$Metadata$lat)),
+                         lon = suppressWarnings(as.numeric(pdb$Metadata$lon)))
+
+    coords <- coords[stats::complete.cases(coords), ]
+
+    ev_env <- new.env()
+    ev_env$coords <- coords
+
+  }
 
   output <- .pdb_rmd_citations(output, pdb)
 
@@ -258,7 +270,7 @@ pdb_report <- function(pdb,
 
   sink()
 
-  if(render_output) rmarkdown::render(rmd_dest)
+  if(render_output) rmarkdown::render(rmd_dest, envir = ev_env)
 
   if(!keep_rmd) unlink(rmd_dest)
 
@@ -269,9 +281,7 @@ pdb_report <- function(pdb,
 #' @importFrom ggplot2 ggplot geom_polygon geom_point theme_bw map_data aes xlab ylab
 #' @noRd
 
-.pdb_rmd_map <- function(output, pdb) {
-
-
+.pdb_rmd_map <- function(output, use_pdb) {
 
   mp_expr <- rlang::expr(
     ggplot2::ggplot(data = wrld_map,
@@ -289,13 +299,11 @@ pdb_report <- function(pdb,
       ggplot2::ylab("Latitude")
   )
 
-  mp_txt <- paste0("```{r echo = FALSE, message = FALSE}\n\n",
-                   'coords <- data.frame(lat = suppressWarnings(as.numeric(pdb$Metadata$lat)),
-                                         lon = suppressWarnings(as.numeric(pdb$Metadata$lon)))
-                    coords <- coords[complete.cases(coords), ]
-                    wrld_map <- ggplot2::map_data(map = "world")\n\n',
-                   rlang::expr_text(mp_expr),
-                   "\n\n```")
+  mp_txt <- c("```{r echo = FALSE, message = FALSE}\n\n",
+              'coords <- coords[complete.cases(coords), ]\n\n
+               wrld_map <- ggplot2::map_data(map = "world")\n\n',
+              rlang::expr_text(mp_expr),
+              "\n\n```")
 
   header <- "\n\n# Map of studies in this `pdb` object\n\n"
 
@@ -364,7 +372,7 @@ pdb_report <- function(pdb,
 
   msg <- c(
     "Continuous environmental variation is handled in PADRINO by sampling from",
-    " random number generators corresponding to the appropriate distribution for",
+    " random number generators corresponding to the appropriate distribution",
     " as reported by the authors. Because these models all include calls to some",
     " stochastic algorithm, they are always treated as stochastic models at build",
     " time, regardlessof whether the authors intended for them to be. To circumvent ",
@@ -393,7 +401,7 @@ pdb_report <- function(pdb,
     "intercept or slope from a regression model) may take on many values. This",
     " is often the case with vital rate regressions fit with discrete predictors,",
     " or with mixed effects models. Common examples include year or site specific",
-    " effects. PADRINO, along with 'ipmr', implements a syntax that allows us ",
+    " effects. PADRINO, along with 'ipmr', implements a syntax that allows us to ",
     "concisely represent these models without risking typographical errors or",
     " retyping an expression many times. \n\n",
     "For example, the expression `mu_g_yr = alpha_g_yr + beta_g * z_1` may encompass",

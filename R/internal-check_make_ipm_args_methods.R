@@ -46,7 +46,8 @@
                 "iterations",
                 "kernel_seq",
                 "normalize_pop_size",
-                "report_progress")
+                "report_progress",
+                "return_sub_kernels")
 
   cur_args <- names(args[[1]])
 
@@ -77,7 +78,8 @@
                 "iterations",
                 "kernel_seq",
                 "normalize_pop_size",
-                "report_progress")
+                "report_progress",
+                "return_sub_kernels")
 
   cur_args <- names(args[[1]])
 
@@ -106,7 +108,8 @@
                 "domain_list",
                 "iterate",
                 "iterations",
-                "normalize_pop_size")
+                "normalize_pop_size",
+                "return_sub_kernels")
 
   cur_args <- names(args[[1]])
 
@@ -135,7 +138,8 @@
                 "iterations",
                 "kernel_seq",
                 "normalize_pop_size",
-                "report_progress")
+                "report_progress",
+                "return_sub_kernels")
 
   cur_args <- names(args[[1]])
 
@@ -166,7 +170,8 @@
                 "iterations",
                 "kernel_seq",
                 "normalize_pop_size",
-                "report_progress")
+                "report_progress",
+                "return_sub_kernels")
 
   cur_args <- names(args[[1]])
 

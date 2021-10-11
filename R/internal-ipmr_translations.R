@@ -124,6 +124,11 @@
       )
 
       names(par_set_indices) <- use_par_sets$vr_expr_name
+      if(!all(is.na(he_tab$drop_levels))) {
+
+        par_set_indices$drop_levels <- unique(use_par_sets$drop_levels)
+
+      }
 
     } else {
 
