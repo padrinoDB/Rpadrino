@@ -259,7 +259,6 @@ pdb_report <- function(pdb,
 
     ev_env <- new.env()
     ev_env$coords <- coords
-
   }
 
   output <- .pdb_rmd_citations(output, pdb)
@@ -278,14 +277,16 @@ pdb_report <- function(pdb,
 
 }
 
-#' @importFrom ggplot2 ggplot geom_polygon geom_point theme_bw map_data aes xlab ylab
+#' @importFrom ggplot2 ggplot geom_polygon geom_point theme_bw scale_y_continuous
+#' @importFrom ggplot2 map_data aes xlab ylab scale_x_continuous
 #' @noRd
 
 .pdb_rmd_map <- function(output, use_pdb) {
 
   mp_expr <- rlang::expr(
     ggplot2::ggplot(data = wrld_map,
-                    ggplot2::aes(x = long, y = lat,
+                    ggplot2::aes(x = long,
+                                 y = lat,
                                  group = group)) +
       ggplot2::geom_polygon(fill = NA, color = "grey70") +
       ggplot2::geom_point(data = coords,
@@ -296,7 +297,15 @@ pdb_report <- function(pdb,
                  size = 3) +
       ggplot2::theme_bw() +
       ggplot2::xlab("Longitude") +
-      ggplot2::ylab("Latitude")
+      ggplot2::ylab("Latitude") +
+      ggplot2::scale_x_continuous(
+        breaks = seq(-180, 180, by = 60),
+        labels = NULL
+      ) +
+    ggplot2::scale_y_continuous(
+      breaks = seq(-90, 90, by = 60),
+      labels = NULL
+    )
   )
 
   mp_txt <- c("```{r echo = FALSE, message = FALSE}\n\n",
@@ -318,10 +327,100 @@ pdb_report <- function(pdb,
 
   cit_list <- unique(pdb_citations(pdb))
 
+  cit_list <- .pdb_rmd_append_doi_jstor(pdb, cit_list)
+  cit_list <- .pdb_rmd_append_appendix_link(pdb, cit_list)
+
   cit_list <- paste(seq_along(cit_list), ". ", cit_list, sep = "")
   cit_list <- paste(cit_list, collapse = "\n\n")
 
   c(output, "\n\n# Citations included in the `pdb` object\n\n", cit_list)
+
+}
+
+#' @noRd
+# Assumes anything without a full URL will point to a DOI. Need to check how
+# this works with an actual database.
+
+.pdb_rmd_append_appendix_link <- function(pdb, cit_list) {
+
+  app_links <- pdb$Metadata$demog_appendix_link[!duplicated(pdb$Metadata$apa_citation)]
+
+  for(i in seq_along(cit_list)) {
+
+    if(is.na(app_links[i])) next
+
+    if(!.pdb_is_http(app_links[i])) {
+
+      if(.pdb_is_www(app_links[i])){
+
+        app_links[i] <- paste0("https://", app_links[i])
+
+      } else {
+
+        app_links[i] <- paste0("https://doi.org/", app_links[i])
+
+      }
+    }
+
+    cit_list[i] <- paste0(cit_list[i], ", [Appendix Link](", app_links[i], ")")
+  }
+
+  return(cit_list)
+
+}
+
+#' @noRd
+# RMarkdown requires URLs to start with https://, otheriwse it will point to
+# a local destination. Thus, anything starting w/ www needs to have http or
+# https prepended to it.
+
+.pdb_is_www <- function(x) {
+
+  tst <- substr(x, 1, 3)
+
+  if(tst == "www") return(TRUE)
+
+  return(FALSE)
+}
+
+#' @noRd
+
+.pdb_is_http <- function(x) {
+
+  tst <- substr(x, 1, 5)
+
+  if(tst == "https") return(TRUE)
+
+  return(FALSE)
+
+}
+
+#' @noRd
+
+.pdb_rmd_append_doi_jstor <- function(pdb, cit_list) {
+
+  doi_jstor <- pdb$Metadata$doi[!duplicated(pdb$Metadata$apa_citation)]
+
+  for(i in seq_along(cit_list)) {
+
+    if(is.na(doi_jstor[i])) next
+
+    doi_jstor_link <- doi_jstor[i]
+
+    if(grepl("jstor\\.org", doi_jstor_link)) {
+
+      cit_list[i] <- paste0(cit_list[i], ", [JSTOR Link](", doi_jstor_link,")")
+
+    } else {
+
+      temp <- paste0("https://doi.org/", doi_jstor_link)
+
+      cit_list[i] <- paste0(cit_list[i], " [DOI](", temp,")")
+    }
+
+  }
+
+  return(cit_list)
 
 }
 
