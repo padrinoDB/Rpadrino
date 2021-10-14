@@ -20,13 +20,13 @@ information on the number of models in each.
 
 | Data Source           | \# of Species | \# of Publications | \# of IPM id’s |
 |:----------------------|--------------:|-------------------:|---------------:|
-| Internal Data         |            26 |                 16 |             66 |
-| Full PADRINO Database |            44 |                 33 |            257 |
+| Internal Data         |            36 |                 22 |             77 |
+| Full PADRINO Database |            56 |                 40 |            280 |
 
 | Kingdom  | \# of Species | \# of Publications | \# of IPM id’s |
 |:---------|--------------:|-------------------:|---------------:|
-| Animalia |             9 |                  9 |             15 |
-| Plantae  |            35 |                 24 |            242 |
+| Animalia |            16 |                 14 |             22 |
+| Plantae  |            40 |                 26 |            258 |
 
 Above are the current number of unique species, unique publications, and
 unique `ipm_id`s that are in PADRINO and `RPadrino`’s internal dataset.
