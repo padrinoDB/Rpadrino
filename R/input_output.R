@@ -49,7 +49,7 @@ pdb_download <- function(save = TRUE, destination = NULL) {
     out[[i]] <- utils::read.table(file = url(urls[i]),
                                   stringsAsFactors = FALSE,
                                   sep              = "\t",
-                                  fileEncoding     = "UTF-8",
+                                  encoding         = "UTF-8",
                                   quote            = "\"",
                                   header           = TRUE)
 
@@ -155,7 +155,7 @@ pdb_load <- function(path) {
     pdb[[i]] <- utils::read.table(file = path[i],
                                   stringsAsFactors = FALSE,
                                   sep              = "\t",
-                                  fileEncoding     = "UTF-8",
+                                  encoding         = "UTF-8",
                                   quote            = "\"",
                                   header           = TRUE)
   }
