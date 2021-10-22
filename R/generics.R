@@ -582,6 +582,20 @@ pdb_new_fun_form <- function(...) {
   return(object)
 }
 
+#' @rdname ipmr_generics
+#' @param x A \code{pdb_ipm} object.
+#' @param i The index to extract
+#' @export
+
+`[.pdb_ipm` <- function(x, i) {
+
+  out <- NextMethod()
+
+  class(out) <- c("pdb_ipm", "list")
+
+  return(out)
+
+}
 
 #' @noRd
 

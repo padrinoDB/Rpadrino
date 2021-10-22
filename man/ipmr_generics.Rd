@@ -24,6 +24,7 @@
 \alias{parameters<-.pdb_proto_ipm_list}
 \alias{vital_rate_exprs<-.pdb_proto_ipm_list}
 \alias{kernel_formulae<-.pdb_proto_ipm_list}
+\alias{[.pdb_ipm}
 \title{Padrino methods for `ipmr` generic functions}
 \usage{
 \method{vital_rate_exprs}{pdb_proto_ipm_list}(object)
@@ -71,6 +72,8 @@ pdb_new_fun_form(...)
 \method{vital_rate_exprs}{pdb_proto_ipm_list}(object, kernel = NULL, vital_rate = NULL) <- value
 
 \method{kernel_formulae}{pdb_proto_ipm_list}(object, kernel) <- value
+
+\method{[}{pdb_ipm}(x, i)
 }
 \arguments{
 \item{object}{An object produced by \code{pdb_make_proto_ipm} or
@@ -109,6 +112,10 @@ can also supply a string specifying how they are combined (e.g.
 \item{kernel}{Ignored, present for compatibility with \code{ipmr}.}
 
 \item{vital_rate}{Ignored, present for compatibility with \code{ipmr}.}
+
+\item{x}{A \code{pdb_ipm} object.}
+
+\item{i}{The index to extract}
 }
 \description{
 Provides wrappers around \code{ipmr} generic functions to extract

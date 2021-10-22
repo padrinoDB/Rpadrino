@@ -88,3 +88,166 @@ cirsiums
 We've rebuilt our first set of IPMs! Next, we'll explore how to extract a bit more information from these.
 
 # More complicated analyses
+
+Often times, we'll want more than just the deterministic population growth rates. We'll explore how to run some more complicated analyses here. Specifically, we'll compute the probability of surviving to age $a$, $l_a(z_0)$ and the average per-capita fecundity at age $a$, $f_a(z_0)$. After that, we'll compute mean and variance in lifespan ($\bar\eta(z_0)$ and $\sigma_\eta^2 (z_0)$, respectively), and mean and variance in lifetime output of recruits ($\bar r(z_0)$ and $\sigma_r^2(z_0)$, respectively). Along the way, we'll see how to manipulate `proto_ipm`s and IPM objects, as well as how to pass additional arguments to the model building process. 
+
+## The dataset
+
+We're going to use a subset of PADRINO IPMs to illustrate how to implement these calculations. We'll select simple IPMs that are density-independent, deterministic, and from North America, so that things run a bit faster. 
+
+```{r}
+
+n_state_vars <- table(pdb$StateVariables$ipm_id) 
+simple_mod_ind <- names(n_state_vars)[n_state_vars == 1]
+
+stoch_mod_ind <- unique(c(pdb$EnvironmentalVariables$ipm_id,
+                          pdb$ParSetIndices$ipm_id,
+                          pdb$Metadata$ipm_id[pdb$Metadata$has_dd],
+                          pdb$Metadata$ipm_id[pdb$Metadata$continent != "n_america"]))
+
+simple_mod_ind <- simple_mod_ind[!simple_mod_ind %in% stoch_mod_ind]
+
+monocarps <- pdb$Metadata$ipm_id[pdb$Metadata$organism_type == "biennial"]
+
+simple_mod_ind <- simple_mod_ind[!simple_mod_ind %in% monocarps]
+
+simple_pdb <- pdb_subset(pdb, simple_mod_ind) %>%
+  pdb_make_proto_ipm() %>%
+  pdb_make_ipm()
+
+
+```
+
+We now have `r length(simple_pdb)` distinct `ipm_id`s to work with! 
+
+## Age-specific survival and fecundity
+
+Age-specific calculations are straightforward once we've extracted sub-kernels. We can define functions that accept a single IPM object and then `lapply()` them to do our computations. We'll start with $l_a(z_0)$ and $f_a(z_0)$. These are defined by the following equations:
+
+1. $l_a(z_0) = eP^a$, and
+
+2. $f_a(z_0) = (eFP^a)/l_a$.
+
+$P$ and $F$ are survival/growth and fecundity kernels, respectively. $e$ is a constant function $e(z) \equiv 1$. Left multiplication with this function has the effect of summing columns. $a$ is the age we wish to do the calculations for.
+
+```{r}
+
+l_a <- function(ipm, a) {
+    
+  P <- ipm$sub_kernels$P
+  
+  # %^% is a function from ipmr that raises matrices to a power, rather than
+  # a pointwise power that ^ does.
+  
+  P_a <- P %^% a
+  
+  colSums(P_a)
+}
+
+f_a <- function(ipm, a) {
+    
+  P <- ipm$sub_kernels$P
+  F <- ipm$sub_kernels$F
+  
+  l_age <- l_a(ipm, a)
+  
+  P_a <- P %^% a
+  
+  colSums(F %*% P_a) / l_age
+
+}
+
+```
+
+Now, we just need to apply our functions to the IPMs. We'll compute survival and fecundities for 5 year olds, and then plot the results:
+
+```{r}
+
+l_as <- lapply(simple_pdb,
+               function(x, a) l_a(x, a), 
+               a = 5)
+
+f_as <- lapply(simple_pdb,
+               function(x, a) f_a(x, a), 
+               a = 5)
+
+par(mfrow = c(3, 2))
+for(i in seq_along(l_as)) {
+  
+  nm <- pdb$Metadata$species_accepted[pdb$Metadata$ipm_id == names(l_as)[i]]
+  
+  plot(l_as[[i]], type = "l",
+       # ylim = c(0, 1),
+       main = paste0(nm,": Probability of survival to age 5"),
+       xlab = expression(paste("Initial size z"[0])),
+       ylab = "Pr(s)")
+  
+  plot(f_as[[i]], type = "l",
+       # ylim = c(0, 1),
+       main = paste0(nm,": Expected Fecundity at age 5 (given survival)"),
+       xlab = expression(paste("Initial size z"[0])),
+       ylab = "E[f]")
+  
+}
+
+```
+
+We can also generate survivorship curves for each one to investigate type I/II/III species. These require simulating cohorts for a number of years using the $P$ and $F$ kernels. Because this can take some time to run, we'll only do it for a single model for each species in our data set.
+
+```{r}
+
+keep_ind <- pdb_subset(pdb, simple_mod_ind) %>%
+  .$Metadata %>%
+  .[!duplicated(.$species_accepted), "ipm_id"]
+
+use_ipms <- simple_pdb[keep_ind]
+
+
+n_yrs <- 10
+
+init_pops <- right_ev(use_ipms)
+
+par(mfrow = c(3, 2))
+
+for(i in seq_along(init_pops)) {
+  
+  f_age <- l_age <- numeric(n_yrs) 
+  
+  P_a <- diag(nrow(use_ipms[[i]]$sub_kernels[[1]]))
+  
+  
+  for(j in seq_len(n_yrs)) {
+    
+    P_now <- use_ipms[[i]]$sub_kernels$P
+    F_now <- use_ipms[[i]]$sub_kernels$F
+
+    l_age[j] <- sum(colSums(P_a) * init_pops[[i]][[1]]) 
+    f_age[j] <- sum(colSums(F_now %*% P_a) * init_pops[[i]][[1]])
+    
+    P_a <- P_now %*% P_a
+  }
+  
+  f_age <- f_age / l_age
+  
+  nm <- pdb$Metadata$species_accepted[pdb$Metadata$ipm_id == names(init_pops)[i]]
+  
+  plot(l_age, type = "l",
+       ylim = c(0, 1),
+       main = paste0(nm, ": Probability of survival"),
+       xlab = "Age",
+       ylab = "Pr(s)")
+  
+  plot(f_age, type = "l",
+       # ylim = c(0, 1),
+       main = paste0(nm, ": Average Fecundity"),
+       xlab = "Age",
+       ylab = "E[f]")
+  
+}
+
+```
+
+
+
+
+
