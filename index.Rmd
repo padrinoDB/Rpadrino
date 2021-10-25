@@ -1,0 +1,130 @@
+---
+output: github_document
+---
+
+[![R-CMD-check](https://github.com/levisc8/RPadrino/workflows/R-CMD-check/badge.svg)](https://github.com/levisc8/RPadrino/actions) 
+[![Codecov test coverage](https://codecov.io/gh/levisc8/RPadrino/branch/main/graph/badge.svg)](https://codecov.io/gh/levisc8/RPadrino?branch=main)
+
+
+## RPadrino
+
+`RPadrino` is a package for interacting with the PADRINO Integral Projection Model database. Currently, an alpha release of PADRINO exists as a set of version controlled csv files hosted in a GitHub repository. The longer term plan is to migrate it to a set of static, version-controlled tables that are hosted on Zenodo (or similar). For now, you can access it by installing the `RPadrino` _R_ package from this repository (see below for instructions).
+
+The data included in this package are quality checked (see below) and ready for use. This is not the complete database - that can be downloaded using the `pdb_download` function. See the table below for information on the number of models in each.
+
+```{r echo = FALSE, message = FALSE, warning = FALSE}
+library(dplyr)
+library(RPadrino)
+
+data(pdb)
+
+sum_tab <- data.frame(
+  source = "Internal Data",
+  Number_of_Species      = length(unique(pdb$Metadata$species_accepted)), 
+  Number_of_Publications = length(unique(pdb$Metadata$apa_citation)),
+  Number_of_IPM_ids      = nrow(pdb$Metadata)
+)
+
+pdb <- pdb_download(save = FALSE)
+
+sum_tab_2 <-  data.frame(
+  source = "Full PADRINO Database",
+  Number_of_Species      = length(unique(pdb$Metadata$species_accepted)), 
+  Number_of_Publications = length(unique(pdb$Metadata$apa_citation)),
+  Number_of_IPM_ids      = nrow(pdb$Metadata)
+)
+
+full_tab <- rbind(sum_tab, sum_tab_2)
+names(full_tab) <- gsub("_", " ", names(full_tab))
+
+
+knitr::kable(
+  full_tab,
+  col.names = c("Data Source", "# of Species", "# of Publications", "# of IPM id's")
+)
+
+king_tab <- pdb$Metadata %>%
+  group_by(kingdom) %>% 
+  summarise(
+    Number_of_Species      = length(unique(species_accepted)), 
+    Number_of_Publications = length(unique(apa_citation)),
+    Number_of_IPM_ids      = n()
+  )
+
+knitr::kable(
+  king_tab,
+  col.names = c("Kingdom", "# of Species", "# of Publications", "# of IPM id's")
+)
+
+```
+
+Above are the current number of unique species, unique publications, and unique `ipm_id`s that are in PADRINO and `RPadrino`'s internal dataset. Table 2 provides a breakdown of how these are distributed amongst taxonomic kingdoms in the **full** database (i.e. not the internal data set). All of the models included in both the internal data set and full database have been quality checked for accuracy. Quality checked means that for deterministic models, the asymptotic per-capita growth rate ($\lambda$) is within $\pm 0.03$ of the published point estimate value. For stochastic models, we check for approximately the same stochastic population growth rate ($\lambda_s$), but do not try to replicate the analysis, as this usually requires too many computing resources to be feasible.  
+
+## Scope
+
+The goal of this package is basic data management, exploration, and porting PADRINO's internal syntax to [`ipmr`'s](https://levisc8.github.io/ipmr/) syntax. One can combine models from here with their own models for synthesis work, using the `proto_ipm` as a common data structure to power the analysis. It is not intended to provide a complete analysis toolbox - that will come in a separate package designed to work with `ipmr` and `RPadrino` objects.
+
+## Usage
+
+### Installation
+
+You can install RPadrino from github with:
+
+```{r gh-installation, eval = FALSE}
+
+if(!requireNamespace("remotes", quietly = TRUE)) {
+  install.packages("remotes")
+}
+
+remotes::install_github("levisc8/RPadrino")
+```
+
+### Examples
+
+A small-ish copy of the Padrino Database is included as a package data set. You can download the full database as well. You can access it with the following code:
+
+```{r eval = FALSE}
+
+library(RPadrino)
+
+data("pdb") # Internal copy, contains a subset of plant species in PADRINO
+
+# Downloads the complete database. The models contained in here have 
+# been tested for accuracy/reasonable results.  
+pdb <- pdb_download(save = FALSE) 
+
+```
+
+The next step is to identify the models we are interested in building. There are accessor functions that allow you to extract metadata columns from the `pdb` object, which may be helpful in this step. See `?pdb_species_accepted` for a list of those.
+
+Once, we've identified the model(s) we want, we can build a list of [`proto_ipm`'s](https://levisc8.github.io/ipmr/articles/proto-ipms.html). This is an intermediate step between the database representation and a set of kernels. Once we have the list of `proto_ipm`'s, we can build an actual model. Below, we extract a specific study, and construct an IPM from the database object.
+
+```{r eval = FALSE}
+
+# We can construct a single IPM at a time, or make a list of many IPMs
+
+proto_list   <- pdb_make_proto_ipm(pdb, 
+                                   ipm_id = c("aaa310", "ddddd7", "aaaa17"),
+                                   det_stoch = "det")
+
+```
+
+Once the list of `proto_ipm`'s is generated, you can either append your own IPMs to it, or you can go ahead to the next chunk. Note that `pdb_make_ipm` will almost always work, but there may still be bugs lurking!
+
+```{r eval = FALSE}
+
+ipm_list <- pdb_make_ipm(proto_list)
+
+lams         <- lambda(ipm_list)
+stable_dists <- right_ev(ipm_list)
+repro_vals   <- left_ev(ipm_list)
+
+```
+
+## Finding help
+
+Functions are documented in the _Functions_ tab and longer form documentation and examples are in the _Vignettes_ tab.
+
+### Contributing
+
+Please note that the RPadrino project is released with a [Contributor Code of Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.

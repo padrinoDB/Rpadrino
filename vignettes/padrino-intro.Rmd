@@ -1,7 +1,10 @@
 ---
 title: "RPadrino Introduction"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 3
 vignette: >
   %\VignetteIndexEntry{RPadrino Introduction}
   %\VignetteEngine{knitr::rmarkdown}
@@ -10,7 +13,7 @@ vignette: >
 
 # Package Overview
 
-_RPadrino_ provides an interface to the PADRINO database. PADRINO houses metadata on published Integral Projection Models, and all the information needed to rebuild them. _RPadrino_ provides a set of functions that wrap around [ipmr](https://levisc8.github.io/ipmr/) so that you can rebuild these models using _R_. Additionally, there's some data downloading and management functionality, as well as tools to help report and cite studies used in an analysis.
+`RPadrino` provides an interface to the PADRINO database. PADRINO houses metadata on published Integral Projection Models, and all the information needed to rebuild them. `RPadrino` provides a set of functions that wrap around [`ipmr`](https://levisc8.github.io/ipmr/) so that you can rebuild these models using _R_. Additionally, there's some data downloading and management functionality, as well as tools to help report and cite studies used in an analysis.
 
 # Usage
 
@@ -56,7 +59,7 @@ aster_pdb <- pdb_subset(pdb, ipm_ids = aster_ind)
 
 ```
 
-Next, we can rebuild their IPMs. This is a two step process in _RPadrino_. The first is to create `proto_ipm`s with `pdb_make_proto_ipm()`. This function takes a database object and, optionally, a subset of `ipm_id`s, and constructs a list of `proto_ipm`s. `proto_ipm`s are a common data structure used to represent IPM objects before they are actually constructed. One advantage of this extra step is that you can combine `proto_ipm`s generated from your own data with `ipmr` with `proto_ipm`s generated from PADRINO, so you can augment syntheses with your own data. An example of that is provided further down. 
+Next, we can rebuild their IPMs. This is a two step process in `RPadrino`. The first is to create `proto_ipm`s with `pdb_make_proto_ipm()`. This function takes a database object and, optionally, a subset of `ipm_id`s, and constructs a list of `proto_ipm`s. `proto_ipm`s are a common data structure used to represent IPM objects before they are actually constructed. One advantage of this extra step is that you can combine `proto_ipm`s generated from your own data with `ipmr` with `proto_ipm`s generated from PADRINO, so you can augment syntheses with your own data. An example of that is provided in the _Other Data Sources_ vignette. 
 
 The simplest way to make `proto_ipm`s for a whole `pdb` object is:
 
@@ -89,7 +92,7 @@ We've rebuilt our first set of IPMs! Next, we'll explore how to extract a bit mo
 
 # More complicated analyses
 
-Often times, we'll want more than just the deterministic population growth rates. We'll explore how to run some more complicated analyses here. Specifically, we'll compute the probability of surviving to age $a$, $l_a(z_0)$ and the average per-capita fecundity at age $a$, $f_a(z_0)$. After that, we'll compute mean and variance in lifespan ($\bar\eta(z_0)$ and $\sigma_\eta^2 (z_0)$, respectively), and mean and variance in lifetime output of recruits ($\bar r(z_0)$ and $\sigma_r^2(z_0)$, respectively). Along the way, we'll see how to manipulate `proto_ipm`s and IPM objects, as well as how to pass additional arguments to the model building process. 
+Often times, we'll want more than just the deterministic population growth rates. We'll explore how to run some more complicated analyses here. Specifically, we'll compute the probability of surviving to age $a$, $l_a(z_0)$ and the average per-capita fecundity at age $a$, $f_a(z_0)$. After that, we'll compute mean and variance in lifespan ($\bar\eta(z_0)$ and $\sigma_\eta^2 (z_0)$, respectively). Along the way, we'll learn more about the structure of IPM objects in `RPadrino` and `ipmr`. 
 
 ## The dataset
 
@@ -97,19 +100,36 @@ We're going to use a subset of PADRINO IPMs to illustrate how to implement these
 
 ```{r}
 
+# This creates a table of the number of state variables per ipm_id. Since
+# simple IPMs, by defintion, have only 1 state variable, we can use the names
+# of the vector that it returns to choose only those. 
+
 n_state_vars <- table(pdb$StateVariables$ipm_id) 
 simple_mod_ind <- names(n_state_vars)[n_state_vars == 1]
 
-stoch_mod_ind <- unique(c(pdb$EnvironmentalVariables$ipm_id,
-                          pdb$ParSetIndices$ipm_id,
-                          pdb$Metadata$ipm_id[pdb$Metadata$has_dd],
-                          pdb$Metadata$ipm_id[pdb$Metadata$continent != "n_america"]))
 
-simple_mod_ind <- simple_mod_ind[!simple_mod_ind %in% stoch_mod_ind]
+# Next, we want to capture any models that have stochastic dynamics, multiple
+# values per parameter, or density dependence. 
+
+rm_mod_ind <- unique(c(pdb$EnvironmentalVariables$ipm_id, # Stochastic models
+                       pdb$ParSetIndices$ipm_id,          # Multiple parameter values
+                       pdb$Metadata$ipm_id[pdb$Metadata$has_dd], # Density dependent
+                       pdb$Metadata$ipm_id[pdb$Metadata$continent != "n_america"]))
+
+# Remove these IDs from our simple_mod_ind vector
+
+simple_mod_ind <- simple_mod_ind[!simple_mod_ind %in% rm_mod_ind]
+
+# We're also going to remove monocarpic perennials, as their survival/growth
+# kernels are slightly trickier to work with (note that there is an example
+# of working with these in the manuscript/si/case_study_1.pdf file in PADRINO
+# GitHub repository).
 
 monocarps <- pdb$Metadata$ipm_id[pdb$Metadata$organism_type == "biennial"]
 
 simple_mod_ind <- simple_mod_ind[!simple_mod_ind %in% monocarps]
+
+# Finally, we'll subset the database and build the IPM objects!
 
 simple_pdb <- pdb_subset(pdb, simple_mod_ind) %>%
   pdb_make_proto_ipm() %>%
@@ -161,7 +181,7 @@ f_a <- function(ipm, a) {
 
 Now, we just need to apply our functions to the IPMs. We'll compute survival and fecundities for 5 year olds, and then plot the results:
 
-```{r}
+```{r, fig.height = 8, fig.width = 8}
 
 l_as <- lapply(simple_pdb,
                function(x, a) l_a(x, a), 
@@ -171,8 +191,12 @@ f_as <- lapply(simple_pdb,
                function(x, a) f_a(x, a), 
                a = 5)
 
-par(mfrow = c(3, 2))
-for(i in seq_along(l_as)) {
+# This only plots the figures for the first two species.
+# Remove the [1:4] to see all of them.
+# Uncomment the par(mfrow = c(...)) line to get an arrangement you like
+
+# par(mfrow = c(2, 2))
+for(i in seq_along(l_as)[1:4]) {
   
   nm <- pdb$Metadata$species_accepted[pdb$Metadata$ipm_id == names(l_as)[i]]
   
@@ -194,7 +218,7 @@ for(i in seq_along(l_as)) {
 
 We can also generate survivorship curves for each one to investigate type I/II/III species. These require simulating cohorts for a number of years using the $P$ and $F$ kernels. Because this can take some time to run, we'll only do it for a single model for each species in our data set.
 
-```{r}
+```{r, fig.height = 8, fig.width = 8}
 
 keep_ind <- pdb_subset(pdb, simple_mod_ind) %>%
   .$Metadata %>%
@@ -207,9 +231,11 @@ n_yrs <- 10
 
 init_pops <- right_ev(use_ipms)
 
-par(mfrow = c(3, 2))
+# As above, remove the [1:4] to see all plots and use par() to control their
+# arrangement
+# par(mfrow = c(3, 2))
 
-for(i in seq_along(init_pops)) {
+for(i in seq_along(init_pops)[1:2]) {
   
   f_age <- l_age <- numeric(n_yrs) 
   
@@ -248,6 +274,210 @@ for(i in seq_along(init_pops)) {
 ```
 
 
+## Mean and variance in lifespan
+
+$\bar\eta(z_0)$ is given by the following equation: $\bar\eta(z_0) = eN$, where $N$ is the fundamental operator. This can be thought of as the expected amount of time an individual with initial state $z_0$ spends in state $z'$ before death. It is computed as $(I - P)^{-1}$, where $I$ is an identity operator (in practice, it is an identity matrix with dimension equal to $P$), and $P$ is the survival/growth kernel of the IPM. Thus, all we need are the $P$ kernels from each model. 
 
 
+```{r}
+
+make_N <- function(ipm) {
+  
+  P <- ipm$sub_kernel$P
+  I <- diag(nrow(P))
+  N <- solve(I - P)
+  
+  return(N)
+}
+eta_bar_z0 <- function(ipm) {
+  
+  N <- make_N(ipm)
+  return(colSums(N))
+  
+}
+
+mean_lifespan <- lapply(use_ipms, eta_bar_z0) 
+
+```
+
+The formula for the variance in lifespan is only a bit more complicated. It is given by $\sigma_\eta^2(z_0) = e(2N^2 - N) - (eN)^2$. For this, we also need to use `ipmr`'s `%^%` operator to ensure we correctly exponentiate the first term, and use the regular `^` to exponentiate the second term. Calculating $N$ is the same as before, we'll compute the variance and standard deviation of lifespan (for plotting). 
+
+```{r}
+
+sigma_eta_z0 <- function(ipm) {
+  
+  N <- make_N(ipm)
+  
+  out <- colSums(2 * N %^% 2 - N) - (colSums(N)) ^ 2
+  
+  return(out)
+  
+}
+
+var_lifespan <- lapply(use_ipms, sigma_eta_z0)
+
+sd_lifespan  <- lapply(var_lifespan, sqrt)
+
+```
+
+Warning? Huh? Let's see what's going on.
+
+```{r}
+
+vapply(mean_lifespan, range, numeric(2L))
+
+vapply(var_lifespan, range, numeric(2L))
+
+```
+
+The fundamental operator should not have any negative numbers, and yet `aaa341` contains them. This is because of the survival function used in the model. We'll show how to remedy this in the next section, but for now, we'll just remove it from our analysis. Next, we'll learn how to visualize our results quickly with `ggplot2`:
+
+
+```{r, fig.height = 10, fig.width = 10}
+
+mean_lifespan <- mean_lifespan[!names(mean_lifespan) %in% "aaa341"]
+sd_lifespan  <- sd_lifespan[!names(sd_lifespan) %in% "aaa341"]
+
+library(ggplot2)
+
+all_data <- data.frame(
+  id      = NA,
+  species = NA,
+  mean_ls = NA,
+  upper   = NA,
+  lower   = NA,
+  z_0     = NA
+)
+
+for(i in seq_along(mean_lifespan)) {
+  
+  temp <- data.frame(
+    id = names(mean_lifespan)[i],
+    species = pdb$Metadata$species_accepted[pdb$Metadata$ipm_id == names(mean_lifespan)[i]],
+    mean_ls = mean_lifespan[[i]],
+    upper   = mean_lifespan[[i]] + 1.96 * sd_lifespan[[i]],
+    lower   = mean_lifespan[[i]] - 1.96 * sd_lifespan[[i]],
+    z_0     = seq(1, length(mean_lifespan[[i]]), 1)
+  )
+  
+  all_data <- rbind(all_data, temp)
+  
+}
+
+# Remove the NA dummy row, and restrict the lower CI to >= 0 (can't have negative
+# lifespan)
+
+all_data <- all_data[-1, ]
+all_data$lower <- ifelse(all_data$lower < 0, 0, all_data$lower)
+
+
+# Now, ggplot using facet wrap and geom_ribbon to get the confidence interval
+
+ggplot(all_data, aes(x = z_0, y = mean_ls)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = lower,
+                  ymax = upper),
+              fill = "grey50",
+              alpha = 0.5) +
+  facet_wrap( ~ species,
+              scales = "free") +
+  theme_bw()
+
+
+```
+
+# Correcting issues with data
+
+We saw above that sometimes data in PADRINO can give values that make no sense. PADRINO is committed to providing IPMs *as they are published*, and does not take a stance on the technical correctness of these models. `aaa341` does provide an opportunity to illustrate how to address some of these issues. 
+
+We saw that that the fundamental operator contained negative values. This shouldn't be possible, but occurs when the determinant of $(I - P)$ is negative. This usually occurs when some part of the probability of survival function is exactly 1 (i.e. individuals of that size cannot die). We can correct this by modifying the functional form in PADRINO to compute the parallel minimum of the survival function the authors reported and some value that is really close to 1, but not quite there. 
+
+We'll introduce two new functions - `vital_rate_exprs<-` and `pdb_new_fun_form()`. Since we're computing all new survival values, we'll have to modify the `proto_ipm` first, then re-build the IPM object (the species in question is *Lonicera maackii*). 
+
+```{r}
+
+lonicera_proto <- pdb_make_proto_ipm(pdb, "aaa341")
+
+# Inspect the vital rate expressions
+vital_rate_exprs(lonicera_proto)
+
+```
+
+We can see that the function `s` is the one we want to update. We'll use the setter `vital_rate_exprs<-` and `pdb_new_fun_form()` to do this. These two functions combine with the following syntax:
+
+```{r eval = FALSE}
+
+vital_rate_exprs(proto_ipms) <- pdb_new_fun_form(
+  list(
+    <ipm_id_1> = list(
+      <vital_rate_name_1> = <expression_1>
+      <vital_rate_name_2> = <expression_2>
+    ),
+    <ipm_id_2> = list(
+      <vital_rate_name_3> = <expression_3>
+    )
+  )
+)
+
+```
+
+With a maximum survival probability of 0.98, our example of `aaa341` looks like this:
+
+```{r}
+
+vital_rate_exprs(lonicera_proto) <-pdb_new_fun_form(
+  list(
+    aaa341 = list(
+      s = pmin(0.98, 1 / (1 + exp(-(si + ss1 * size_1 + ss2 * size_1 ^ 2))))
+    )
+  )
+)
+
+vital_rate_exprs(lonicera_proto)
+```
+
+Great! Let's re-run the analysis above with our corrected model!
+
+```{r fig.height = 10, fig.width = 10}
+
+# Rebuild the IPM, then use our functions for mean, variance, and SD on it.
+lonicera_ipm <- pdb_make_ipm(lonicera_proto)
+
+lonicera_mu_ls  <- eta_bar_z0(lonicera_ipm$aaa341)
+lonicera_var_ls <- sigma_eta_z0(lonicera_ipm$aaa341)
+lonicera_sd_ls  <- sqrt(lonicera_var_ls)
+
+temp <- data.frame(
+    id = "aaa341",
+    species = "Lonicera_maackii",
+    mean_ls = lonicera_mu_ls,
+    upper   = lonicera_mu_ls + 1.96 * lonicera_sd_ls,
+    lower   = lonicera_mu_ls - 1.96 * lonicera_sd_ls,
+    z_0     = seq(1, length(lonicera_mu_ls), 1)
+  )
+
+
+all_data <- rbind(all_data, temp)
+
+# Again, restrict the lower CI to have minimum of 0
+all_data$lower <- ifelse(all_data$lower < 0, 0, all_data$lower)
+
+
+# Rebuild our plot!
+ggplot(all_data, aes(x = z_0, y = mean_ls)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = lower,
+                  ymax = upper),
+              fill = "grey50",
+              alpha = 0.5) +
+  facet_wrap( ~ species,
+              scales = "free") +
+  theme_bw()
+```
+
+The results look a bit better for *Lonicera*, and are at least now mathematically correct. When updating functional forms in PADRINO, it is important to explore how assumptions like the maximum survival probability in the modified form affect results. This is left as an exercise to you!
+
+# Further reading
+
+This is just a very brief overview of the analyses that are possible with `RPadrino`. [Ellner, Childs & Rees 2016](https://link.springer.com/content/pdf/10.1007/978-3-319-28893-2.pdf) give a comprehensive overview of IPM theory and analyses. There are further vignettes in this package that describe data cleaning and how to use PADRINO with other databases. 
 
