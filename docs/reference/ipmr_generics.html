@@ -99,6 +99,9 @@ some quantities of interest from pdb_proto_ipm_lists and pdb_ipms." />
       <a href="../articles/padrino-intro.html">Introduction to RPadrino</a>
     </li>
     <li>
+      <a href="../articles/data-cleaning.html">Data Cleaning and Troubleshooting</a>
+    </li>
+    <li>
       <a href="../articles/interop.html">PADRINO and Other Databases</a>
     </li>
   </ul>
@@ -129,73 +132,76 @@ some quantities of interest from pdb_proto_ipm_lists and pdb_ipms." />
 some quantities of interest from <code>pdb_proto_ipm_list</code>s and <code>pdb_ipm</code>s.</p>
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for pdb_proto_ipm_list</span>
-<span class='fu'>vital_rate_exprs</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span>
+    <pre class="usage"># S3 method for pdb_proto_ipm_list
+vital_rate_exprs(object)
 
-<span class='co'># S3 method for pdb_ipm</span>
-<span class='fu'>vital_rate_exprs</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span>
+# S3 method for pdb_ipm
+vital_rate_exprs(object)
 
-<span class='co'># S3 method for pdb_proto_ipm_list</span>
-<span class='fu'>kernel_formulae</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span>
+# S3 method for pdb_proto_ipm_list
+kernel_formulae(object)
 
-<span class='co'># S3 method for pdb_ipm</span>
-<span class='fu'>kernel_formulae</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span>
+# S3 method for pdb_ipm
+kernel_formulae(object)
 
-<span class='co'># S3 method for pdb_proto_ipm_list</span>
-<span class='fu'>domains</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span>
+# S3 method for pdb_proto_ipm_list
+domains(object)
 
-<span class='co'># S3 method for pdb_ipm</span>
-<span class='fu'>domains</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span>
+# S3 method for pdb_ipm
+domains(object)
 
-<span class='co'># S3 method for pdb_proto_ipm_list</span>
-<span class='fu'>parameters</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span>
+# S3 method for pdb_proto_ipm_list
+parameters(object)
 
-<span class='co'># S3 method for pdb_ipm</span>
-<span class='fu'>parameters</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span>
+# S3 method for pdb_ipm
+parameters(object)
 
-<span class='co'># S3 method for pdb_proto_ipm_list</span>
-<span class='fu'>pop_state</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span>
+# S3 method for pdb_proto_ipm_list
+pop_state(object)
 
-<span class='co'># S3 method for pdb_ipm</span>
-<span class='fu'>pop_state</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span>
+# S3 method for pdb_ipm
+pop_state(object)
 
-<span class='co'># S3 method for pdb_ipm</span>
-<span class='fu'>vital_rate_funs</span><span class='op'>(</span><span class='va'>ipm</span><span class='op'>)</span>
+# S3 method for pdb_ipm
+vital_rate_funs(ipm)
 
-<span class='co'># S3 method for pdb_ipm</span>
-<span class='fu'>int_mesh</span><span class='op'>(</span><span class='va'>ipm</span>, full_mesh <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+# S3 method for pdb_ipm
+int_mesh(ipm, full_mesh = TRUE)
 
-<span class='co'># S3 method for pdb_ipm</span>
-<span class='fu'>lambda</span><span class='op'>(</span><span class='va'>ipm</span>, <span class='va'>...</span><span class='op'>)</span>
+# S3 method for pdb_ipm
+lambda(ipm, ...)
 
-<span class='co'># S3 method for pdb_ipm</span>
-<span class='fu'>right_ev</span><span class='op'>(</span><span class='va'>ipm</span>, iterations <span class='op'>=</span> <span class='fl'>100</span>, tolerance <span class='op'>=</span> <span class='fl'>1e-10</span>, <span class='va'>...</span><span class='op'>)</span>
+# S3 method for pdb_ipm
+right_ev(ipm, iterations = 100, tolerance = 1e-10, ...)
 
-<span class='co'># S3 method for pdb_ipm</span>
-<span class='fu'>left_ev</span><span class='op'>(</span><span class='va'>ipm</span>, iterations <span class='op'>=</span> <span class='fl'>100</span>, tolerance <span class='op'>=</span> <span class='fl'>1e-10</span>, <span class='va'>...</span><span class='op'>)</span>
+# S3 method for pdb_ipm
+left_ev(ipm, iterations = 100, tolerance = 1e-10, ...)
 
-<span class='co'># S3 method for pdb_ipm</span>
-<span class='fu'>is_conv_to_asymptotic</span><span class='op'>(</span><span class='va'>ipm</span>, tolerance <span class='op'>=</span> <span class='fl'>1e-10</span><span class='op'>)</span>
+# S3 method for pdb_ipm
+is_conv_to_asymptotic(ipm, tolerance = 1e-10)
 
-<span class='co'># S3 method for pdb_ipm</span>
-<span class='fu'>conv_plot</span><span class='op'>(</span><span class='va'>ipm</span>, iterations <span class='op'>=</span> <span class='cn'>NULL</span>, log <span class='op'>=</span> <span class='cn'>FALSE</span>, show_stable <span class='op'>=</span> <span class='cn'>TRUE</span>, <span class='va'>...</span><span class='op'>)</span>
+# S3 method for pdb_ipm
+conv_plot(ipm, iterations = NULL, log = FALSE, show_stable = TRUE, ...)
 
-<span class='co'># S3 method for pdb_ipm</span>
-<span class='fu'>make_iter_kernel</span><span class='op'>(</span><span class='va'>ipm</span>, <span class='va'>...</span>, name_ps <span class='op'>=</span> <span class='cn'>NULL</span>, f_forms <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
+# S3 method for pdb_ipm
+make_iter_kernel(ipm, ..., name_ps = NULL, f_forms = NULL)
 
-<span class='co'># S3 method for pdb_ipm</span>
-<span class='fu'>mean_kernel</span><span class='op'>(</span><span class='va'>ipm</span><span class='op'>)</span>
+# S3 method for pdb_ipm
+mean_kernel(ipm)
 
-<span class='fu'>pdb_new_fun_form</span><span class='op'>(</span><span class='va'>...</span><span class='op'>)</span>
+pdb_new_fun_form(...)
 
-<span class='co'># S3 method for pdb_proto_ipm_list</span>
-<span class='fu'>parameters</span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>...</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='va'>value</span>
+# S3 method for pdb_proto_ipm_list
+parameters(object, ...) &lt;- value
 
-<span class='co'># S3 method for pdb_proto_ipm_list</span>
-<span class='fu'>vital_rate_exprs</span><span class='op'>(</span><span class='va'>object</span>, kernel <span class='op'>=</span> <span class='cn'>NULL</span>, vital_rate <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='va'>value</span>
+# S3 method for pdb_proto_ipm_list
+vital_rate_exprs(object, kernel = NULL, vital_rate = NULL) &lt;- value
 
-<span class='co'># S3 method for pdb_proto_ipm_list</span>
-<span class='fu'>kernel_formulae</span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>kernel</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='va'>value</span></pre>
+# S3 method for pdb_proto_ipm_list
+kernel_formulae(object, kernel) &lt;- value
+
+# S3 method for pdb_ipm
+[(x, i)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -262,6 +268,14 @@ can also supply a string specifying how they are combined (e.g.
     <tr>
       <th>vital_rate</th>
       <td><p>Ignored, present for compatibility with <code>ipmr</code>.</p></td>
+    </tr>
+    <tr>
+      <th>x</th>
+      <td><p>A <code>pdb_ipm</code> object.</p></td>
+    </tr>
+    <tr>
+      <th>i</th>
+      <td><p>The index to extract</p></td>
     </tr>
     </table>
 

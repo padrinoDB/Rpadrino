@@ -2,9 +2,10 @@ pandoc: '2.12'
 pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
+  data-cleaning: data-cleaning.html
   interop: interop.html
   padrino-intro: padrino-intro.html
-last_built: 2021-10-14T13:34Z
+last_built: 2021-10-26T11:47Z
 urls:
   reference: https://levisc8.github.io/RPadrino/reference
   article: https://levisc8.github.io/RPadrino/articles

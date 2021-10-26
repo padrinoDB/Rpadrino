@@ -1,0 +1,107 @@
+---
+title: "Data Cleaning and Troubleshooting"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 3
+vignette: >
+  %\VignetteIndexEntry{Data Cleaning and Troubleshooting}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Introduction
+
+PADRINO is pretty thoroughly checked in terms of reproducing published IPM behavior, but it is not strictly checked for the mathematical behavior of each IPM. Therefore, there are times where using IPMs from PADRINO in ways that the original authors did not use them may yield results that are either bizarre or biologically impossible. The purpose of this vignette is to show how to handle these so that these IPMs are still usable.
+
+# Fundamental operators
+
+The most common issue we've found is when a function that predicts survival probabilities equals 1 for some range of trait values in the IPM. This doesn't cause any mathematical issues in many analyses, and so often goes unnoticed by authors publishing their IPMs (the author of this document included - example to follow shortly!). However, to our knowledge, no species becomes immortal regardless of their size, and so this will cause issues for any longevity-related questions. Additionally, a mathematical issue arises whenever one needs to compute the fundamental operator for a model with this. 
+
+## Overview of the problem
+
+The fundamental operator, $N$, can be thought of as the amount of time an individual will spend in state $z'$ given state $z$  before death. It is given by
+
+$$
+N = (I + P + P^2 + P^3 + ...) = (I - P)^{-1}
+$$
+
+This _Neumann series_ corresponds to the geometric series $1 + r + r^2 + r^3 + ... = (1-r)^{-1}$ and is valid for any real number $|r| < 1$, and remains valid provided survival probabilities for individuals are less than 1. Clearly, this computation is no longer valid when an IPM's survival model predicts survival probabilities that are equal to 1. 
+
+## Diagnosis
+
+This most often manifests as negative values in the fundamental operator, which propagate through the rest of the analysis and return nonsense results. Below is a quick example of this manifesting in an IPM for *Lonicera maackii* when computing mean lifespan ($\bar\eta(z_0) = eN$).
+
+
+
+```{r message = FALSE}
+library(RPadrino)
+
+data(pdb)
+
+problem_ipm <- pdb_make_proto_ipm(pdb, "aaa341") %>%
+  pdb_make_ipm()
+
+P <- problem_ipm$aaa341$sub_kernels$P
+N <- solve(diag(nrow(P)) - P)
+
+range(colSums(N))
+
+
+```
+
+According to this, *Lonicera maackii* is expected to live between negative 348,800 and negative 30,555 years. This seems incorrect. Therefore, we should inspect what's going on with the $P$ kernel, and more importantly, the functions that comprise it. We'll use a couple functions from `RPadrino` for that:
+
+```{r}
+
+kernel_formulae(problem_ipm)
+vital_rate_exprs(problem_ipm)
+
+
+```
+
+We can see that `P = s * g`, and since `g` is given by a probability density function, we are unlikely to find much going on there. Thus, we want to inspect the values for `s`. How do we do that? By default, `ipmr`, the engine that powers `RPadrino`, does not return individual function values in IPM objects. Therefore, we'll need to rebuild the IPM, and tell `ipmr` to give us those by setting `return_all_envs = TRUE`. Then we can ask for the vital rate functions using `vital_rate_funs()`.
+
+```{r}
+
+problem_ipm <- pdb_make_proto_ipm(pdb, "aaa341") %>%
+  pdb_make_ipm(addl_args = list(aaa341 = list(return_all_envs = TRUE)))
+
+
+vr_funs <- vital_rate_funs(problem_ipm)
+
+vr_funs
+```
+
+Ah ha! The maximum value of `s` is 1! This is problematic for us. How do we fix this? 
+
+## Fixing the problem
+
+The quickest way is to modify the survival function to be a parallel minimum of the original survival function (i.e. the one that the authors used) and some maximum survival value that we choose ourselves. For the purposes of this example, we'll use 0.98 as the maximum survival probability. `RPadrino` has two functions to help with this: `vital_rate_exprs<-` and `pdb_new_fun_form()`. These are used together to insert a new functional form into a `proto_ipm` so that we can make changes to the IPM without having to think too much about how a `proto_ipm` is actually structured. 
+
+```{r}
+
+problem_proto <- pdb_make_proto_ipm(pdb, "aaa341")
+
+vital_rate_exprs(problem_proto) <- pdb_new_fun_form(
+  list(
+    aaa341 = list(
+      s = pmin(0.98, plogis(si + ss1 * size_1 + ss2 * size_1 ^ 2))
+    )
+  )
+)
+
+good_ipm <- pdb_make_ipm(problem_proto,
+                         addl_args = list(aaa341 = list(return_all_envs = TRUE)))
+
+vital_rate_funs(good_ipm)
+
+
+P <- good_ipm$aaa341$sub_kernels$P
+N <- solve(diag(nrow(P)) - P)
+
+range(colSums(N))
+
+```
+
+These values are far more reasonable!

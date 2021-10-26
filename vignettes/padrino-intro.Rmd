@@ -28,7 +28,7 @@ pdb <- pdb_download(save = FALSE)
 
 ```
 
-We've now downloaded the PADRINO database. It consists of 10-12 tables, all linked by `ipm_id`. 
+We've now downloaded the PADRINO database. It consists of 10 tables, all linked by `ipm_id`. 
 
 We can get a brief overview of the information using the `print` method:
 
@@ -192,11 +192,11 @@ f_as <- lapply(simple_pdb,
                a = 5)
 
 # This only plots the figures for the first two species.
-# Remove the [1:4] to see all of them.
+# Remove the [1:2] to see all of them.
 # Uncomment the par(mfrow = c(...)) line to get an arrangement you like
 
 # par(mfrow = c(2, 2))
-for(i in seq_along(l_as)[1:4]) {
+for(i in seq_along(l_as)[1:2]) {
   
   nm <- pdb$Metadata$species_accepted[pdb$Metadata$ipm_id == names(l_as)[i]]
   
@@ -231,7 +231,7 @@ n_yrs <- 10
 
 init_pops <- right_ev(use_ipms)
 
-# As above, remove the [1:4] to see all plots and use par() to control their
+# As above, remove the [1:2] to see all plots and use par() to control their
 # arrangement
 # par(mfrow = c(3, 2))
 
@@ -388,9 +388,9 @@ ggplot(all_data, aes(x = z_0, y = mean_ls)) +
 
 # Correcting issues with data
 
-We saw above that sometimes data in PADRINO can give values that make no sense. PADRINO is committed to providing IPMs *as they are published*, and does not take a stance on the technical correctness of these models. `aaa341` does provide an opportunity to illustrate how to address some of these issues. 
+We saw above that sometimes data in PADRINO can give values that make no sense. PADRINO is committed to providing IPMs *as they are published*, and does not take a stance on the technical correctness of these models. The analysis above provides an opportunity to quickly illustrate how to address some of these issues. There is a separate vignette with a more complete overview of known issues in PADRINO.
 
-We saw that that the fundamental operator contained negative values. This shouldn't be possible, but occurs when the determinant of $(I - P)$ is negative. This usually occurs when some part of the probability of survival function is exactly 1 (i.e. individuals of that size cannot die). We can correct this by modifying the functional form in PADRINO to compute the parallel minimum of the survival function the authors reported and some value that is really close to 1, but not quite there. 
+## Quick solution
 
 We'll introduce two new functions - `vital_rate_exprs<-` and `pdb_new_fun_form()`. Since we're computing all new survival values, we'll have to modify the `proto_ipm` first, then re-build the IPM object (the species in question is *Lonicera maackii*). 
 

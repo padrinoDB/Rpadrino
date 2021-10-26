@@ -18,6 +18,8 @@ navbar:
       menu:
         - text: "Introduction to RPadrino"
           href: articles/padrino-intro.html
+        - text: "Data Cleaning and Troubleshooting"
+          href: articles/data-cleaning.html
         - text: "PADRINO and Other Databases"
           href: articles/interop.html
 

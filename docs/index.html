@@ -60,6 +60,9 @@
       <a href="articles/padrino-intro.html">Introduction to RPadrino</a>
     </li>
     <li>
+      <a href="articles/data-cleaning.html">Data Cleaning and Troubleshooting</a>
+    </li>
+    <li>
       <a href="articles/interop.html">PADRINO and Other Databases</a>
     </li>
   </ul>
@@ -133,7 +136,7 @@
 <div id="scope" class="section level2">
 <h2 class="hasAnchor">
 <a href="#scope" class="anchor"></a>Scope</h2>
-<p>The goal of this package is basic data management, exploration, and porting PADRINO’s internal syntax to <a href="https://levisc8.github.io/ipmr/"><code>ipmr</code>’s</a> syntax. One can combine models from here with their own models for synthesis work, using the <code>proto_ipm</code> as a common data structure to power the analysis.</p>
+<p>The goal of this package is basic data management, exploration, and porting PADRINO’s internal syntax to <a href="https://levisc8.github.io/ipmr/"><code>ipmr</code>’s</a> syntax. One can combine models from here with their own models for synthesis work, using the <code>proto_ipm</code> as a common data structure to power the analysis. It is not intended to provide a complete analysis toolbox - that will come in a separate package designed to work with <code>ipmr</code> and <code>RPadrino</code> objects.</p>
 </div>
 <div id="usage" class="section level2">
 <h2 class="hasAnchor">
@@ -173,13 +176,15 @@
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ipm_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/pdb_make_ipm.html">pdb_make_ipm</a></span><span class="op">(</span><span class="va">proto_list</span><span class="op">)</span>
 
-<span class="va">lams</span>     <span class="op">&lt;-</span> <span class="fu">lambda</span><span class="op">(</span><span class="va">ipm_list</span><span class="op">)</span></code></pre></div>
+<span class="va">lams</span>         <span class="op">&lt;-</span> <span class="fu">lambda</span><span class="op">(</span><span class="va">ipm_list</span><span class="op">)</span>
+<span class="va">stable_dists</span> <span class="op">&lt;-</span> <span class="fu">right_ev</span><span class="op">(</span><span class="va">ipm_list</span><span class="op">)</span>
+<span class="va">repro_vals</span>   <span class="op">&lt;-</span> <span class="fu">left_ev</span><span class="op">(</span><span class="va">ipm_list</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="finding-help" class="section level3">
-<h3 class="hasAnchor">
-<a href="#finding-help" class="anchor"></a>Finding help</h3>
-<p>The package is documented <a href="https://levisc8.github.io/RPadrino/">here</a>.</p>
 </div>
+<div id="finding-help" class="section level2">
+<h2 class="hasAnchor">
+<a href="#finding-help" class="anchor"></a>Finding help</h2>
+<p>Functions are documented in the <em>Functions</em> tab and longer form documentation and examples are in the <em>Vignettes</em> tab.</p>
 <div id="contributing" class="section level3">
 <h3 class="hasAnchor">
 <a href="#contributing" class="anchor"></a>Contributing</h3>
