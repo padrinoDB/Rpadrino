@@ -308,7 +308,7 @@ pdb_report <- function(pdb,
     )
   )
 
-  mp_txt <- c("```{r echo = FALSE, message = FALSE}\n\n",
+  mp_txt <- c("```{r echo = FALSE, message = FALSE, fig.height = 5, fig.width = }\n\n",
               'coords <- coords[complete.cases(coords), ]\n\n
                wrld_map <- ggplot2::map_data(map = "world")\n\n',
               rlang::expr_text(mp_expr),
