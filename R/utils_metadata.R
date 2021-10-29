@@ -261,7 +261,8 @@ pdb_report <- function(pdb,
     ev_env$coords <- coords
   }
 
-  output <- .pdb_rmd_citations(output, pdb)
+  output <- .pdb_rmd_citations(output, pdb) %>%
+    .pdb_clean_report_source()
 
   sink(file = rmd_dest)
 
@@ -274,6 +275,18 @@ pdb_report <- function(pdb,
   if(!keep_rmd) unlink(rmd_dest)
 
   invisible(pdb)
+
+}
+
+#' @noRd
+
+.pdb_clean_report_source <- function(report) {
+
+  chunk_ind <- grepl("```", report)
+
+  report[chunk_ind] <- trimws(report[chunk_ind])
+
+  report
 
 }
 
