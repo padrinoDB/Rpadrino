@@ -15,3 +15,5 @@
 ^paper$
 ^\.github$
 ^data-raw$
+^index\.md$
+^index\.rmd$
