@@ -2,8 +2,8 @@
 output: github_document
 ---
 
-[![R-CMD-check](https://github.com/levisc8/RPadrino/workflows/R-CMD-check/badge.svg)](https://github.com/levisc8/RPadrino/actions) 
-[![Codecov test coverage](https://codecov.io/gh/levisc8/RPadrino/branch/main/graph/badge.svg)](https://codecov.io/gh/levisc8/RPadrino?branch=main)
+[![R-CMD-check](https://github.com/padrinoDB/RPadrino/workflows/R-CMD-check/badge.svg)](https://github.com/padrinoDB/RPadrino/actions) 
+[![Codecov test coverage](https://codecov.io/gh/padrinoDB/RPadrino/branch/main/graph/badge.svg)](https://codecov.io/gh/padrinoDB/RPadrino?branch=main)
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
 knitr::opts_chunk$set(
@@ -17,6 +17,24 @@ knitr::opts_chunk$set(
 ## RPadrino
 
 `RPadrino` is a package for interacting with the PADRINO Integral Projection Model database. Currently, an alpha release of PADRINO exists as a set of version controlled csv files hosted in a GitHub repository. The longer term plan is to migrate it to a set of static, version-controlled tables that are hosted on Zenodo (or similar). For now, you can access it by installing the `RPadrino` _R_ package from this repository (see below for instructions).
+
+## Installation
+
+```{r, message = FALSE, warning = FALSE, eval = FALSE}
+
+if(!require("remotes", quietly = TRUE)) {
+  install.packages("remotes")
+}
+
+remotes::install_github("padrinoDB/RPadrino")
+
+```
+
+## Scope
+
+The goal of this package is basic data management, exploration, and porting PADRINO's internal syntax to [`ipmr`'s](https://levisc8.github.io/ipmr/) syntax. One can combine models from here with their own models for synthesis work, using the `proto_ipm` as a common data structure to power the analysis.
+
+## Usage
 
 The data included in this package are quality checked (see below) and ready for use. This is not the complete database - that can be downloaded using the `pdb_download` function. See the table below for information on the number of models in each.
 
@@ -68,27 +86,6 @@ knitr::kable(
 
 Above are the current number of unique species, unique publications, and unique `ipm_id`s that are in PADRINO and `RPadrino`'s internal dataset. Table 2 provides a breakdown of how these are distributed amongst taxonomic kingdoms in the **full** database (i.e. not the internal data set). All of the models included in both the internal data set and full database have been quality checked for accuracy. Quality checked means that for deterministic models, the asymptotic per-capita growth rate ($\lambda$) is within $\pm 0.03$ of the published point estimate value. For stochastic models, we check for approximately the same stochastic population growth rate ($\lambda_s$), but do not try to replicate the analysis, as this usually requires too many computing resources to be feasible.  
 
-## Scope
-
-The goal of this package is basic data management, exploration, and porting PADRINO's internal syntax to [`ipmr`'s](https://levisc8.github.io/ipmr/) syntax. One can combine models from here with their own models for synthesis work, using the `proto_ipm` as a common data structure to power the analysis.
-
-## Usage
-
-### Installation
-
-You can install RPadrino from github with:
-
-```{r gh-installation, eval = FALSE}
-
-if(!requireNamespace("remotes", quietly = TRUE)) {
-  install.packages("remotes")
-}
-
-remotes::install_github("levisc8/RPadrino")
-```
-
-### Examples
-
 A small-ish copy of the Padrino Database is included as a package data set. You can download the full database as well. You can access it with the following code:
 
 ```{r eval = FALSE}
@@ -129,7 +126,7 @@ lams     <- lambda(ipm_list)
 
 ### Finding help
 
-The package is documented [here](https://levisc8.github.io/RPadrino/).
+The package is documented [here](https://padrinoDB.github.io/RPadrino/).
 
 ### Contributing
 

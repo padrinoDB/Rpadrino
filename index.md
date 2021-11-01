@@ -1,7 +1,7 @@
 
-[![R-CMD-check](https://github.com/levisc8/RPadrino/workflows/R-CMD-check/badge.svg)](https://github.com/levisc8/RPadrino/actions)
+[![R-CMD-check](https://github.com/padrinODB/RPadrino/workflows/R-CMD-check/badge.svg)](https://github.com/padrinoDB/RPadrino/actions)
 [![Codecov test
-coverage](https://codecov.io/gh/levisc8/RPadrino/branch/main/graph/badge.svg)](https://codecov.io/gh/levisc8/RPadrino?branch=main)
+coverage](https://codecov.io/gh/padrinoDB/RPadrino/branch/main/graph/badge.svg)](https://codecov.io/gh/padrinoDB/RPadrino?branch=main)
 
 ## RPadrino
 
@@ -12,6 +12,28 @@ The longer term plan is to migrate it to a set of static,
 version-controlled tables that are hosted on Zenodo (or similar). For
 now, you can access it by installing the `RPadrino` *R* package from
 this repository (see below for instructions).
+
+## Installation
+
+``` r
+if(!require("remotes", quietly = TRUE)) {
+  install.packages("remotes")
+}
+
+remotes::install_github("padrinoDB/RPadrino")
+```
+
+## Scope
+
+The goal of this package is basic data management, exploration, and
+porting PADRINO’s internal syntax to
+[`ipmr`’s](https://levisc8.github.io/ipmr/) syntax. One can combine
+models from here with their own models for synthesis work, using the
+`proto_ipm` as a common data structure to power the analysis. It is not
+intended to provide a complete analysis toolbox - that will come in a
+separate package designed to work with `ipmr` and `RPadrino` objects.
+
+## Usage
 
 The data included in this package are quality checked (see below) and
 ready for use. This is not the complete database - that can be
@@ -40,32 +62,6 @@ stochastic models, we check for approximately the same stochastic
 population growth rate (*λ*<sub>*s*</sub>), but do not try to replicate
 the analysis, as this usually requires too many computing resources to
 be feasible.
-
-## Scope
-
-The goal of this package is basic data management, exploration, and
-porting PADRINO’s internal syntax to
-[`ipmr`’s](https://levisc8.github.io/ipmr/) syntax. One can combine
-models from here with their own models for synthesis work, using the
-`proto_ipm` as a common data structure to power the analysis. It is not
-intended to provide a complete analysis toolbox - that will come in a
-separate package designed to work with `ipmr` and `RPadrino` objects.
-
-## Usage
-
-### Installation
-
-You can install RPadrino from github with:
-
-``` r
-if(!requireNamespace("remotes", quietly = TRUE)) {
-  install.packages("remotes")
-}
-
-remotes::install_github("levisc8/RPadrino")
-```
-
-### Examples
 
 A small-ish copy of the Padrino Database is included as a package data
 set. You can download the full database as well. You can access it with

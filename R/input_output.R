@@ -38,7 +38,7 @@ pdb_download <- function(save = TRUE, destination = NULL) {
                "ParameterValues", "EnvironmentalVariables", "ParSetIndices")
 
   urls <- paste(
-    "https://raw.githubusercontent.com/levisc8/Padrino/main/padrino-database/clean/",
+    "https://raw.githubusercontent.com/padrinoDB/Padrino/main/padrino-database/clean/",
     tab_nms,
     ".txt", sep = "")
 

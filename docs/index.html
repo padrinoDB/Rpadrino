@@ -86,6 +86,25 @@
 <h2 class="hasAnchor">
 <a href="#rpadrino" class="anchor"></a>RPadrino</h2>
 <p><code>RPadrino</code> is a package for interacting with the PADRINO Integral Projection Model database. Currently, an alpha release of PADRINO exists as a set of version controlled csv files hosted in a GitHub repository. The longer term plan is to migrate it to a set of static, version-controlled tables that are hosted on Zenodo (or similar). For now, you can access it by installing the <code>RPadrino</code> <em>R</em> package from this repository (see below for instructions).</p>
+</div>
+<div id="installation" class="section level2">
+<h2 class="hasAnchor">
+<a href="#installation" class="anchor"></a>Installation</h2>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="st"><a href="https://remotes.r-lib.org">"remotes"</a></span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span>
+<span class="op">}</span>
+
+<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"padrinoDB/RPadrino"</span><span class="op">)</span></code></pre></div>
+</div>
+<div id="scope" class="section level2">
+<h2 class="hasAnchor">
+<a href="#scope" class="anchor"></a>Scope</h2>
+<p>The goal of this package is basic data management, exploration, and porting PADRINO’s internal syntax to <a href="https://levisc8.github.io/ipmr/"><code>ipmr</code>’s</a> syntax. One can combine models from here with their own models for synthesis work, using the <code>proto_ipm</code> as a common data structure to power the analysis. It is not intended to provide a complete analysis toolbox - that will come in a separate package designed to work with <code>ipmr</code> and <code>RPadrino</code> objects.</p>
+</div>
+<div id="usage" class="section level2">
+<h2 class="hasAnchor">
+<a href="#usage" class="anchor"></a>Usage</h2>
 <p>The data included in this package are quality checked (see below) and ready for use. This is not the complete database - that can be downloaded using the <code>pdb_download</code> function. See the table below for information on the number of models in each.</p>
 <table class="table">
 <thead><tr class="header">
@@ -132,29 +151,6 @@
 </tbody>
 </table>
 <p>Above are the current number of unique species, unique publications, and unique <code>ipm_id</code>s that are in PADRINO and <code>RPadrino</code>’s internal dataset. Table 2 provides a breakdown of how these are distributed amongst taxonomic kingdoms in the <strong>full</strong> database (i.e. not the internal data set). All of the models included in both the internal data set and full database have been quality checked for accuracy. Quality checked means that for deterministic models, the asymptotic per-capita growth rate (<em>λ</em>) is within  ± 0.03 of the published point estimate value. For stochastic models, we check for approximately the same stochastic population growth rate (<em>λ</em><sub><em>s</em></sub>), but do not try to replicate the analysis, as this usually requires too many computing resources to be feasible.</p>
-</div>
-<div id="scope" class="section level2">
-<h2 class="hasAnchor">
-<a href="#scope" class="anchor"></a>Scope</h2>
-<p>The goal of this package is basic data management, exploration, and porting PADRINO’s internal syntax to <a href="https://levisc8.github.io/ipmr/"><code>ipmr</code>’s</a> syntax. One can combine models from here with their own models for synthesis work, using the <code>proto_ipm</code> as a common data structure to power the analysis. It is not intended to provide a complete analysis toolbox - that will come in a separate package designed to work with <code>ipmr</code> and <code>RPadrino</code> objects.</p>
-</div>
-<div id="usage" class="section level2">
-<h2 class="hasAnchor">
-<a href="#usage" class="anchor"></a>Usage</h2>
-<div id="installation" class="section level3">
-<h3 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h3>
-<p>You can install RPadrino from github with:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"remotes"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span>
-<span class="op">}</span>
-
-<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"levisc8/RPadrino"</span><span class="op">)</span></code></pre></div>
-</div>
-<div id="examples" class="section level3">
-<h3 class="hasAnchor">
-<a href="#examples" class="anchor"></a>Examples</h3>
 <p>A small-ish copy of the Padrino Database is included as a package data set. You can download the full database as well. You can access it with the following code:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">RPadrino</span><span class="op">)</span>
@@ -179,7 +175,6 @@
 <span class="va">lams</span>         <span class="op">&lt;-</span> <span class="fu">lambda</span><span class="op">(</span><span class="va">ipm_list</span><span class="op">)</span>
 <span class="va">stable_dists</span> <span class="op">&lt;-</span> <span class="fu">right_ev</span><span class="op">(</span><span class="va">ipm_list</span><span class="op">)</span>
 <span class="va">repro_vals</span>   <span class="op">&lt;-</span> <span class="fu">left_ev</span><span class="op">(</span><span class="va">ipm_list</span><span class="op">)</span></code></pre></div>
-</div>
 </div>
 <div id="finding-help" class="section level2">
 <h2 class="hasAnchor">
@@ -225,8 +220,8 @@
   <div class="dev-status">
 <h2>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/levisc8/RPadrino/actions"><img src="https://github.com/levisc8/RPadrino/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
-<li><a href="https://codecov.io/gh/levisc8/RPadrino?branch=main"><img src="https://codecov.io/gh/levisc8/RPadrino/branch/main/graph/badge.svg" alt="Codecov test coverage"></a></li>
+<li><a href="https://github.com/padrinoDB/RPadrino/actions"><img src="https://github.com/padrinODB/RPadrino/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://codecov.io/gh/padrinoDB/RPadrino?branch=main"><img src="https://codecov.io/gh/padrinoDB/RPadrino/branch/main/graph/badge.svg" alt="Codecov test coverage"></a></li>
 </ul>
 </div>
 </div>
