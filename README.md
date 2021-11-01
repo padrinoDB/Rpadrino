@@ -38,8 +38,6 @@ ready for use. This is not the complete database - that can be
 downloaded using the `pdb_download` function. See the table below for
 information on the number of models in each.
 
-    #> Warning: package 'dplyr' was built under R version 4.1.1
-
 | Data Source           | \# of Species | \# of Publications | \# of IPM id’s |
 |:----------------------|--------------:|-------------------:|---------------:|
 | Internal Data         |            36 |                 22 |             77 |

@@ -38,7 +38,7 @@ The goal of this package is basic data management, exploration, and porting PADR
 
 The data included in this package are quality checked (see below) and ready for use. This is not the complete database - that can be downloaded using the `pdb_download` function. See the table below for information on the number of models in each.
 
-```{r echo = FALSE, message = FALSE}
+```{r echo = FALSE, message = FALSE, warning = FALSE}
 library(dplyr)
 library(RPadrino)
 
