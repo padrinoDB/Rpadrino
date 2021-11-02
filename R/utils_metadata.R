@@ -207,12 +207,15 @@ pdb_has_age <- .make_pdb_accessor("has_age")
 #'
 #' @param title The title for the created report.
 #' @param keep_rmd Keep the un-rendered Rmd file? Useful for manual editing.
-#' @param rmd_dest The filepath to save the Rmd file at if \code{keep_rmd = TRUE}.
-#' The default is \code{tempfile()}.
+#' @param rmd_dest The folder to save the Rmd file at if \code{keep_rmd = TRUE}.
+#' The default is \code{getwd()}.
 #' @param output_format The output format to create. Options are "html", "pdf",
 #' "word", "odt", "rtf", or "md".
 #' @param render_output A logical - should the document be rendered for inspection?
 #' @param map Create a map of studies included in the \code{pdb} object?
+#'
+#' @return The file path to the rendered output, or to the \code{.rmd} file when
+#' \code{render_output = FALSE}.
 #'
 #' @importFrom rmarkdown render
 #' @importFrom stats complete.cases
@@ -221,17 +224,26 @@ pdb_has_age <- .make_pdb_accessor("has_age")
 pdb_report <- function(pdb,
                        title = "",
                        keep_rmd = TRUE,
-                       rmd_dest = NULL,
+                       rmd_dest = getwd(),
                        output_format = "html",
                        render_output = TRUE,
                        map = TRUE) {
 
-  if(is.null(rmd_dest) && keep_rmd) {
+  date <- gsub("-", "", Sys.Date())
 
-    rmd_dest <- tempfile(fileext = ".Rmd")
+  if((is.null(rmd_dest) || is.na(rmd_dest) || rmd_dest == "") && keep_rmd) {
+
+    rmd_dest <- tempfile(pattern = paste0("RPadrino_report_", date),
+                         fileext = ".Rmd")
 
     message("'keep_rmd = TRUE' and 'rmd_dest' is not specified! ",
             "Saving to a temporary file: \n", rmd_dest)
+  } else {
+
+    rmd_dest <- paste0(rmd_dest, "/RPadrino_report_", date, ".Rmd")
+
+    file.create(rmd_dest, showWarnings = FALSE)
+
   }
 
   output <- .pdb_rmd_header(title, output_format)
@@ -264,17 +276,17 @@ pdb_report <- function(pdb,
   output <- .pdb_rmd_citations(output, pdb) %>%
     .pdb_clean_report_source()
 
-  sink(file = rmd_dest)
+  writeLines(output, con = rmd_dest)
 
-    cat(output)
-
-  sink()
-
-  if(render_output) rmarkdown::render(rmd_dest, envir = ev_env)
+  if(render_output) {
+    out_path <- rmarkdown::render(rmd_dest, envir = ev_env)
+  } else {
+    out_path <- rmd_dest
+  }
 
   if(!keep_rmd) unlink(rmd_dest)
 
-  invisible(pdb)
+  invisible(out_path)
 
 }
 
@@ -301,16 +313,16 @@ pdb_report <- function(pdb,
                     ggplot2::aes(x = long,
                                  y = lat,
                                  group = group)) +
-      ggplot2::geom_polygon(fill = NA, color = "grey70") +
+      ggplot2::geom_polygon(fill = NA, color = 'grey70') +
       ggplot2::geom_point(data = coords,
                  ggplot2::aes(x = lon, y = lat,),
                  inherit.aes = FALSE,
-                 color = "black",
+                 color = 'black',
                  # shape = 1,
                  size = 3) +
       ggplot2::theme_bw() +
-      ggplot2::xlab("Longitude") +
-      ggplot2::ylab("Latitude") +
+      ggplot2::xlab('Longitude') +
+      ggplot2::ylab('Latitude') +
       ggplot2::scale_x_continuous(
         breaks = seq(-180, 180, by = 60),
         labels = NULL
@@ -321,7 +333,7 @@ pdb_report <- function(pdb,
     )
   )
 
-  mp_txt <- c("```{r echo = FALSE, message = FALSE, fig.height = 5, fig.width = }\n\n",
+  mp_txt <- c("```{r echo = FALSE, message = FALSE, fig.height = 5, fig.width = 8}\n\n",
               'coords <- coords[complete.cases(coords), ]\n\n
                wrld_map <- ggplot2::map_data(map = "world")\n\n',
               rlang::expr_text(mp_expr),

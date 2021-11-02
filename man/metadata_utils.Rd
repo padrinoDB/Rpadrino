@@ -122,7 +122,7 @@ pdb_report(
   pdb,
   title = "",
   keep_rmd = TRUE,
-  rmd_dest = NULL,
+  rmd_dest = getwd(),
   output_format = "html",
   render_output = TRUE,
   map = TRUE
@@ -138,8 +138,8 @@ values in the \code{pdb} object.}
 
 \item{keep_rmd}{Keep the un-rendered Rmd file? Useful for manual editing.}
 
-\item{rmd_dest}{The filepath to save the Rmd file at if \code{keep_rmd = TRUE}.
-The default is \code{tempfile()}.}
+\item{rmd_dest}{The folder to save the Rmd file at if \code{keep_rmd = TRUE}.
+The default is \code{getwd()}.}
 
 \item{output_format}{The output format to create. Options are "html", "pdf",
 "word", "odt", "rtf", or "md".}
@@ -150,6 +150,9 @@ The default is \code{tempfile()}.}
 }
 \value{
 A vector
+
+The file path to the rendered output, or to the \code{.rmd} file when
+\code{render_output = FALSE}.
 }
 \description{
 These functions access pieces of specific pieces metadata from

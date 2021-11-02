@@ -7,20 +7,20 @@ test_that("pdb_report generates correct output", {
 
 
   html_fp <- pdb_report(pdb,
-                        rmd_dest = paste0(out_temp, "/test_html.rmd"),
+                        rmd_dest = out_temp,
                         output_format = "html",
                         map = TRUE)
 
   pdf_fp <- pdb_report(pdb,
-                       rmd_dest = paste0(out_temp, "/test_pdf.rmd"),
+                       rmd_dest = out_temp,
                        output_format = "pdf",
                        map = TRUE)
 
-  test_pats <- c(paste0(out_temp, "/",
-                     paste0("test_",
-                           c("html", "pdf"), ".rmd")),
-                 paste0(out_temp, "/",
-                        paste0("test_", c("html.html", "pdf.pdf"))))
+  date <- gsub("-", "", Sys.Date())
+
+  test_pats <- paste0(out_temp, "/",
+                      paste0("RPadrino_report_", date,
+                             c(".html", ".pdf", ".Rmd")))
 
   actual_pats <- list.files(out_temp, full.names = TRUE)
 

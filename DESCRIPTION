@@ -29,6 +29,8 @@ Imports:
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
+BugReports: https://github.com/padrinoDB/RPadrino/issues
+URL: https://github.com/padrinoDB/RPadrino, https://padrinoDB.github.io/RPadrino
 RoxygenNote: 7.1.2
 Suggests: 
     testthat,
