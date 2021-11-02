@@ -24,6 +24,7 @@ Imports:
   purrr,
   rlang (>= 0.3.0),
   rmarkdown,
+  tools,
   truncdist,
   utils
 License: GPL-3

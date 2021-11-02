@@ -229,22 +229,7 @@ pdb_report <- function(pdb,
                        render_output = TRUE,
                        map = TRUE) {
 
-  date <- gsub("-", "", Sys.Date())
-
-  if((is.null(rmd_dest) || is.na(rmd_dest) || rmd_dest == "") && keep_rmd) {
-
-    rmd_dest <- tempfile(pattern = paste0("RPadrino_report_", date),
-                         fileext = ".Rmd")
-
-    message("'keep_rmd = TRUE' and 'rmd_dest' is not specified! ",
-            "Saving to a temporary file: \n", rmd_dest)
-  } else {
-
-    rmd_dest <- paste0(rmd_dest, "/RPadrino_report_", date, ".Rmd")
-
-    file.create(rmd_dest, showWarnings = FALSE)
-
-  }
+  rmd_dest <- .pdb_rmd_dest(rmd_dest)
 
   output <- .pdb_rmd_header(title, output_format)
 
@@ -288,6 +273,45 @@ pdb_report <- function(pdb,
 
   invisible(out_path)
 
+}
+
+#' @noRd
+#' @importFrom tools file_ext
+
+.pdb_rmd_dest <- function(rmd_dest) {
+
+  date <- gsub("-", "", Sys.Date())
+
+  # Non-specified output directory gets a tempdir()
+  if((is.null(rmd_dest) || is.na(rmd_dest) || rmd_dest == "") && keep_rmd) {
+
+    rmd_dest <- tempfile(pattern = paste0("RPadrino_report_", date),
+                         fileext = ".Rmd")
+
+    message("'keep_rmd = TRUE' and 'rmd_dest' is not specified! ",
+            "Saving to a temporary file: \n", rmd_dest)
+
+  } else if(file_ext(rmd_dest) == "") {
+
+    rmd_dest <- paste0(rmd_dest, "/RPadrino_report_", date, ".Rmd")
+
+    file.create(rmd_dest, showWarnings = FALSE)
+
+  } else if(tools::file_ext(tolower(rmd_dest)) == "rmd") {
+
+    rmd_dest <- gsub("\\.rmd$", paste0("_", date, ".Rmd"),
+                     rmd_dest,
+                     ignore.case = TRUE)
+
+    file.create(rmd_dest, showWarnings = FALSE)
+
+  } else {
+
+    stop("'rmd_dest' must either be 'NULL', the name of a folder, or a file with",
+         " a .rmd file extension!")
+  }
+
+  rmd_dest
 }
 
 #' @noRd
