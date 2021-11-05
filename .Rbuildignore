@@ -17,3 +17,4 @@
 ^data-raw$
 ^index\.md$
 ^index\.rmd$
+^build_artefacts/*$

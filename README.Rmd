@@ -100,7 +100,8 @@ pdb <- pdb_download(save = FALSE)
 
 ```
 
-The next step is to identify the models we are interested in building. There are accessor functions that allow you to extract metadata columns from the `pdb` object, which may be helpful in this step. See `?pdb_species_accepted` for a list of those.
+The next step is to identify the models we are interested in building. There are accessor functions that allow you to extract metadata columns from the `pdb` object, which may be helpful in this step. See `?pdb_species_accepted` for a list of those. Additionally, the [shiny_pdb](https://sam-levin.shinyapps.io/shiny_pdb/) allows for interactive exploration and subsetting of data. 
+
 
 Once, we've identified the model(s) we want, we can build a list of [`proto_ipm`'s](https://levisc8.github.io/ipmr/articles/proto-ipms.html). This is an intermediate step between the database representation and a set of kernels. Once we have the list of `proto_ipm`'s, we can build an actual model. Below, we extract a specific study, and construct an IPM from the database object.
 

@@ -12,3 +12,4 @@ paper/*.html
 */to_do_list.Rmd
 README.html
 tests/testthat/Rplots.pdf
+build_artefacts/*

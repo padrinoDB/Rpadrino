@@ -78,7 +78,9 @@ pdb <- pdb_download(save = FALSE)
 The next step is to identify the models we are interested in building.
 There are accessor functions that allow you to extract metadata columns
 from the `pdb` object, which may be helpful in this step. See
-`?pdb_species_accepted` for a list of those.
+`?pdb_species_accepted` for a list of those. Additionally, the
+[shiny\_pdb](https://sam-levin.shinyapps.io/shiny_pdb/) allows for
+interactive exploration and subsetting of data.
 
 Once, we’ve identified the model(s) we want, we can build a list of
 [`proto_ipm`’s](https://levisc8.github.io/ipmr/articles/proto-ipms.html).
