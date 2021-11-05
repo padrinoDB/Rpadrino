@@ -1,6 +1,6 @@
 Package: RPadrino
 Title: Interact with the PADRINO IPM Database
-Version: 0.0.0.9000
+Version: 0.0.1
 Authors@R: c(
     person("Sam", "Levin",  email = "levisc8@gmail.com", role = c("aut", "cre")),
     person("Sanne", "Evers", email = "sanne.evers@idiv.de", role = c("aut")),
@@ -31,7 +31,7 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: true
 BugReports: https://github.com/padrinoDB/RPadrino/issues
-URL: https://github.com/padrinoDB/RPadrino, https://padrinoDB.github.io/RPadrino
+URL: https://github.com/padrinoDB/RPadrino, https://padrinoDB.github.io/RPadrino/
 RoxygenNote: 7.1.2
 Suggests: 
     testthat,
