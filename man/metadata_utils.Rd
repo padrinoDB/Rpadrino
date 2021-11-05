@@ -149,10 +149,8 @@ The default is \code{getwd()}.}
 \item{map}{Create a map of studies included in the \code{pdb} object?}
 }
 \value{
-A vector
-
-The file path to the rendered output, or to the \code{.rmd} file when
-\code{render_output = FALSE}.
+A vector of the metadata. For \code{pdb_report}e file path to the
+rendered output, or to the \code{.rmd} file when \code{render_output = FALSE}.
 }
 \description{
 These functions access pieces of specific pieces metadata from

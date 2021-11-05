@@ -12,10 +12,7 @@
 #' model. Default is \code{"det"}. See details
 #' @param kern_param If \code{det_stoch = "stoch"}, then whether or not to construct
 #' a kernel resampled model, or a parameter resampled model. See details.
-#' @param stop_on_failure A logical. If \code{TRUE}, when building many models,
-#' will halt the process with an error if any one of them is unable to build with the
-#' requested parameters. Otherwise, it will throw a warning indicating which
-#' models cannot be built.
+#'
 #'
 #' @return A list containing one or more \code{proto_ipms}. Names of the list
 #' will correspond to \code{ipm_id}s.
@@ -49,8 +46,7 @@
 pdb_make_proto_ipm <- function(pdb,
                                ipm_id = NULL,
                                det_stoch = "det",
-                               kern_param = "kern",
-                               stop_on_failure = TRUE) {
+                               kern_param = "kern") {
 
 
   if(!is.null(ipm_id)) {
@@ -94,8 +90,7 @@ pdb_make_proto_ipm <- function(pdb,
     out[[i]]      <- .make_proto(pdb,
                                  id = unique_ids[i],
                                  det_stoch[i],
-                                 kern_param[i],
-                                 stop_on_failure)
+                                 kern_param[i])
 
     attr(out[[i]], "species_accepted") <- pdb$Metadata$species_accepted[i]
 

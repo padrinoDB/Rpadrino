@@ -75,7 +75,7 @@ statistics and citation information for the pdb object." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RPadrino</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.0.9000</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.1</span>
       </span>
     </div>
 
@@ -110,7 +110,12 @@ statistics and citation information for the pdb object." />
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/padrinoDB/RPadrino/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -125,7 +130,7 @@ statistics and citation information for the pdb object." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Access pieces of metadata from a <code>pdb</code> object</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/padrinoDB/RPadrino/blob/master/R/utils_metadata.R'><code>R/utils_metadata.R</code></a></small>
     <div class="hidden name"><code>metadata_utils.Rd</code></div>
     </div>
 
@@ -216,7 +221,7 @@ statistics and citation information for the <code>pdb</code> object.</p>
   <span class='va'>pdb</span>,
   title <span class='op'>=</span> <span class='st'>""</span>,
   keep_rmd <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  rmd_dest <span class='op'>=</span> <span class='cn'>NULL</span>,
+  rmd_dest <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/getwd.html'>getwd</a></span><span class='op'>(</span><span class='op'>)</span>,
   output_format <span class='op'>=</span> <span class='st'>"html"</span>,
   render_output <span class='op'>=</span> <span class='cn'>TRUE</span>,
   map <span class='op'>=</span> <span class='cn'>TRUE</span>
@@ -244,8 +249,8 @@ values in the <code>pdb</code> object.</p></td>
     </tr>
     <tr>
       <th>rmd_dest</th>
-      <td><p>The filepath to save the Rmd file at if <code>keep_rmd = TRUE</code>.
-The default is <code><a href='https://rdrr.io/r/base/tempfile.html'>tempfile()</a></code>.</p></td>
+      <td><p>The folder to save the Rmd file at if <code>keep_rmd = TRUE</code>.
+The default is <code><a href='https://rdrr.io/r/base/getwd.html'>getwd()</a></code>.</p></td>
     </tr>
     <tr>
       <th>output_format</th>
@@ -264,7 +269,8 @@ The default is <code><a href='https://rdrr.io/r/base/tempfile.html'>tempfile()</
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A vector</p>
+    <p>A vector of the metadata. For <code>pdb_report</code>e file path to the
+rendered output, or to the <code>.rmd</code> file when <code>render_output = FALSE</code>.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

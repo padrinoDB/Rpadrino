@@ -34,7 +34,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">RPadrino</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.0.9000</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.1</span>
       </span>
     </div>
 
@@ -68,7 +68,14 @@
   </ul>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right"></ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+  <a href="https://github.com/padrinoDB/RPadrino/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
 <!--/.nav-collapse -->
   </div>
@@ -153,7 +160,7 @@
 <p>Above are the current number of unique species, unique publications, and unique <code>ipm_id</code>s that are in PADRINO and <code>RPadrino</code>’s internal dataset. Table 2 provides a breakdown of how these are distributed amongst taxonomic kingdoms in the <strong>full</strong> database (i.e. not the internal data set). All of the models included in both the internal data set and full database have been quality checked for accuracy. Quality checked means that for deterministic models, the asymptotic per-capita growth rate (<em>λ</em>) is within  ± 0.03 of the published point estimate value. For stochastic models, we check for approximately the same stochastic population growth rate (<em>λ</em><sub><em>s</em></sub>), but do not try to replicate the analysis, as this usually requires too many computing resources to be feasible.</p>
 <p>A small-ish copy of the Padrino Database is included as a package data set. You can download the full database as well. You can access it with the following code:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">RPadrino</span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/padrinoDB/RPadrino">RPadrino</a></span><span class="op">)</span>
 
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"pdb"</span><span class="op">)</span> <span class="co"># Internal copy, contains a subset of plant species in PADRINO</span>
 
@@ -172,9 +179,9 @@
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ipm_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/pdb_make_ipm.html">pdb_make_ipm</a></span><span class="op">(</span><span class="va">proto_list</span><span class="op">)</span>
 
-<span class="va">lams</span>         <span class="op">&lt;-</span> <span class="fu">lambda</span><span class="op">(</span><span class="va">ipm_list</span><span class="op">)</span>
-<span class="va">stable_dists</span> <span class="op">&lt;-</span> <span class="fu">right_ev</span><span class="op">(</span><span class="va">ipm_list</span><span class="op">)</span>
-<span class="va">repro_vals</span>   <span class="op">&lt;-</span> <span class="fu">left_ev</span><span class="op">(</span><span class="va">ipm_list</span><span class="op">)</span></code></pre></div>
+<span class="va">lams</span>         <span class="op">&lt;-</span> <span class="fu"><a href="https://levisc8.github.io/ipmr/reference/lambda.html">lambda</a></span><span class="op">(</span><span class="va">ipm_list</span><span class="op">)</span>
+<span class="va">stable_dists</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://levisc8.github.io/ipmr/reference/eigenvectors.html">right_ev</a></span><span class="op">(</span><span class="va">ipm_list</span><span class="op">)</span>
+<span class="va">repro_vals</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://levisc8.github.io/ipmr/reference/eigenvectors.html">left_ev</a></span><span class="op">(</span><span class="va">ipm_list</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="finding-help" class="section level2">
 <h2 class="hasAnchor">
@@ -190,7 +197,16 @@
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-    <div class="license">
+    <div class="links">
+<h2>Links</h2>
+<ul class="list-unstyled">
+<li>Browse source code at <br><a href="https://github.com/padrinoDB/RPadrino/">https://​github.com/​padrinoDB/​RPadrino/​</a>
+</li>
+<li>Report a bug at <br><a href="https://github.com/padrinoDB/RPadrino/issues">https://​github.com/​padrinoDB/​RPadrino/​issues</a>
+</li>
+</ul>
+</div>
+<div class="license">
 <h2>License</h2>
 <ul class="list-unstyled">
 <li><a href="LICENSE.html">Full license</a></li>

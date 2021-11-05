@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RPadrino</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.0.9000</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.1</span>
       </span>
     </div>
 
@@ -65,7 +65,14 @@
   </ul>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right"></ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+  <a href="https://github.com/padrinoDB/RPadrino/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
 <!--/.nav-collapse -->
   </div>
@@ -80,9 +87,9 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>RPadrino Introduction</h1>
             
-            <h4 class="date">2021-11-01</h4>
+            <h4 class="date">2021-11-05</h4>
       
-      
+      <small class="dont-index">Source: <a href="https://github.com/padrinoDB/RPadrino/blob/master/vignettes/padrino-intro.Rmd"><code>vignettes/padrino-intro.Rmd</code></a></small>
       <div class="hidden name"><code>padrino-intro.Rmd</code></div>
 
     </div>
@@ -99,7 +106,7 @@
 <a href="#usage" class="anchor"></a>Usage</h1>
 <p>Below are some very brief examples of how to select data based on the Metadata table, rebuild those models, and conduct an analysis. The first step for any of this is to access PADRINO. For first time users, this will always mean downloading it. For returning users, you may save and re-load PADRINO, but this example will not make use of the saving/loading functionality provided in <code><a href="../reference/pdb_download.html">pdb_load()</a></code> and <code><a href="../reference/pdb_download.html">pdb_save()</a></code>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">RPadrino</span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/padrinoDB/RPadrino">RPadrino</a></span><span class="op">)</span>
 
 <span class="va">pdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pdb_download.html">pdb_download</a></span><span class="op">(</span>save <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
 <p>We’ve now downloaded the PADRINO database. It consists of 10 tables, all linked by <code>ipm_id</code>.</p>
@@ -145,7 +152,7 @@
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">cirsiums</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pdb_make_ipm.html">pdb_make_ipm</a></span><span class="op">(</span><span class="va">proto_list</span><span class="op">)</span>
 
-<span class="va">lambdas</span>  <span class="op">&lt;-</span> <span class="fu">lambda</span><span class="op">(</span><span class="va">cirsiums</span><span class="op">)</span>
+<span class="va">lambdas</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://levisc8.github.io/ipmr/reference/lambda.html">lambda</a></span><span class="op">(</span><span class="va">cirsiums</span><span class="op">)</span>
 
 <span class="va">cirsiums</span></code></pre></div>
 <pre><code>## $aaa326
@@ -187,7 +194,7 @@
 
 <span class="co"># Remove these IDs from our simple_mod_ind vector</span>
 
-<span class="va">simple_mod_ind</span> <span class="op">&lt;-</span> <span class="va">simple_mod_ind</span><span class="op">[</span><span class="op">!</span><span class="va">simple_mod_ind</span> <span class="op">%in%</span> <span class="va">rm_mod_ind</span><span class="op">]</span>
+<span class="va">simple_mod_ind</span> <span class="op">&lt;-</span> <span class="va">simple_mod_ind</span><span class="op">[</span><span class="op">!</span><span class="va">simple_mod_ind</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">rm_mod_ind</span><span class="op">]</span>
 
 <span class="co"># We're also going to remove monocarpic perennials, as their survival/growth</span>
 <span class="co"># kernels are slightly trickier to work with (note that there is an example</span>
@@ -196,12 +203,12 @@
 
 <span class="va">monocarps</span> <span class="op">&lt;-</span> <span class="va">pdb</span><span class="op">$</span><span class="va">Metadata</span><span class="op">$</span><span class="va">ipm_id</span><span class="op">[</span><span class="va">pdb</span><span class="op">$</span><span class="va">Metadata</span><span class="op">$</span><span class="va">organism_type</span> <span class="op">==</span> <span class="st">"biennial"</span><span class="op">]</span>
 
-<span class="va">simple_mod_ind</span> <span class="op">&lt;-</span> <span class="va">simple_mod_ind</span><span class="op">[</span><span class="op">!</span><span class="va">simple_mod_ind</span> <span class="op">%in%</span> <span class="va">monocarps</span><span class="op">]</span>
+<span class="va">simple_mod_ind</span> <span class="op">&lt;-</span> <span class="va">simple_mod_ind</span><span class="op">[</span><span class="op">!</span><span class="va">simple_mod_ind</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">monocarps</span><span class="op">]</span>
 
 <span class="co"># Finally, we'll subset the database and build the IPM objects!</span>
 
-<span class="va">simple_pdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pdb_subset.html">pdb_subset</a></span><span class="op">(</span><span class="va">pdb</span>, <span class="va">simple_mod_ind</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="../reference/pdb_make_proto_ipm.html">pdb_make_proto_ipm</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
+<span class="va">simple_pdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pdb_subset.html">pdb_subset</a></span><span class="op">(</span><span class="va">pdb</span>, <span class="va">simple_mod_ind</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/pdb_make_proto_ipm.html">pdb_make_proto_ipm</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
   <span class="fu"><a href="../reference/pdb_make_ipm.html">pdb_make_ipm</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## 'ipm_id' aaa310 has the following notes that require your attention:
 ## aaa310: 'Geo and time info retrieved from COMPADRE (v.X.X.X.4)'</code></pre>
@@ -234,7 +241,7 @@
   <span class="co"># %^% is a function from ipmr that raises matrices to a power, rather than</span>
   <span class="co"># a pointwise power that ^ does.</span>
   
-  <span class="va">P_a</span> <span class="op">&lt;-</span> <span class="va">P</span> <span class="op">%^%</span> <span class="va">a</span>
+  <span class="va">P_a</span> <span class="op">&lt;-</span> <span class="va">P</span> <span class="op"><a href="https://levisc8.github.io/ipmr/reference/matrix-power.html">%^%</a></span> <span class="va">a</span>
   
   <span class="fu"><a href="https://rdrr.io/r/base/colSums.html">colSums</a></span><span class="op">(</span><span class="va">P_a</span><span class="op">)</span>
 <span class="op">}</span>
@@ -246,9 +253,9 @@
   
   <span class="va">l_age</span> <span class="op">&lt;-</span> <span class="fu">l_a</span><span class="op">(</span><span class="va">ipm</span>, <span class="va">a</span><span class="op">)</span>
   
-  <span class="va">P_a</span> <span class="op">&lt;-</span> <span class="va">P</span> <span class="op">%^%</span> <span class="va">a</span>
+  <span class="va">P_a</span> <span class="op">&lt;-</span> <span class="va">P</span> <span class="op"><a href="https://levisc8.github.io/ipmr/reference/matrix-power.html">%^%</a></span> <span class="va">a</span>
   
-  <span class="fu"><a href="https://rdrr.io/r/base/colSums.html">colSums</a></span><span class="op">(</span><span class="cn">F</span> <span class="op">%*%</span> <span class="va">P_a</span><span class="op">)</span> <span class="op">/</span> <span class="va">l_age</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/colSums.html">colSums</a></span><span class="op">(</span><span class="cn">F</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html">%*%</a></span> <span class="va">P_a</span><span class="op">)</span> <span class="op">/</span> <span class="va">l_age</span>
 
 <span class="op">}</span></code></pre></div>
 <p>Now, we just need to apply our functions to the IPMs. We’ll compute survival and fecundities for 5 year olds, and then plot the results:</p>
@@ -286,8 +293,8 @@
 <p><img src="padrino-intro_files/figure-html/unnamed-chunk-10-1.png" width="768"><img src="padrino-intro_files/figure-html/unnamed-chunk-10-2.png" width="768"><img src="padrino-intro_files/figure-html/unnamed-chunk-10-3.png" width="768"><img src="padrino-intro_files/figure-html/unnamed-chunk-10-4.png" width="768"></p>
 <p>We can also generate survivorship curves for each one to investigate type I/II/III species. These require simulating cohorts for a number of years using the <span class="math inline">\(P\)</span> and <span class="math inline">\(F\)</span> kernels. Because this can take some time to run, we’ll only do it for a single model for each species in our data set.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">keep_ind</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pdb_subset.html">pdb_subset</a></span><span class="op">(</span><span class="va">pdb</span>, <span class="va">simple_mod_ind</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="va">.</span><span class="op">$</span><span class="va">Metadata</span> <span class="op">%&gt;%</span>
+<code class="sourceCode R"><span class="va">keep_ind</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pdb_subset.html">pdb_subset</a></span><span class="op">(</span><span class="va">pdb</span>, <span class="va">simple_mod_ind</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
+  <span class="va">.</span><span class="op">$</span><span class="va">Metadata</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
   <span class="va">.</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/duplicated.html">duplicated</a></span><span class="op">(</span><span class="va">.</span><span class="op">$</span><span class="va">species_accepted</span><span class="op">)</span>, <span class="st">"ipm_id"</span><span class="op">]</span>
 
 <span class="va">use_ipms</span> <span class="op">&lt;-</span> <span class="va">simple_pdb</span><span class="op">[</span><span class="va">keep_ind</span><span class="op">]</span>
@@ -295,7 +302,7 @@
 
 <span class="va">n_yrs</span> <span class="op">&lt;-</span> <span class="fl">10</span>
 
-<span class="va">init_pops</span> <span class="op">&lt;-</span> <span class="fu">right_ev</span><span class="op">(</span><span class="va">use_ipms</span><span class="op">)</span></code></pre></div>
+<span class="va">init_pops</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://levisc8.github.io/ipmr/reference/eigenvectors.html">right_ev</a></span><span class="op">(</span><span class="va">use_ipms</span><span class="op">)</span></code></pre></div>
 <pre><code>## 'x' did not converge to asymptotic dynamics after 51 iterations.
 ## Will re-iterate the model 100 times and check for convergence.</code></pre>
 <pre><code>## model is now converged :)</code></pre>
@@ -329,9 +336,9 @@
     <span class="va">F_now</span> <span class="op">&lt;-</span> <span class="va">use_ipms</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">sub_kernels</span><span class="op">$</span><span class="cn">F</span>
 
     <span class="va">l_age</span><span class="op">[</span><span class="va">j</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html">colSums</a></span><span class="op">(</span><span class="va">P_a</span><span class="op">)</span> <span class="op">*</span> <span class="va">init_pops</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> 
-    <span class="va">f_age</span><span class="op">[</span><span class="va">j</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html">colSums</a></span><span class="op">(</span><span class="va">F_now</span> <span class="op">%*%</span> <span class="va">P_a</span><span class="op">)</span> <span class="op">*</span> <span class="va">init_pops</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>
+    <span class="va">f_age</span><span class="op">[</span><span class="va">j</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html">colSums</a></span><span class="op">(</span><span class="va">F_now</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html">%*%</a></span> <span class="va">P_a</span><span class="op">)</span> <span class="op">*</span> <span class="va">init_pops</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>
     
-    <span class="va">P_a</span> <span class="op">&lt;-</span> <span class="va">P_now</span> <span class="op">%*%</span> <span class="va">P_a</span>
+    <span class="va">P_a</span> <span class="op">&lt;-</span> <span class="va">P_now</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html">%*%</a></span> <span class="va">P_a</span>
   <span class="op">}</span>
   
   <span class="va">f_age</span> <span class="op">&lt;-</span> <span class="va">f_age</span> <span class="op">/</span> <span class="va">l_age</span>
@@ -374,13 +381,13 @@
 <span class="op">}</span>
 
 <span class="va">mean_lifespan</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">use_ipms</span>, <span class="va">eta_bar_z0</span><span class="op">)</span> </code></pre></div>
-<p>The formula for the variance in lifespan is only a bit more complicated. It is given by <span class="math inline">\(\sigma_\eta^2(z_0) = e(2N^2 - N) - (eN)^2\)</span>. For this, we also need to use <code>ipmr</code>’s <code>%^%</code> operator to ensure we correctly exponentiate the first term, and use the regular <code><a href="https://rdrr.io/r/base/Arithmetic.html">^</a></code> to exponentiate the second term. Calculating <span class="math inline">\(N\)</span> is the same as before, we’ll compute the variance and standard deviation of lifespan (for plotting).</p>
+<p>The formula for the variance in lifespan is only a bit more complicated. It is given by <span class="math inline">\(\sigma_\eta^2(z_0) = e(2N^2 - N) - (eN)^2\)</span>. For this, we also need to use <code>ipmr</code>’s <code>%^%</code> operator to ensure we correctly exponentiate the first term, and use the regular <code>^</code> to exponentiate the second term. Calculating <span class="math inline">\(N\)</span> is the same as before, we’ll compute the variance and standard deviation of lifespan (for plotting).</p>
 <div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">sigma_eta_z0</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">ipm</span><span class="op">)</span> <span class="op">{</span>
   
   <span class="va">N</span> <span class="op">&lt;-</span> <span class="fu">make_N</span><span class="op">(</span><span class="va">ipm</span><span class="op">)</span>
   
-  <span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html">colSums</a></span><span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="va">N</span> <span class="op">%^%</span> <span class="fl">2</span> <span class="op">-</span> <span class="va">N</span><span class="op">)</span> <span class="op">-</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html">colSums</a></span><span class="op">(</span><span class="va">N</span><span class="op">)</span><span class="op">)</span> <span class="op">^</span> <span class="fl">2</span>
+  <span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html">colSums</a></span><span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="va">N</span> <span class="op"><a href="https://levisc8.github.io/ipmr/reference/matrix-power.html">%^%</a></span> <span class="fl">2</span> <span class="op">-</span> <span class="va">N</span><span class="op">)</span> <span class="op">-</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html">colSums</a></span><span class="op">(</span><span class="va">N</span><span class="op">)</span><span class="op">)</span> <span class="op">^</span> <span class="fl">2</span>
   
   <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span>
   
@@ -408,8 +415,8 @@
 ## [2,] 0.9258931 0.7019200</code></pre>
 <p>The fundamental operator should not have any negative numbers, and yet <code>aaa341</code> contains them. This is because of the survival function used in the model. We’ll show how to remedy this in the next section, but for now, we’ll just remove it from our analysis. Next, we’ll learn how to visualize our results quickly with <code>ggplot2</code>:</p>
 <div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">mean_lifespan</span> <span class="op">&lt;-</span> <span class="va">mean_lifespan</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">mean_lifespan</span><span class="op">)</span> <span class="op">%in%</span> <span class="st">"aaa341"</span><span class="op">]</span>
-<span class="va">sd_lifespan</span>  <span class="op">&lt;-</span> <span class="va">sd_lifespan</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">sd_lifespan</span><span class="op">)</span> <span class="op">%in%</span> <span class="st">"aaa341"</span><span class="op">]</span>
+<code class="sourceCode R"><span class="va">mean_lifespan</span> <span class="op">&lt;-</span> <span class="va">mean_lifespan</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">mean_lifespan</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="st">"aaa341"</span><span class="op">]</span>
+<span class="va">sd_lifespan</span>  <span class="op">&lt;-</span> <span class="va">sd_lifespan</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">sd_lifespan</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="st">"aaa341"</span><span class="op">]</span>
 
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span></code></pre></div>
 <pre><code>## Warning: package 'ggplot2' was built under R version 4.1.1</code></pre>
@@ -471,7 +478,7 @@
 <code class="sourceCode R"><span class="va">lonicera_proto</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pdb_make_proto_ipm.html">pdb_make_proto_ipm</a></span><span class="op">(</span><span class="va">pdb</span>, <span class="st">"aaa341"</span><span class="op">)</span>
 
 <span class="co"># Inspect the vital rate expressions</span>
-<span class="fu">vital_rate_exprs</span><span class="op">(</span><span class="va">lonicera_proto</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://levisc8.github.io/ipmr/reference/accessors.html">vital_rate_exprs</a></span><span class="op">(</span><span class="va">lonicera_proto</span><span class="op">)</span></code></pre></div>
 <pre><code>## $aaa341
 ## s: 1/(1 + exp(-(si + ss1 * size_1 + ss2 * size_1^2)))
 ## g_mean: gi + gs * size_1
@@ -493,7 +500,7 @@
 <span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 <p>With a maximum survival probability of 0.98, our example of <code>aaa341</code> looks like this:</p>
 <div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">vital_rate_exprs</span><span class="op">(</span><span class="va">lonicera_proto</span><span class="op">)</span> <span class="op">&lt;-</span><span class="fu"><a href="../reference/vital_rate_exprs.pdb_proto_ipm_list.html">pdb_new_fun_form</a></span><span class="op">(</span>
+<code class="sourceCode R"><span class="fu"><a href="https://levisc8.github.io/ipmr/reference/accessors.html">vital_rate_exprs</a></span><span class="op">(</span><span class="va">lonicera_proto</span><span class="op">)</span> <span class="op">&lt;-</span><span class="fu"><a href="../reference/vital_rate_exprs.pdb_proto_ipm_list.html">pdb_new_fun_form</a></span><span class="op">(</span>
   <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
     aaa341 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
       s <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">pmin</a></span><span class="op">(</span><span class="fl">0.98</span>, <span class="fl">1</span> <span class="op">/</span> <span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="op">-</span><span class="op">(</span><span class="va">si</span> <span class="op">+</span> <span class="va">ss1</span> <span class="op">*</span> <span class="va">size_1</span> <span class="op">+</span> <span class="va">ss2</span> <span class="op">*</span> <span class="va">size_1</span> <span class="op">^</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
@@ -501,7 +508,7 @@
   <span class="op">)</span>
 <span class="op">)</span>
 
-<span class="fu">vital_rate_exprs</span><span class="op">(</span><span class="va">lonicera_proto</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://levisc8.github.io/ipmr/reference/accessors.html">vital_rate_exprs</a></span><span class="op">(</span><span class="va">lonicera_proto</span><span class="op">)</span></code></pre></div>
 <pre><code>## $aaa341
 ## s: pmin(0.98, 1/(1 + exp(-(si + ss1 * size_1 + ss2 * size_1^2))))
 ## g_mean: gi + gs * size_1

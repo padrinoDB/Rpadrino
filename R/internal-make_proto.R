@@ -4,7 +4,7 @@
 # Functions to construct a single proto_ipm. This will take a complete pdb
 # object and a single id, and construct a proto_ipm for it.
 
-.make_proto <- function(db_tabs, id, det_stoch, kern_param, stop_on_failure) {
+.make_proto <- function(db_tabs, id, det_stoch, kern_param) {
 
   # Subset to a single IPM
 
@@ -15,7 +15,7 @@
   },
   id = id)
 
-  .check_proto_args(use_tabs, det_stoch, kern_param, stop_on_failure)
+  .check_proto_args(use_tabs, det_stoch, kern_param)
 
 
   # Split out individual tables

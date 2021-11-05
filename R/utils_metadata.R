@@ -11,7 +11,8 @@
 #' @param ipm_id The ID of the model. The default (\code{NULL}) returns all
 #' values in the \code{pdb} object.
 #'
-#' @return A vector
+#' @return A vector of the metadata. For \code{pdb_report}e file path to the
+#' rendered output, or to the \code{.rmd} file when \code{render_output = FALSE}.
 #'
 #' @export
 
@@ -214,9 +215,6 @@ pdb_has_age <- .make_pdb_accessor("has_age")
 #' @param render_output A logical - should the document be rendered for inspection?
 #' @param map Create a map of studies included in the \code{pdb} object?
 #'
-#' @return The file path to the rendered output, or to the \code{.rmd} file when
-#' \code{render_output = FALSE}.
-#'
 #' @importFrom rmarkdown render
 #' @importFrom stats complete.cases
 #' @export
@@ -229,7 +227,7 @@ pdb_report <- function(pdb,
                        render_output = TRUE,
                        map = TRUE) {
 
-  rmd_dest <- .pdb_rmd_dest(rmd_dest)
+  rmd_dest <- .pdb_rmd_dest(rmd_dest, keep_rmd)
 
   output <- .pdb_rmd_header(title, output_format)
 
@@ -278,7 +276,7 @@ pdb_report <- function(pdb,
 #' @noRd
 #' @importFrom tools file_ext
 
-.pdb_rmd_dest <- function(rmd_dest) {
+.pdb_rmd_dest <- function(rmd_dest, keep_rmd) {
 
   date <- gsub("-", "", Sys.Date())
 

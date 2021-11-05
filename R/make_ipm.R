@@ -30,7 +30,13 @@
 #'                             kern_param = "kern")
 #'
 #' args  <-list(
+#'
+#'  # The names in the outermost list should be ipm_id's
+#'
 #'  aaaa55 = list(
+#'
+#'    # The names in the inner list should be arguments to make_ipm()
+#'
 #'    report_progress = TRUE,
 #'    iterate         = TRUE,
 #'    iterations      = 100,

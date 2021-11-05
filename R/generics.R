@@ -86,7 +86,7 @@ print.pdb_proto_ipm_list <- function(x, ...) {
 #' of the fecundity kernels. If multiple sub-kernels contribute to fecundity, we
 #' can also supply a string specifying how they are combined (e.g.
 #' \code{f_forms = "F + C"}).
-#' @param log Log-transform lambdas?
+#' @param log Log-transform lambdas for plotting?
 #' @param show_stable Show horizontal line denoting stable population growth?
 #' @param ipm A \code{pdb_ipm}.
 #' @param iterations The number of times to iterate the model to reach
@@ -164,6 +164,9 @@ print.pdb_proto_ipm_list <- function(x, ...) {
 #'      aaa310 = list(F = f_n * f_d * establishment_prob)
 #'    )
 #'  )
+#'
+#'  my_ipms    <- pdb_make_ipm(my_pdb)
+#'  iter_kerns <- make_iter_kernel(my_ipms, aaaa17 = c(0, F_yr, Y, P_yr))
 #'
 #' @importFrom ipmr vital_rate_exprs
 #' @export

@@ -73,7 +73,7 @@ Padrino Database tables." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">RPadrino</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.0.9000</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.1</span>
       </span>
     </div>
 
@@ -108,7 +108,12 @@ Padrino Database tables." />
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/padrinoDB/RPadrino/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -123,7 +128,7 @@ Padrino Database tables." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Generate proto_ipms from Padrino objects</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/padrinoDB/RPadrino/blob/master/R/make_proto.R'><code>R/make_proto.R</code></a></small>
     <div class="hidden name"><code>pdb_make_proto_ipm.Rd</code></div>
     </div>
 
@@ -132,13 +137,7 @@ Padrino Database tables." />
 Padrino Database tables.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>pdb_make_proto_ipm</span><span class='op'>(</span>
-  <span class='va'>pdb</span>,
-  ipm_id <span class='op'>=</span> <span class='cn'>NULL</span>,
-  det_stoch <span class='op'>=</span> <span class='st'>"det"</span>,
-  kern_param <span class='op'>=</span> <span class='st'>"kern"</span>,
-  stop_on_failure <span class='op'>=</span> <span class='cn'>TRUE</span>
-<span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>pdb_make_proto_ipm</span><span class='op'>(</span><span class='va'>pdb</span>, ipm_id <span class='op'>=</span> <span class='cn'>NULL</span>, det_stoch <span class='op'>=</span> <span class='st'>"det"</span>, kern_param <span class='op'>=</span> <span class='st'>"kern"</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -163,13 +162,6 @@ model. Default is <code>"det"</code>. See details</p></td>
       <th>kern_param</th>
       <td><p>If <code>det_stoch = "stoch"</code>, then whether or not to construct
 a kernel resampled model, or a parameter resampled model. See details.</p></td>
-    </tr>
-    <tr>
-      <th>stop_on_failure</th>
-      <td><p>A logical. If <code>TRUE</code>, when building many models,
-will halt the process with an error if any one of them is unable to build with the
-requested parameters. Otherwise, it will throw a warning indicating which
-models cannot be built.</p></td>
     </tr>
     </table>
 

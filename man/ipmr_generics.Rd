@@ -91,7 +91,7 @@ convergence. Default is 100.}
 
 \item{tolerance}{Tolerance to evaluate convergence to asymptotic dynamics.}
 
-\item{log}{Log-transform lambdas?}
+\item{log}{Log-transform lambdas for plotting?}
 
 \item{show_stable}{Show horizontal line denoting stable population growth?}
 
@@ -196,5 +196,8 @@ vital_rate_exprs(my_pdb) <- pdb_new_fun_form(
      aaa310 = list(F = f_n * f_d * establishment_prob)
    )
  )
+
+ my_ipms    <- pdb_make_ipm(my_pdb)
+ iter_kerns <- make_iter_kernel(my_ipms, aaaa17 = c(0, F_yr, Y, P_yr))
 
 }

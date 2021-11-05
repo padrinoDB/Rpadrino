@@ -25,7 +25,7 @@
 # Checks if requested models are possible, and tries to fail informatively
 # if they aren't
 
-.check_proto_args <- function(use_db, det_stoch, kern_param, .stop) {
+.check_proto_args <- function(use_db, det_stoch, kern_param) {
 
   mods <- unique(use_db$Metadata$ipm_id)
 
@@ -55,7 +55,7 @@
   # Internal errors. Hopefully these don't come up, but we will need to
   # generate informative ones to aid trouble shooting.
 
-  if(.stop && any(problems != "OK")) {
+  if(any(problems != "OK")) {
 
     stop("The following models produced the following errors:\n",
          paste(
@@ -67,17 +67,6 @@
          call. = FALSE
     )
 
-  } else if(any(problems != "OK")) {
-
-    warning("The following models produced the following errors:\n",
-            paste(
-              paste(
-                mods, ": ", problems, sep = ""
-              ),
-              collapse = "\n"
-            ),
-            call. = FALSE
-    )
   }
 
 
