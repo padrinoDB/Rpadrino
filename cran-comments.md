@@ -8,7 +8,7 @@ Additional information on this submission:
 * macOS Catalina 10.15.7 (GitHub Actions), release and oldrelease
 * Windows server 2019 x64 (Github Actions), release, and oldrelease
 * Windows server 2008 x86_64 (Win Builder), devel, release, and oldrelease
-* Ubuntu Linux 20.04.1 LTS, GCC (R-Hub) Release
+* Fedora Clang, gfortran (R-Hub) devel
 
 
 ## R CMD check results
