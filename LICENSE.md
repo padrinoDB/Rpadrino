@@ -10,7 +10,7 @@ document, but changing it is not allowed.
 Sam Levin, Tiffany Knight, Roberto Salguero-Gomez, Dylan Childs. 
 Software to reproduce any Integral Projection Model derived from parametric
 statistics.
-Copyright (C) 2018 RPadrino 
+Copyright (C) 2018 Rpadrino 
 
 <padrinocontact@gmail.com>
 

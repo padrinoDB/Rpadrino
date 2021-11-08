@@ -1,4 +1,4 @@
-This is the first submission of RPadrino. 
+This is a resubmission of the first submission of Rpadrino. We have corrected the title case in the description, and added DOIs for background on the methods.
 
 Additional information on this submission:
 
@@ -18,6 +18,6 @@ Additional information on this submission:
 Possibly mis-spelled words in DESCRIPTION:
   IPM (2:34)
   PADRINO (2:26, 12:14)
-  RPadrino (15:33)
+  Rpadrino (15:33)
   
-IPM is shorthand for Integral Projection Model. PADRINO and RPadrino are names.
+IPM is shorthand for Integral Projection Model. PADRINO and Rpadrino are names.

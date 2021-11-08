@@ -5,14 +5,14 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Data Cleaning and Troubleshooting • RPadrino</title>
+<title>Data Cleaning and Troubleshooting • Rpadrino</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/yeti/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Data Cleaning and Troubleshooting">
-<meta property="og:description" content="RPadrino">
+<meta property="og:description" content="Rpadrino">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -30,7 +30,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">RPadrino</a>
+        <a class="navbar-link" href="../index.html">Rpadrino</a>
         <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.1</span>
       </span>
     </div>
@@ -54,7 +54,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/padrino-intro.html">Introduction to RPadrino</a>
+      <a href="../articles/padrino-intro.html">Introduction to Rpadrino</a>
     </li>
     <li>
       <a href="../articles/data-cleaning.html">Data Cleaning and Troubleshooting</a>
@@ -64,7 +64,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/padrinoDB/RPadrino/">
+  <a href="https://github.com/padrinoDB/Rpadrino/">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -85,7 +85,7 @@
       <h1 data-toc-skip>Data Cleaning and Troubleshooting</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/padrinoDB/RPadrino/blob/master/vignettes/data-cleaning.Rmd"><code>vignettes/data-cleaning.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/padrinoDB/Rpadrino/blob/master/vignettes/data-cleaning.Rmd"><code>vignettes/data-cleaning.Rmd</code></a></small>
       <div class="hidden name"><code>data-cleaning.Rmd</code></div>
 
     </div>
@@ -115,7 +115,7 @@ N = (I + P + P^2 + P^3 + ...) = (I - P)^{-1}
 <a href="#diagnosis" class="anchor"></a>Diagnosis</h2>
 <p>This most often manifests as negative values in the fundamental operator, which propagate through the rest of the analysis and return nonsense results. Below is a quick example of this manifesting in an IPM for <em>Lonicera maackii</em> when computing mean lifespan (<span class="math inline">\(\bar\eta(z_0) = eN\)</span>).</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/padrinoDB/RPadrino">RPadrino</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/padrinoDB/Rpadrino">Rpadrino</a></span><span class="op">)</span>
 
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">pdb</span><span class="op">)</span>
 
@@ -127,7 +127,7 @@ N = (I + P + P^2 + P^3 + ...) = (I - P)^{-1}
 
 <span class="fu"><a href="https://rdrr.io/r/base/range.html">range</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html">colSums</a></span><span class="op">(</span><span class="va">N</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] -348825.70  -30555.21</code></pre>
-<p>According to this, <em>Lonicera maackii</em> is expected to live between negative 348,800 and negative 30,555 years. This seems incorrect. Therefore, we should inspect what’s going on with the <span class="math inline">\(P\)</span> kernel, and more importantly, the functions that comprise it. We’ll use a couple functions from <code>RPadrino</code> for that:</p>
+<p>According to this, <em>Lonicera maackii</em> is expected to live between negative 348,800 and negative 30,555 years. This seems incorrect. Therefore, we should inspect what’s going on with the <span class="math inline">\(P\)</span> kernel, and more importantly, the functions that comprise it. We’ll use a couple functions from <code>Rpadrino</code> for that:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://levisc8.github.io/ipmr/reference/accessors.html">kernel_formulae</a></span><span class="op">(</span><span class="va">problem_ipm</span><span class="op">)</span></code></pre></div>
 <pre><code>## $aaa341
@@ -142,7 +142,7 @@ N = (I + P + P^2 + P^3 + ...) = (I - P)^{-1}
 ## Fp: 1/(1 + exp(-(fpi + fps * size_1)))
 ## Fs: exp(fi + fs * size_1)
 ## Fd: stats::dnorm(size_2, fd_mean, fd_sd)</code></pre>
-<p>We can see that <code>P = s * g</code>, and since <code>g</code> is given by a probability density function, we are unlikely to find much going on there. Thus, we want to inspect the values for <code>s</code>. How do we do that? By default, <code>ipmr</code>, the engine that powers <code>RPadrino</code>, does not return individual function values in IPM objects. Therefore, we’ll need to rebuild the IPM, and tell <code>ipmr</code> to give us those by setting <code>return_all_envs = TRUE</code>. Then we can ask for the vital rate functions using <code><a href="https://levisc8.github.io/ipmr/reference/accessors.html">vital_rate_funs()</a></code>.</p>
+<p>We can see that <code>P = s * g</code>, and since <code>g</code> is given by a probability density function, we are unlikely to find much going on there. Thus, we want to inspect the values for <code>s</code>. How do we do that? By default, <code>ipmr</code>, the engine that powers <code>Rpadrino</code>, does not return individual function values in IPM objects. Therefore, we’ll need to rebuild the IPM, and tell <code>ipmr</code> to give us those by setting <code>return_all_envs = TRUE</code>. Then we can ask for the vital rate functions using <code><a href="https://levisc8.github.io/ipmr/reference/accessors.html">vital_rate_funs()</a></code>.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">problem_ipm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pdb_make_proto_ipm.html">pdb_make_proto_ipm</a></span><span class="op">(</span><span class="va">pdb</span>, <span class="st">"aaa341"</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
   <span class="fu"><a href="../reference/pdb_make_ipm.html">pdb_make_ipm</a></span><span class="op">(</span>addl_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>aaa341 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>return_all_envs <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
@@ -166,7 +166,7 @@ N = (I + P + P^2 + P^3 + ...) = (I - P)^{-1}
 <div id="fixing-the-problem" class="section level2">
 <h2 class="hasAnchor">
 <a href="#fixing-the-problem" class="anchor"></a>Fixing the problem</h2>
-<p>The quickest way is to modify the survival function to be a parallel minimum of the original survival function (i.e. the one that the authors used) and some maximum survival value that we choose ourselves. For the purposes of this example, we’ll use 0.98 as the maximum survival probability. <code>RPadrino</code> has two functions to help with this: <code>vital_rate_exprs&lt;-</code> and <code><a href="../reference/vital_rate_exprs.pdb_proto_ipm_list.html">pdb_new_fun_form()</a></code>. These are used together to insert a new functional form into a <code>proto_ipm</code> so that we can make changes to the IPM without having to think too much about how a <code>proto_ipm</code> is actually structured.</p>
+<p>The quickest way is to modify the survival function to be a parallel minimum of the original survival function (i.e. the one that the authors used) and some maximum survival value that we choose ourselves. For the purposes of this example, we’ll use 0.98 as the maximum survival probability. <code>Rpadrino</code> has two functions to help with this: <code>vital_rate_exprs&lt;-</code> and <code><a href="../reference/vital_rate_exprs.pdb_proto_ipm_list.html">pdb_new_fun_form()</a></code>. These are used together to insert a new functional form into a <code>proto_ipm</code> so that we can make changes to the IPM without having to think too much about how a <code>proto_ipm</code> is actually structured.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">problem_proto</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pdb_make_proto_ipm.html">pdb_make_proto_ipm</a></span><span class="op">(</span><span class="va">pdb</span>, <span class="st">"aaa341"</span><span class="op">)</span>
 

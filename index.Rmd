@@ -2,13 +2,13 @@
 output: github_document
 ---
 
-[![R-CMD-check](https://github.com/padrinODB/RPadrino/workflows/R-CMD-check/badge.svg)](https://github.com/padrinoDB/RPadrino/actions) 
-[![Codecov test coverage](https://codecov.io/gh/padrinoDB/RPadrino/branch/main/graph/badge.svg)](https://codecov.io/gh/padrinoDB/RPadrino?branch=main)
+[![R-CMD-check](https://github.com/padrinODB/Rpadrino/workflows/R-CMD-check/badge.svg)](https://github.com/padrinoDB/Rpadrino/actions) 
+[![Codecov test coverage](https://codecov.io/gh/padrinoDB/Rpadrino/branch/main/graph/badge.svg)](https://codecov.io/gh/padrinoDB/Rpadrino?branch=main)
 
 
-## RPadrino
+## Rpadrino
 
-`RPadrino` is a package for interacting with the PADRINO Integral Projection Model database. Currently, an alpha release of PADRINO exists as a set of version controlled csv files hosted in a GitHub repository. The longer term plan is to migrate it to a set of static, version-controlled tables that are hosted on Zenodo (or similar). For now, you can access it by installing the `RPadrino` _R_ package from this repository (see below for instructions).
+`Rpadrino` is a package for interacting with the PADRINO Integral Projection Model database. Currently, an alpha release of PADRINO exists as a set of version controlled csv files hosted in a GitHub repository. The longer term plan is to migrate it to a set of static, version-controlled tables that are hosted on Zenodo (or similar). For now, you can access it by installing the `Rpadrino` _R_ package from this repository (see below for instructions).
 
 ## Installation
 
@@ -18,13 +18,13 @@ if(!require("remotes", quietly = TRUE)) {
   install.packages("remotes")
 }
 
-remotes::install_github("padrinoDB/RPadrino")
+remotes::install_github("padrinoDB/Rpadrino")
 
 ```
 
 ## Scope
 
-The goal of this package is basic data management, exploration, and porting PADRINO's internal syntax to [`ipmr`'s](https://levisc8.github.io/ipmr/) syntax. One can combine models from here with their own models for synthesis work, using the `proto_ipm` as a common data structure to power the analysis. It is not intended to provide a complete analysis toolbox - that will come in a separate package designed to work with `ipmr` and `RPadrino` objects.
+The goal of this package is basic data management, exploration, and porting PADRINO's internal syntax to [`ipmr`'s](https://levisc8.github.io/ipmr/) syntax. One can combine models from here with their own models for synthesis work, using the `proto_ipm` as a common data structure to power the analysis. It is not intended to provide a complete analysis toolbox - that will come in a separate package designed to work with `ipmr` and `Rpadrino` objects.
 
 ## Usage
 
@@ -32,7 +32,7 @@ The data included in this package are quality checked (see below) and ready for 
 
 ```{r echo = FALSE, message = FALSE, warning = FALSE}
 library(dplyr)
-library(RPadrino)
+library(Rpadrino)
 
 data(pdb)
 
@@ -76,13 +76,13 @@ knitr::kable(
 
 ```
 
-Above are the current number of unique species, unique publications, and unique `ipm_id`s that are in PADRINO and `RPadrino`'s internal dataset. Table 2 provides a breakdown of how these are distributed amongst taxonomic kingdoms in the **full** database (i.e. not the internal data set). All of the models included in both the internal data set and full database have been quality checked for accuracy. Quality checked means that for deterministic models, the asymptotic per-capita growth rate ($\lambda$) is within $\pm 0.03$ of the published point estimate value. For stochastic models, we check for approximately the same stochastic population growth rate ($\lambda_s$), but do not try to replicate the analysis, as this usually requires too many computing resources to be feasible.  
+Above are the current number of unique species, unique publications, and unique `ipm_id`s that are in PADRINO and `Rpadrino`'s internal dataset. Table 2 provides a breakdown of how these are distributed amongst taxonomic kingdoms in the **full** database (i.e. not the internal data set). All of the models included in both the internal data set and full database have been quality checked for accuracy. Quality checked means that for deterministic models, the asymptotic per-capita growth rate ($\lambda$) is within $\pm 0.03$ of the published point estimate value. For stochastic models, we check for approximately the same stochastic population growth rate ($\lambda_s$), but do not try to replicate the analysis, as this usually requires too many computing resources to be feasible.  
 
 A small-ish copy of the Padrino Database is included as a package data set. You can download the full database as well. You can access it with the following code:
 
 ```{r eval = FALSE}
 
-library(RPadrino)
+library(Rpadrino)
 
 data("pdb") # Internal copy, contains a subset of plant species in PADRINO
 
@@ -124,4 +124,4 @@ Functions are documented in the _Functions_ tab and longer form documentation an
 
 ### Contributing
 
-Please note that the RPadrino project is released with a [Contributor Code of Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.
+Please note that the Rpadrino project is released with a [Contributor Code of Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.

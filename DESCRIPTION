@@ -1,5 +1,5 @@
-Package: RPadrino
-Title: Interact With the PADRINO IPM Database
+Package: Rpadrino
+Title: Interact with the PADRINO IPM Database
 Version: 0.0.1
 Authors@R: c(
     person(given = "Sam",
@@ -34,7 +34,13 @@ Authors@R: c(
 Description: PADRINO houses textual representations of
     Integral Projection Models which can be converted from their 
     table format into full kernels to reproduce or extend an 
-    already published analysis. RPadrino is an R interface to this database. 
+    already published analysis. Rpadrino is an R interface to this database. For
+    more information on Integral Projection Models, see Easterling et al. (2000) 
+  <doi:10.1890/0012-9658(2000)081[0694:SSSAAN]2.0.CO;2>, Merow et al. (2013) 
+  <doi:10.1111/2041-210X.12146>, Rees et al. (2014) <doi:10.1111/1365-2656.12178>,
+  and Metcalf et al. (2015) <doi:10.1111/2041-210X.12405>. See Levin et al. (2021)
+  for more information on 'ipmr', the engine that powers model reconstruction
+  <doi:10.1111/2041-210X.13683>.
 Depends: 
   R (>= 3.3.0),
   ipmr (>= 0.0.4)
@@ -52,8 +58,8 @@ Imports:
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-BugReports: https://github.com/padrinoDB/RPadrino/issues
-URL: https://github.com/padrinoDB/RPadrino, https://padrinoDB.github.io/RPadrino/
+BugReports: https://github.com/padrinoDB/Rpadrino/issues
+URL: https://github.com/padrinoDB/Rpadrino, https://padrinoDB.github.io/Rpadrino/
 RoxygenNote: 7.1.2
 Suggests: 
     testthat,

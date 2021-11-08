@@ -283,7 +283,7 @@ pdb_report <- function(pdb,
   # Non-specified output directory gets a tempdir()
   if((is.null(rmd_dest) || is.na(rmd_dest) || rmd_dest == "") && keep_rmd) {
 
-    rmd_dest <- tempfile(pattern = paste0("RPadrino_report_", date),
+    rmd_dest <- tempfile(pattern = paste0("Rpadrino_report_", date),
                          fileext = ".Rmd")
 
     message("'keep_rmd = TRUE' and 'rmd_dest' is not specified! ",
@@ -291,7 +291,7 @@ pdb_report <- function(pdb,
 
   } else if(file_ext(rmd_dest) == "") {
 
-    rmd_dest <- paste0(rmd_dest, "/RPadrino_report_", date, ".Rmd")
+    rmd_dest <- paste0(rmd_dest, "/Rpadrino_report_", date, ".Rmd")
 
     file.create(rmd_dest, showWarnings = FALSE)
 
@@ -523,7 +523,7 @@ pdb_report <- function(pdb,
     " stochastic algorithm, they are always treated as stochastic models at build",
     " time, regardlessof whether the authors intended for them to be. To circumvent ",
     "this behavior, you can set the values of the continuouslly varying parameters",
-    " manually and run a deterministic projection using either _RPadrino_ or _ipmr_.\n\n",
+    " manually and run a deterministic projection using either _Rpadrino_ or _ipmr_.\n\n",
     "It is also worth noting that stochastic models with continuously varying",
     " environments can take some time to run, due to extra steps of sampling the",
     " environment and then reconstructing unique kernels for each iteration. Please",

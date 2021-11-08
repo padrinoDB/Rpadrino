@@ -35,7 +35,7 @@ This most often manifests as negative values in the fundamental operator, which 
 
 
 ```{r message = FALSE}
-library(RPadrino)
+library(Rpadrino)
 
 data(pdb)
 
@@ -50,7 +50,7 @@ range(colSums(N))
 
 ```
 
-According to this, *Lonicera maackii* is expected to live between negative 348,800 and negative 30,555 years. This seems incorrect. Therefore, we should inspect what's going on with the $P$ kernel, and more importantly, the functions that comprise it. We'll use a couple functions from `RPadrino` for that:
+According to this, *Lonicera maackii* is expected to live between negative 348,800 and negative 30,555 years. This seems incorrect. Therefore, we should inspect what's going on with the $P$ kernel, and more importantly, the functions that comprise it. We'll use a couple functions from `Rpadrino` for that:
 
 ```{r}
 
@@ -60,7 +60,7 @@ vital_rate_exprs(problem_ipm)
 
 ```
 
-We can see that `P = s * g`, and since `g` is given by a probability density function, we are unlikely to find much going on there. Thus, we want to inspect the values for `s`. How do we do that? By default, `ipmr`, the engine that powers `RPadrino`, does not return individual function values in IPM objects. Therefore, we'll need to rebuild the IPM, and tell `ipmr` to give us those by setting `return_all_envs = TRUE`. Then we can ask for the vital rate functions using `vital_rate_funs()`.
+We can see that `P = s * g`, and since `g` is given by a probability density function, we are unlikely to find much going on there. Thus, we want to inspect the values for `s`. How do we do that? By default, `ipmr`, the engine that powers `Rpadrino`, does not return individual function values in IPM objects. Therefore, we'll need to rebuild the IPM, and tell `ipmr` to give us those by setting `return_all_envs = TRUE`. Then we can ask for the vital rate functions using `vital_rate_funs()`.
 
 ```{r}
 
@@ -77,7 +77,7 @@ Ah ha! The maximum value of `s` is 1! This is problematic for us. How do we fix 
 
 ## Fixing the problem
 
-The quickest way is to modify the survival function to be a parallel minimum of the original survival function (i.e. the one that the authors used) and some maximum survival value that we choose ourselves. For the purposes of this example, we'll use 0.98 as the maximum survival probability. `RPadrino` has two functions to help with this: `vital_rate_exprs<-` and `pdb_new_fun_form()`. These are used together to insert a new functional form into a `proto_ipm` so that we can make changes to the IPM without having to think too much about how a `proto_ipm` is actually structured. 
+The quickest way is to modify the survival function to be a parallel minimum of the original survival function (i.e. the one that the authors used) and some maximum survival value that we choose ourselves. For the purposes of this example, we'll use 0.98 as the maximum survival probability. `Rpadrino` has two functions to help with this: `vital_rate_exprs<-` and `pdb_new_fun_form()`. These are used together to insert a new functional form into a `proto_ipm` so that we can make changes to the IPM without having to think too much about how a `proto_ipm` is actually structured. 
 
 ```{r}
 

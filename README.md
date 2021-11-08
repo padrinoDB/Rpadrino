@@ -1,16 +1,16 @@
 
-[![R-CMD-check](https://github.com/padrinoDB/RPadrino/workflows/R-CMD-check/badge.svg)](https://github.com/padrinoDB/RPadrino/actions)
+[![R-CMD-check](https://github.com/padrinoDB/Rpadrino/workflows/R-CMD-check/badge.svg)](https://github.com/padrinoDB/Rpadrino/actions)
 [![Codecov test
-coverage](https://codecov.io/gh/padrinoDB/RPadrino/branch/main/graph/badge.svg)](https://codecov.io/gh/padrinoDB/RPadrino?branch=main)
+coverage](https://codecov.io/gh/padrinoDB/Rpadrino/branch/main/graph/badge.svg)](https://codecov.io/gh/padrinoDB/Rpadrino?branch=main)
 
-## RPadrino
+## Rpadrino
 
-`RPadrino` is a package for interacting with the PADRINO Integral
+`Rpadrino` is a package for interacting with the PADRINO Integral
 Projection Model database. Currently, an alpha release of PADRINO exists
 as a set of version controlled csv files hosted in a GitHub repository.
 The longer term plan is to migrate it to a set of static,
 version-controlled tables that are hosted on Zenodo (or similar). For
-now, you can access it by installing the `RPadrino` *R* package from
+now, you can access it by installing the `Rpadrino` *R* package from
 this repository (see below for instructions).
 
 ## Installation
@@ -20,7 +20,7 @@ if(!require("remotes", quietly = TRUE)) {
   install.packages("remotes")
 }
 
-remotes::install_github("padrinoDB/RPadrino")
+remotes::install_github("padrinoDB/Rpadrino")
 ```
 
 ## Scope
@@ -49,7 +49,7 @@ information on the number of models in each.
 | Plantae  |            40 |                 26 |            258 |
 
 Above are the current number of unique species, unique publications, and
-unique `ipm_id`s that are in PADRINO and `RPadrino`’s internal dataset.
+unique `ipm_id`s that are in PADRINO and `Rpadrino`’s internal dataset.
 Table 2 provides a breakdown of how these are distributed amongst
 taxonomic kingdoms in the **full** database (i.e. not the internal data
 set). All of the models included in both the internal data set and full
@@ -66,7 +66,7 @@ set. You can download the full database as well. You can access it with
 the following code:
 
 ``` r
-library(RPadrino)
+library(Rpadrino)
 
 data("pdb") # Internal copy, contains a subset of plant species in PADRINO
 
@@ -110,11 +110,11 @@ lams     <- lambda(ipm_list)
 
 ### Finding help
 
-The package is documented [here](https://padrinoDB.github.io/RPadrino/).
+The package is documented [here](https://padrinoDB.github.io/Rpadrino/).
 
 ### Contributing
 
-Please note that the RPadrino project is released with a [Contributor
+Please note that the Rpadrino project is released with a [Contributor
 Code of
 Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html).
 By contributing to this project, you agree to abide by its terms.

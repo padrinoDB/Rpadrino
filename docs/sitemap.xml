@@ -1,45 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://levisc8.github.io/RPadrino/index.html</loc>
+    <loc>https://padrinoDB.github.io/Rpadrino/index.html</loc>
   </url>
   <url>
-    <loc>https://levisc8.github.io/RPadrino/reference/in_out.html</loc>
+    <loc>https://padrinoDB.github.io/Rpadrino/reference/in_out.html</loc>
   </url>
   <url>
-    <loc>https://levisc8.github.io/RPadrino/reference/ipmr_generics.html</loc>
+    <loc>https://padrinoDB.github.io/Rpadrino/reference/ipmr_generics.html</loc>
   </url>
   <url>
-    <loc>https://levisc8.github.io/RPadrino/reference/metadata_utils.html</loc>
+    <loc>https://padrinoDB.github.io/Rpadrino/reference/metadata_utils.html</loc>
   </url>
   <url>
-    <loc>https://levisc8.github.io/RPadrino/reference/pdb.html</loc>
+    <loc>https://padrinoDB.github.io/Rpadrino/reference/pdb.html</loc>
   </url>
   <url>
-    <loc>https://levisc8.github.io/RPadrino/reference/pdb_make_ipm.html</loc>
+    <loc>https://padrinoDB.github.io/Rpadrino/reference/pdb_make_ipm.html</loc>
   </url>
   <url>
-    <loc>https://levisc8.github.io/RPadrino/reference/pdb_make_proto_ipm.html</loc>
+    <loc>https://padrinoDB.github.io/Rpadrino/reference/pdb_make_proto_ipm.html</loc>
   </url>
   <url>
-    <loc>https://levisc8.github.io/RPadrino/reference/pdb_subset.html</loc>
+    <loc>https://padrinoDB.github.io/Rpadrino/reference/pdb_subset.html</loc>
   </url>
   <url>
-    <loc>https://levisc8.github.io/RPadrino/reference/pipe.html</loc>
+    <loc>https://padrinoDB.github.io/Rpadrino/reference/pipe.html</loc>
   </url>
   <url>
-    <loc>https://levisc8.github.io/RPadrino/reference/print_star.html</loc>
+    <loc>https://padrinoDB.github.io/Rpadrino/reference/print_star.html</loc>
   </url>
   <url>
-    <loc>https://levisc8.github.io/RPadrino/reference/tidyeval.html</loc>
+    <loc>https://padrinoDB.github.io/Rpadrino/reference/tidyeval.html</loc>
   </url>
   <url>
-    <loc>https://levisc8.github.io/RPadrino/articles/data-cleaning.html</loc>
+    <loc>https://padrinoDB.github.io/Rpadrino/articles/data-cleaning.html</loc>
   </url>
   <url>
-    <loc>https://levisc8.github.io/RPadrino/articles/interop.html</loc>
+    <loc>https://padrinoDB.github.io/Rpadrino/articles/interop.html</loc>
   </url>
   <url>
-    <loc>https://levisc8.github.io/RPadrino/articles/padrino-intro.html</loc>
+    <loc>https://padrinoDB.github.io/Rpadrino/articles/padrino-intro.html</loc>
   </url>
 </urlset>

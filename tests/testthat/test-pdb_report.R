@@ -19,7 +19,7 @@ test_that("pdb_report generates correct output", {
   date <- gsub("-", "", Sys.Date())
 
   test_pats <- paste0(out_temp, "/",
-                      paste0("RPadrino_report_", date,
+                      paste0("Rpadrino_report_", date,
                              c(".html", ".pdf", ".Rmd")))
 
   actual_pats <- list.files(out_temp, full.names = TRUE)

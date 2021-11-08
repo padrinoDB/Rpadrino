@@ -5,17 +5,23 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Interact With the PADRINO IPM Database • RPadrino</title>
+<title>Interact with the PADRINO IPM Database • Rpadrino</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/yeti/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
 <script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script><meta property="og:title" content="Interact With the PADRINO IPM Database">
+<script src="pkgdown.js"></script><meta property="og:title" content="Interact with the PADRINO IPM Database">
 <meta property="og:description" content="PADRINO houses textual representations of
     Integral Projection Models which can be converted from their 
     table format into full kernels to reproduce or extend an 
-    already published analysis. RPadrino is an R interface to this database. ">
+    already published analysis. Rpadrino is an R interface to this database. For
+    more information on Integral Projection Models, see Easterling et al. (2000) 
+  &lt;doi:10.1890/0012-9658(2000)081[0694:SSSAAN]2.0.CO;2&gt;, Merow et al. (2013) 
+  &lt;doi:10.1111/2041-210X.12146&gt;, Rees et al. (2014) &lt;doi:10.1111/1365-2656.12178&gt;,
+  and Metcalf et al. (2015) &lt;doi:10.1111/2041-210X.12405&gt;. See Levin et al. (2021)
+  for more information on ipmr, the engine that powers model reconstruction
+  &lt;doi:10.1111/2041-210X.13683&gt;.">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -33,7 +39,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="index.html">RPadrino</a>
+        <a class="navbar-link" href="index.html">Rpadrino</a>
         <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.1</span>
       </span>
     </div>
@@ -57,7 +63,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="articles/padrino-intro.html">Introduction to RPadrino</a>
+      <a href="articles/padrino-intro.html">Introduction to Rpadrino</a>
     </li>
     <li>
       <a href="articles/data-cleaning.html">Data Cleaning and Troubleshooting</a>
@@ -67,7 +73,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/padrinoDB/RPadrino/">
+  <a href="https://github.com/padrinoDB/Rpadrino/">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -88,8 +94,8 @@
 
 <div id="rpadrino" class="section level2">
 <h2 class="hasAnchor">
-<a href="#rpadrino" class="anchor"></a>RPadrino</h2>
-<p><code>RPadrino</code> is a package for interacting with the PADRINO Integral Projection Model database. Currently, an alpha release of PADRINO exists as a set of version controlled csv files hosted in a GitHub repository. The longer term plan is to migrate it to a set of static, version-controlled tables that are hosted on Zenodo (or similar). For now, you can access it by installing the <code>RPadrino</code> <em>R</em> package from this repository (see below for instructions).</p>
+<a href="#rpadrino" class="anchor"></a>Rpadrino</h2>
+<p><code>Rpadrino</code> is a package for interacting with the PADRINO Integral Projection Model database. Currently, an alpha release of PADRINO exists as a set of version controlled csv files hosted in a GitHub repository. The longer term plan is to migrate it to a set of static, version-controlled tables that are hosted on Zenodo (or similar). For now, you can access it by installing the <code>Rpadrino</code> <em>R</em> package from this repository (see below for instructions).</p>
 </div>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
@@ -99,12 +105,12 @@
   <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span>
 <span class="op">}</span>
 
-<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"padrinoDB/RPadrino"</span><span class="op">)</span></code></pre></div>
+<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"padrinoDB/Rpadrino"</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="scope" class="section level2">
 <h2 class="hasAnchor">
 <a href="#scope" class="anchor"></a>Scope</h2>
-<p>The goal of this package is basic data management, exploration, and porting PADRINO’s internal syntax to <a href="https://levisc8.github.io/ipmr/"><code>ipmr</code>’s</a> syntax. One can combine models from here with their own models for synthesis work, using the <code>proto_ipm</code> as a common data structure to power the analysis. It is not intended to provide a complete analysis toolbox - that will come in a separate package designed to work with <code>ipmr</code> and <code>RPadrino</code> objects.</p>
+<p>The goal of this package is basic data management, exploration, and porting PADRINO’s internal syntax to <a href="https://levisc8.github.io/ipmr/"><code>ipmr</code>’s</a> syntax. One can combine models from here with their own models for synthesis work, using the <code>proto_ipm</code> as a common data structure to power the analysis. It is not intended to provide a complete analysis toolbox - that will come in a separate package designed to work with <code>ipmr</code> and <code>Rpadrino</code> objects.</p>
 </div>
 <div id="usage" class="section level2">
 <h2 class="hasAnchor">
@@ -154,10 +160,10 @@
 </tr>
 </tbody>
 </table>
-<p>Above are the current number of unique species, unique publications, and unique <code>ipm_id</code>s that are in PADRINO and <code>RPadrino</code>’s internal dataset. Table 2 provides a breakdown of how these are distributed amongst taxonomic kingdoms in the <strong>full</strong> database (i.e. not the internal data set). All of the models included in both the internal data set and full database have been quality checked for accuracy. Quality checked means that for deterministic models, the asymptotic per-capita growth rate (<em>λ</em>) is within  ± 0.03 of the published point estimate value. For stochastic models, we check for approximately the same stochastic population growth rate (<em>λ</em><sub><em>s</em></sub>), but do not try to replicate the analysis, as this usually requires too many computing resources to be feasible.</p>
+<p>Above are the current number of unique species, unique publications, and unique <code>ipm_id</code>s that are in PADRINO and <code>Rpadrino</code>’s internal dataset. Table 2 provides a breakdown of how these are distributed amongst taxonomic kingdoms in the <strong>full</strong> database (i.e. not the internal data set). All of the models included in both the internal data set and full database have been quality checked for accuracy. Quality checked means that for deterministic models, the asymptotic per-capita growth rate (<em>λ</em>) is within  ± 0.03 of the published point estimate value. For stochastic models, we check for approximately the same stochastic population growth rate (<em>λ</em><sub><em>s</em></sub>), but do not try to replicate the analysis, as this usually requires too many computing resources to be feasible.</p>
 <p>A small-ish copy of the Padrino Database is included as a package data set. You can download the full database as well. You can access it with the following code:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/padrinoDB/RPadrino">RPadrino</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/padrinoDB/Rpadrino">Rpadrino</a></span><span class="op">)</span>
 
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"pdb"</span><span class="op">)</span> <span class="co"># Internal copy, contains a subset of plant species in PADRINO</span>
 
@@ -187,7 +193,7 @@
 <div id="contributing" class="section level3">
 <h3 class="hasAnchor">
 <a href="#contributing" class="anchor"></a>Contributing</h3>
-<p>Please note that the RPadrino project is released with a <a href="https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p>
+<p>Please note that the Rpadrino project is released with a <a href="https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p>
 </div>
 </div>
 
@@ -197,9 +203,9 @@
     <div class="links">
 <h2>Links</h2>
 <ul class="list-unstyled">
-<li>Browse source code at <br><a href="https://github.com/padrinoDB/RPadrino/">https://​github.com/​padrinoDB/​RPadrino/​</a>
+<li>Browse source code at <br><a href="https://github.com/padrinoDB/Rpadrino/">https://​github.com/​padrinoDB/​Rpadrino/​</a>
 </li>
-<li>Report a bug at <br><a href="https://github.com/padrinoDB/RPadrino/issues">https://​github.com/​padrinoDB/​RPadrino/​issues</a>
+<li>Report a bug at <br><a href="https://github.com/padrinoDB/Rpadrino/issues">https://​github.com/​padrinoDB/​Rpadrino/​issues</a>
 </li>
 </ul>
 </div>
@@ -233,8 +239,8 @@
   <div class="dev-status">
 <h2>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/padrinoDB/RPadrino/actions"><img src="https://github.com/padrinODB/RPadrino/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
-<li><a href="https://codecov.io/gh/padrinoDB/RPadrino?branch=main"><img src="https://codecov.io/gh/padrinoDB/RPadrino/branch/main/graph/badge.svg" alt="Codecov test coverage"></a></li>
+<li><a href="https://github.com/padrinoDB/Rpadrino/actions"><img src="https://github.com/padrinODB/Rpadrino/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://codecov.io/gh/padrinoDB/Rpadrino?branch=main"><img src="https://codecov.io/gh/padrinoDB/Rpadrino/branch/main/graph/badge.svg" alt="Codecov test coverage"></a></li>
 </ul>
 </div>
 </div>

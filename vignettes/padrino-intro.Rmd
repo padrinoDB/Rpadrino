@@ -1,19 +1,19 @@
 ---
-title: "RPadrino Introduction"
+title: "Rpadrino Introduction"
 date: "`r Sys.Date()`"
 output:
   rmarkdown::html_vignette:
     toc: true
     toc_depth: 3
 vignette: >
-  %\VignetteIndexEntry{RPadrino Introduction}
+  %\VignetteIndexEntry{Rpadrino Introduction}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
 # Package Overview
 
-`RPadrino` provides an interface to the PADRINO database. PADRINO houses metadata on published Integral Projection Models, and all the information needed to rebuild them. `RPadrino` provides a set of functions that wrap around [`ipmr`](https://levisc8.github.io/ipmr/) so that you can rebuild these models using _R_. Additionally, there's some data downloading and management functionality, as well as tools to help report and cite studies used in an analysis.
+`Rpadrino` provides an interface to the PADRINO database. PADRINO houses metadata on published Integral Projection Models, and all the information needed to rebuild them. `Rpadrino` provides a set of functions that wrap around [`ipmr`](https://levisc8.github.io/ipmr/) so that you can rebuild these models using _R_. Additionally, there's some data downloading and management functionality, as well as tools to help report and cite studies used in an analysis.
 
 # Usage
 
@@ -21,7 +21,7 @@ Below are some very brief examples of how to select data based on the Metadata t
 
 ```{r message = FALSE}
 
-library(RPadrino)
+library(Rpadrino)
 
 pdb <- pdb_download(save = FALSE)
 
@@ -59,7 +59,7 @@ aster_pdb <- pdb_subset(pdb, ipm_ids = aster_ind)
 
 ```
 
-Next, we can rebuild their IPMs. This is a two step process in `RPadrino`. The first is to create `proto_ipm`s with `pdb_make_proto_ipm()`. This function takes a database object and, optionally, a subset of `ipm_id`s, and constructs a list of `proto_ipm`s. `proto_ipm`s are a common data structure used to represent IPM objects before they are actually constructed. One advantage of this extra step is that you can combine `proto_ipm`s generated from your own data with `ipmr` with `proto_ipm`s generated from PADRINO, so you can augment syntheses with your own data. An example of that is provided in the _Other Data Sources_ vignette. 
+Next, we can rebuild their IPMs. This is a two step process in `Rpadrino`. The first is to create `proto_ipm`s with `pdb_make_proto_ipm()`. This function takes a database object and, optionally, a subset of `ipm_id`s, and constructs a list of `proto_ipm`s. `proto_ipm`s are a common data structure used to represent IPM objects before they are actually constructed. One advantage of this extra step is that you can combine `proto_ipm`s generated from your own data with `ipmr` with `proto_ipm`s generated from PADRINO, so you can augment syntheses with your own data. An example of that is provided in the _Other Data Sources_ vignette. 
 
 The simplest way to make `proto_ipm`s for a whole `pdb` object is:
 
@@ -92,7 +92,7 @@ We've rebuilt our first set of IPMs! Next, we'll explore how to extract a bit mo
 
 # More complicated analyses
 
-Often times, we'll want more than just the deterministic population growth rates. We'll explore how to run some more complicated analyses here. Specifically, we'll compute the probability of surviving to age $a$, $l_a(z_0)$ and the average per-capita fecundity at age $a$, $f_a(z_0)$. After that, we'll compute mean and variance in lifespan ($\bar\eta(z_0)$ and $\sigma_\eta^2 (z_0)$, respectively). Along the way, we'll learn more about the structure of IPM objects in `RPadrino` and `ipmr`. 
+Often times, we'll want more than just the deterministic population growth rates. We'll explore how to run some more complicated analyses here. Specifically, we'll compute the probability of surviving to age $a$, $l_a(z_0)$ and the average per-capita fecundity at age $a$, $f_a(z_0)$. After that, we'll compute mean and variance in lifespan ($\bar\eta(z_0)$ and $\sigma_\eta^2 (z_0)$, respectively). Along the way, we'll learn more about the structure of IPM objects in `Rpadrino` and `ipmr`. 
 
 ## The dataset
 
@@ -479,5 +479,5 @@ The results look a bit better for *Lonicera*, and are at least now mathematicall
 
 # Further reading
 
-This is just a very brief overview of the analyses that are possible with `RPadrino`. [Ellner, Childs & Rees 2016](https://link.springer.com/content/pdf/10.1007/978-3-319-28893-2.pdf) give a comprehensive overview of IPM theory and analyses. There are further vignettes in this package that describe data cleaning and how to use PADRINO with other databases. 
+This is just a very brief overview of the analyses that are possible with `Rpadrino`. [Ellner, Childs & Rees 2016](https://link.springer.com/content/pdf/10.1007/978-3-319-28893-2.pdf) give a comprehensive overview of IPM theory and analyses. There are further vignettes in this package that describe data cleaning and how to use PADRINO with other databases. 
 
