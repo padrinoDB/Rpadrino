@@ -1,14 +1,36 @@
 Package: RPadrino
-Title: Interact with the PADRINO IPM Database
+Title: Interact With the PADRINO IPM Database
 Version: 0.0.1
 Authors@R: c(
-    person("Sam", "Levin",  email = "levisc8@gmail.com", role = c("aut", "cre")),
-    person("Sanne", "Evers", email = "sanne.evers@idiv.de", role = c("aut")),
-    person("Tomos", "Potter", email = "tomos.potter@zoo.ox.ac.uk", role = c("aut")),
-    person("Dylan", "Childs", email = "d.childs@sheffield.ac.uk", role = c("aut")),
-    person("Aldo", "Compagnoni",  email = "aldo.compagnoni@idiv.de", role = c("aut")),
-    person("Roberto", "Salguero-Gomez",  email = "rob.salguero@zoo.ox.ac.uk", role = c("aut")),
-    person("Tiffany", "Knight", role = "aut"))
+    person(given = "Sam",
+           family = "Levin",
+           role = c("aut", "cre"),
+           email = "levisc8@gmail.com",
+           comment = c(ORCID = "0000-0002-3289-9925")),
+    person(given = "Aldo",
+           family = "Compagnoni",
+           email = "aldo.compagnoni@idiv.de",
+           role = "aut"),
+    person(given = "Dylan",
+           family = "Childs",
+           email = "d.childs@sheffield.ac.uk",
+           role = "aut"),
+    person(given = "Sanne",
+           family = "Evers",
+           email = "sanne.evers@idiv.de",
+           role = "aut"),
+    person(given = "Tomos", 
+           family = "Potter", 
+           email = "tomos.potter@zoo.ox.ac.uk", 
+           role = "aut"),
+    person(given = "Roberto",
+           family = "Salguero-Gomez",
+           email = "rob.salguero@zoo.ox.ac.uk",
+           role = "aut"),
+    person(given = "Tiffany",
+           family = "Knight",
+           email = "tiffany.knight@idiv.de",
+           role = "aut"))
 Description: PADRINO houses textual representations of
     Integral Projection Models which can be converted from their 
     table format into full kernels to reproduce or extend an 

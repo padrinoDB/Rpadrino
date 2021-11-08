@@ -19,3 +19,5 @@
 ^index\.md$
 ^index\.rmd$
 ^build_artefacts/*$
+^cran-comments\.md$
+^vignettes/interop\.rmd$

@@ -20,8 +20,6 @@ navbar:
           href: articles/padrino-intro.html
         - text: "Data Cleaning and Troubleshooting"
           href: articles/data-cleaning.html
-        - text: "PADRINO and Other Databases"
-          href: articles/interop.html
 
 reference:
   - title: "Data Input/Output"

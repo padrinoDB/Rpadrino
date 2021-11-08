@@ -5,13 +5,13 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Interact with the PADRINO IPM Database • RPadrino</title>
+<title>Interact With the PADRINO IPM Database • RPadrino</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/yeti/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
 <script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script><meta property="og:title" content="Interact with the PADRINO IPM Database">
+<script src="pkgdown.js"></script><meta property="og:title" content="Interact With the PADRINO IPM Database">
 <meta property="og:description" content="PADRINO houses textual representations of
     Integral Projection Models which can be converted from their 
     table format into full kernels to reproduce or extend an 
@@ -61,9 +61,6 @@
     </li>
     <li>
       <a href="articles/data-cleaning.html">Data Cleaning and Troubleshooting</a>
-    </li>
-    <li>
-      <a href="articles/interop.html">PADRINO and Other Databases</a>
     </li>
   </ul>
 </li>
@@ -167,7 +164,7 @@
 <span class="co"># Downloads the complete database. The models contained in here have </span>
 <span class="co"># been tested for accuracy/reasonable results.  </span>
 <span class="va">pdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/pdb_download.html">pdb_download</a></span><span class="op">(</span>save <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> </code></pre></div>
-<p>The next step is to identify the models we are interested in building. There are accessor functions that allow you to extract metadata columns from the <code>pdb</code> object, which may be helpful in this step. See <code><a href="reference/pdb_citations.html">?pdb_species_accepted</a></code> for a list of those.</p>
+<p>The next step is to identify the models we are interested in building. There are accessor functions that allow you to extract metadata columns from the <code>pdb</code> object, which may be helpful in this step. See <code><a href="reference/pdb_citations.html">?pdb_species_accepted</a></code> for a list of those. Additionally, the <a href="https://sam-levin.shinyapps.io/shiny_pdb/">shiny_pdb</a> allows for interactive exploration and subsetting of data.</p>
 <p>Once, we’ve identified the model(s) we want, we can build a list of <a href="https://levisc8.github.io/ipmr/articles/proto-ipms.html"><code>proto_ipm</code>’s</a>. This is an intermediate step between the database representation and a set of kernels. Once we have the list of <code>proto_ipm</code>’s, we can build an actual model. Below, we extract a specific study, and construct an IPM from the database object.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># We can construct a single IPM at a time, or make a list of many IPMs</span>
@@ -223,11 +220,11 @@
 <h2>Developers</h2>
 <ul class="list-unstyled">
 <li>
-<a href="https://github.com/levisc8">Sam Levin</a> <br><small class="roles"> Author, maintainer </small>  </li>
+<a href="https://github.com/levisc8">Sam Levin</a> <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-3289-9925" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Aldo Compagnoni <br><small class="roles"> Author </small>  </li>
+<li>Dylan Childs <br><small class="roles"> Author </small>  </li>
 <li>Sanne Evers <br><small class="roles"> Author </small>  </li>
 <li>Tomos Potter <br><small class="roles"> Author </small>  </li>
-<li>Dylan Childs <br><small class="roles"> Author </small>  </li>
-<li>Aldo Compagnoni <br><small class="roles"> Author </small>  </li>
 <li>Roberto Salguero-Gomez <br><small class="roles"> Author </small>  </li>
 <li>Tiffany Knight <br><small class="roles"> Author </small>  </li>
 </ul>
@@ -245,7 +242,7 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by <a href="https://github.com/levisc8">Sam Levin</a>, Sanne Evers, Tomos Potter, Dylan Childs, Aldo Compagnoni, Roberto Salguero-Gomez, Tiffany Knight.</p>
+  <p>Developed by <a href="https://github.com/levisc8">Sam Levin</a>, Aldo Compagnoni, Dylan Childs, Sanne Evers, Tomos Potter, Roberto Salguero-Gomez, Tiffany Knight.</p>
 </div>
 
 <div class="pkgdown">
