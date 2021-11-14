@@ -152,6 +152,8 @@ test_that("convergence diagnostics", {
 
   y <- pdb_make_ipm(x)
 
+  old_par <- par()
+
   par(mfrow = c(2,2))
 
   z <- conv_plot(y)
@@ -165,6 +167,8 @@ test_that("convergence diagnostics", {
   y <- pdb_make_ipm(x, addl_args = arg_list)
 
   expect_true(is_conv_to_asymptotic(y, tolerance = 1e-7))
+
+  par(old_par)
 
 })
 

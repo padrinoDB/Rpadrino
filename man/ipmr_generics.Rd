@@ -117,6 +117,12 @@ can also supply a string specifying how they are combined (e.g.
 
 \item{i}{The index to extract}
 }
+\value{
+Most of these return named lists where names correspond to
+\code{ipm_ids}. The exception is \code{pdb_new_fun_form}, which returns a list
+of expressions. It is only intended for setting new expressions with
+\code{vital_rate_exprs<-}.
+}
 \description{
 Provides wrappers around \code{ipmr} generic functions to extract
 some quantities of interest from \code{pdb_proto_ipm_list}s and \code{pdb_ipm}s.

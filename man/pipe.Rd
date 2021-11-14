@@ -6,6 +6,9 @@
 \usage{
 lhs \%>\% rhs
 }
+\value{
+The computed value.
+}
 \description{
 See \code{magrittr::\link[magrittr:pipe]{\%>\%}} for details.
 }

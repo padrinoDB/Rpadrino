@@ -15,6 +15,9 @@
 \item{...}{Only used by \code{pdb_new_fun_form}, otherwise ignored. See details
 and examples for usage in \code{pdb_new_fun_form}.}
 }
+\value{
+\code{x} invisibly.
+}
 \description{
 Print a \code{pdb} object.
 }

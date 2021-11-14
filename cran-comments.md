@@ -1,4 +1,4 @@
-This is a resubmission of the first submission of Rpadrino. We have corrected the title case in the description, and added DOIs for background on the methods.
+This is a resubmission of the first submission of Rpadrino. We have added "'"s around software names in the DESCRIPTION, updated the documentation to include \value tags, and ensured our tests now reset user graphical options in the testing suite. 
 
 Additional information on this submission:
 

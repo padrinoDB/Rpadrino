@@ -2,6 +2,8 @@
 #'
 #' See \code{magrittr::\link[magrittr:pipe]{\%>\%}} for details.
 #'
+#' @return The computed value.
+#'
 #' @name %>%
 #' @rdname pipe
 #' @keywords internal

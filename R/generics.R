@@ -6,6 +6,9 @@
 #' @param x A \code{pdb} object.
 #' @param ... Only used by \code{pdb_new_fun_form}, otherwise ignored. See details
 #' and examples for usage in \code{pdb_new_fun_form}.
+#'
+#' @return \code{x} invisibly.
+#'
 #' @export
 
 print.pdb <- function(x, ...) {
@@ -98,6 +101,12 @@ print.pdb_proto_ipm_list <- function(x, ...) {
 #'
 #' @details There are number of uses for \code{...} which depend on the function
 #' used for them. These are described below.
+#'
+#' @return Most of these return named lists where names correspond to
+#' \code{ipm_ids}. The exception is \code{pdb_new_fun_form}, which returns a list
+#' of expressions. It is only intended for setting new expressions with
+#' \code{vital_rate_exprs<-}.
+#'
 #'
 #' @section \code{pdb_new_fun_form}:
 #'

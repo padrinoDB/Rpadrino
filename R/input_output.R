@@ -11,6 +11,9 @@
 #' a set of 12 text files will be saved in the \code{destination} folder. The files
 #' are tab-delimited.
 #'
+#' @return \code{pdb_download} and \code{pdb_load} return \code{pdb} objects.
+#' \code{pdb_save} returns a \code{pdb} object invisibly.
+#'
 #' @importFrom utils read.table write.table
 #' @export
 

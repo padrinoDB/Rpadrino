@@ -21,6 +21,10 @@ pdb_load(path)
 
 \item{path}{The directory where the PADRINO tables are stored}
 }
+\value{
+\code{pdb_download} and \code{pdb_load} return \code{pdb} objects.
+\code{pdb_save} returns a \code{pdb} object invisibly.
+}
 \description{
 Download PADRINO from Github.
 }

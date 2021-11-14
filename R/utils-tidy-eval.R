@@ -33,6 +33,8 @@
 #'   \code{as_label()}. If you know you have quoted a simple variable
 #'   name, or would like to enforce this, use \code{as_name()}.
 #'
+#' @return Quosures, symbols, or bare expressions.
+#'
 #' @md
 #' @name tidyeval
 #' @keywords internal
