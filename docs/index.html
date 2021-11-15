@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">Rpadrino</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.1</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.1.9000</span>
       </span>
     </div>
 
@@ -100,7 +100,11 @@
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
+<p>CRAN version:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"Rpadrino"</span><span class="op">)</span></code></pre></div>
+<p>Or the development version (may not be stable!):</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="st"><a href="https://remotes.r-lib.org">"remotes"</a></span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
   <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span>
 <span class="op">}</span>
@@ -162,7 +166,7 @@
 </table>
 <p>Above are the current number of unique species, unique publications, and unique <code>ipm_id</code>s that are in PADRINO and <code>Rpadrino</code>’s internal dataset. Table 2 provides a breakdown of how these are distributed amongst taxonomic kingdoms in the <strong>full</strong> database (i.e. not the internal data set). All of the models included in both the internal data set and full database have been quality checked for accuracy. Quality checked means that for deterministic models, the asymptotic per-capita growth rate (<em>λ</em>) is within  ± 0.03 of the published point estimate value. For stochastic models, we check for approximately the same stochastic population growth rate (<em>λ</em><sub><em>s</em></sub>), but do not try to replicate the analysis, as this usually requires too many computing resources to be feasible.</p>
 <p>A small-ish copy of the Padrino Database is included as a package data set. You can download the full database as well. You can access it with the following code:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/padrinoDB/Rpadrino">Rpadrino</a></span><span class="op">)</span>
 
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"pdb"</span><span class="op">)</span> <span class="co"># Internal copy, contains a subset of plant species in PADRINO</span>
@@ -172,14 +176,14 @@
 <span class="va">pdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/pdb_download.html">pdb_download</a></span><span class="op">(</span>save <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> </code></pre></div>
 <p>The next step is to identify the models we are interested in building. There are accessor functions that allow you to extract metadata columns from the <code>pdb</code> object, which may be helpful in this step. See <code><a href="reference/pdb_citations.html">?pdb_species_accepted</a></code> for a list of those. Additionally, the <a href="https://sam-levin.shinyapps.io/shiny_pdb/">shiny_pdb</a> allows for interactive exploration and subsetting of data.</p>
 <p>Once, we’ve identified the model(s) we want, we can build a list of <a href="https://levisc8.github.io/ipmr/articles/proto-ipms.html"><code>proto_ipm</code>’s</a>. This is an intermediate step between the database representation and a set of kernels. Once we have the list of <code>proto_ipm</code>’s, we can build an actual model. Below, we extract a specific study, and construct an IPM from the database object.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># We can construct a single IPM at a time, or make a list of many IPMs</span>
 
 <span class="va">proto_list</span>   <span class="op">&lt;-</span> <span class="fu"><a href="reference/pdb_make_proto_ipm.html">pdb_make_proto_ipm</a></span><span class="op">(</span><span class="va">pdb</span>, 
                                    ipm_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"aaa310"</span>, <span class="st">"ddddd7"</span>, <span class="st">"aaaa17"</span><span class="op">)</span>,
                                    det_stoch <span class="op">=</span> <span class="st">"det"</span><span class="op">)</span></code></pre></div>
 <p>Once the list of <code>proto_ipm</code>’s is generated, you can either append your own IPMs to it, or you can go ahead to the next chunk. Note that <code>pdb_make_ipm</code> will almost always work, but there may still be bugs lurking!</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ipm_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/pdb_make_ipm.html">pdb_make_ipm</a></span><span class="op">(</span><span class="va">proto_list</span><span class="op">)</span>
 
 <span class="va">lams</span>         <span class="op">&lt;-</span> <span class="fu"><a href="https://levisc8.github.io/ipmr/reference/lambda.html">lambda</a></span><span class="op">(</span><span class="va">ipm_list</span><span class="op">)</span>
@@ -203,6 +207,8 @@
     <div class="links">
 <h2>Links</h2>
 <ul class="list-unstyled">
+<li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=Rpadrino">https://​cloud.r-project.org/​package=Rpadrino</a>
+</li>
 <li>Browse source code at <br><a href="https://github.com/padrinoDB/Rpadrino/">https://​github.com/​padrinoDB/​Rpadrino/​</a>
 </li>
 <li>Report a bug at <br><a href="https://github.com/padrinoDB/Rpadrino/issues">https://​github.com/​padrinoDB/​Rpadrino/​issues</a>
@@ -241,6 +247,7 @@
 <ul class="list-unstyled">
 <li><a href="https://github.com/padrinoDB/Rpadrino/actions"><img src="https://github.com/padrinODB/Rpadrino/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
 <li><a href="https://codecov.io/gh/padrinoDB/Rpadrino?branch=main"><img src="https://codecov.io/gh/padrinoDB/Rpadrino/branch/main/graph/badge.svg" alt="Codecov test coverage"></a></li>
+<li><a href="https://cran.r-project.org/package=Rpadrino"><img src="https://www.r-pkg.org/badges/version/Rpadrino" alt="CRAN status"></a></li>
 </ul>
 </div>
 </div>

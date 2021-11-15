@@ -73,7 +73,7 @@ some quantities of interest from pdb_proto_ipm_lists and pdb_ipms." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Rpadrino</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.1</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.1.9000</span>
       </span>
     </div>
 
@@ -281,6 +281,12 @@ can also supply a string specifying how they are combined (e.g.
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>Most of these return named lists where names correspond to
+<code>ipm_ids</code>. The exception is <code>pdb_new_fun_form</code>, which returns a list
+of expressions. It is only intended for setting new expressions with
+<code>vital_rate_exprs&lt;-</code>.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>There are number of uses for <code>...</code> which depend on the function

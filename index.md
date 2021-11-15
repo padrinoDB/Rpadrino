@@ -2,6 +2,8 @@
 [![R-CMD-check](https://github.com/padrinODB/Rpadrino/workflows/R-CMD-check/badge.svg)](https://github.com/padrinoDB/Rpadrino/actions)
 [![Codecov test
 coverage](https://codecov.io/gh/padrinoDB/Rpadrino/branch/main/graph/badge.svg)](https://codecov.io/gh/padrinoDB/Rpadrino?branch=main)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/Rpadrino)](https://cran.r-project.org/package=Rpadrino)
 
 ## Rpadrino
 
@@ -14,6 +16,14 @@ now, you can access it by installing the `Rpadrino` *R* package from
 this repository (see below for instructions).
 
 ## Installation
+
+CRAN version:
+
+``` r
+install.packages("Rpadrino")
+```
+
+Or the development version (may not be stable!):
 
 ``` r
 if(!require("remotes", quietly = TRUE)) {

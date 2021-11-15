@@ -4,6 +4,7 @@ output: github_document
 
 [![R-CMD-check](https://github.com/padrinODB/Rpadrino/workflows/R-CMD-check/badge.svg)](https://github.com/padrinoDB/Rpadrino/actions) 
 [![Codecov test coverage](https://codecov.io/gh/padrinoDB/Rpadrino/branch/main/graph/badge.svg)](https://codecov.io/gh/padrinoDB/Rpadrino?branch=main)
+[![CRAN status](https://www.r-pkg.org/badges/version/Rpadrino)](https://cran.r-project.org/package=Rpadrino) 
 
 
 ## Rpadrino
@@ -12,7 +13,15 @@ output: github_document
 
 ## Installation
 
-```{r, message = FALSE, warning = FALSE, eval = FALSE}
+CRAN version:
+
+```{r eval = FALSE}
+install.packages("Rpadrino")
+```
+
+Or the development version (may not be stable!):
+
+```{r eval = FALSE}
 
 if(!require("remotes", quietly = TRUE)) {
   install.packages("remotes")
