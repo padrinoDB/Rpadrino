@@ -1,4 +1,4 @@
-This is a resubmission of the first submission of Rpadrino. We have added "'"s around software names in the DESCRIPTION, updated the documentation to include \value tags for all exported functions, and ensured our tests now reset user graphical options in the testing suite. 
+This is a resubmission of the first submission of Rpadrino. We have updated our tests to run on Solaris in the absence of Pandoc, and a note about imported packages on Fedora.
 
 Additional information on this submission:
 

@@ -152,7 +152,7 @@ test_that("convergence diagnostics", {
 
   y <- pdb_make_ipm(x)
 
-  old_par <- par()
+  old_par <- par(no.readonly = TRUE)
 
   par(mfrow = c(2,2))
 

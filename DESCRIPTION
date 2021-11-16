@@ -47,7 +47,6 @@ Depends:
 Imports:
   ggplot2,
   magrittr,
-  maps,
   mvtnorm,
   purrr,
   rlang (>= 0.3.0),
@@ -62,10 +61,11 @@ BugReports: https://github.com/padrinoDB/Rpadrino/issues
 URL: https://github.com/padrinoDB/Rpadrino, https://padrinoDB.github.io/Rpadrino/
 RoxygenNote: 7.1.2
 Suggests: 
-    testthat,
-    knitr,
     covr,
-    roxygen2
+    knitr,
+    maps,
+    roxygen2,
+    testthat
 VignetteBuilder: knitr
 Config/testthat/parallel: true
 Config/testthat/edition: 3

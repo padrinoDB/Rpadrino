@@ -2,6 +2,8 @@ data(pdb)
 
 test_that("pdb_report generates correct output", {
 
+  skip_if_not(rmarkdown::pandoc_available(version = "1.12.3"))
+
   out_temp <- tempdir()
   dir.create(out_temp, FALSE)
 
@@ -31,6 +33,8 @@ test_that("pdb_report generates correct output", {
 })
 
 test_that("full filenames work too", {
+
+  skip_if_not(rmarkdown::pandoc_available(version = "1.12.3"))
 
   out_temp <- tempdir()
   dir.create(out_temp, FALSE)
