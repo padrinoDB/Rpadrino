@@ -366,8 +366,20 @@ is_conv_to_asymptotic.pdb_ipm <- function(ipm, tolerance = 1e-10) {
 
   if(!all(test_ind)) {
 
-    msg <- paste0(paste(names(test_ind[!test_ind]), collapse = ", "),
-                 " did not converge!")
+    msg <- strwrap(
+      paste0(
+        "The following IPMs did not converge: \n",
+        paste(
+          names(
+            test_ind[!test_ind]
+          ),
+          collapse = ", "
+        )
+      ),
+      width = 80L,
+      initial = "",
+      prefix = "\n"
+    )
 
     message(msg)
 
