@@ -15,9 +15,6 @@ Additional information on this submission:
 
 0 errors | 0 warnings | 1 note on all platforms
 
-Possibly mis-spelled words in DESCRIPTION:
-  IPM (2:34)
-  PADRINO (2:26, 12:14)
-  Rpadrino (15:33)
-  
-IPM is shorthand for Integral Projection Model. PADRINO and Rpadrino are names.
+Days since last update: 1
+
+This patch is submitted as requested by a CRAN team member to fix issues on a Solaris machine. 

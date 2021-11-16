@@ -1,3 +1,6 @@
+# Rpadrino 0.0.3
+
+
 # Rpadrino 0.0.2
 
 - Fixed some issues from CRAN's Solaris machine.
