@@ -1,4 +1,4 @@
-This is a resubmission of the first submission of Rpadrino. We have updated our tests to run on Solaris in the absence of Pandoc, and a note about imported packages on Fedora.
+This is a patched version of Rpadrino 0.0.1, which errored on Solaris machines because Pandoc is not available for Solaris. We have updated our tests to run on Solaris in the absence of Pandoc, and a note about imported packages on Fedora.
 
 Additional information on this submission:
 

@@ -20,6 +20,8 @@ navbar:
           href: articles/padrino-intro.html
         - text: "Data Cleaning and Troubleshooting"
           href: articles/data-cleaning.html
+    - text: "News"
+      href: news/index.html
 
 reference:
   - title: "Data Input/Output"
