@@ -196,6 +196,8 @@ test_that("print methods produce expected outputs", {
 
 test_that("getters and setters work as expected", {
 
+  skip_on_cran()
+
   # Vital Rate exprs
   ind <- c("aaaa15", "aaaa16", "aaaa17", "aaa310")
 

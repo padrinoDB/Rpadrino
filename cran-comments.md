@@ -1,4 +1,4 @@
-This is a patched version of Rpadrino 0.0.1, which errored on Solaris machines because Pandoc is not available for Solaris. We have updated our tests to run on Solaris in the absence of Pandoc, and a note about imported packages on Fedora.
+This is a submission of Rpadrino 0.0.3. It (hopefully) corrects an error on tests run on linux x86-64.
 
 Additional information on this submission:
 
@@ -15,6 +15,18 @@ Additional information on this submission:
 
 0 errors | 0 warnings | 1 note on all platforms
 
-Days since last update: 1
+Possibly misspelled words in DESCRIPTION:
+  Easterling (38:57)
+  IPM (2:36)
+  Levin (41:64)
+  Merow (39:58)
+  Metcalf (41:7)
+  Rees (40:34)
+  al (38:71, 39:67, 40:42, 41:18, 41:73)
+  et (38:68, 39:64, 40:39, 41:15, 41:70)
 
-This patch is submitted as requested by a CRAN team member to fix issues on a Solaris machine. 
+CRAN repository db overrides:
+  X-CRAN-Comment: Archived on 2021-11-30 as check problems were not
+    corrected in time.
+    
+As stated above, this is an attempt to un-archive the package based on the failing test.
