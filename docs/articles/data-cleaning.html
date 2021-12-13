@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Rpadrino</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.2</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.3.9000</span>
       </span>
     </div>
 
@@ -67,7 +69,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/padrinoDB/Rpadrino/">
+  <a href="https://github.com/padrinoDB/Rpadrino/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -82,125 +84,125 @@
 
       
 
-      </header><script src="data-cleaning_files/header-attrs-2.11/header-attrs.js"></script><div class="row">
+      </header><script src="data-cleaning_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Data Cleaning and Troubleshooting</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/padrinoDB/Rpadrino/blob/master/vignettes/data-cleaning.Rmd"><code>vignettes/data-cleaning.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/padrinoDB/Rpadrino/blob/HEAD/vignettes/data-cleaning.Rmd" class="external-link"><code>vignettes/data-cleaning.Rmd</code></a></small>
       <div class="hidden name"><code>data-cleaning.Rmd</code></div>
 
     </div>
 
     
     
-<div id="introduction" class="section level1">
-<h1 class="hasAnchor">
-<a href="#introduction" class="anchor"></a>Introduction</h1>
+<div class="section level1">
+<h1 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+</h1>
 <p>PADRINO is pretty thoroughly checked in terms of reproducing published IPM behavior, but it is not strictly checked for the mathematical behavior of each IPM. Therefore, there are times where using IPMs from PADRINO in ways that the original authors did not use them may yield results that are either bizarre or biologically impossible. The purpose of this vignette is to show how to handle these so that these IPMs are still usable.</p>
 </div>
-<div id="fundamental-operators" class="section level1">
-<h1 class="hasAnchor">
-<a href="#fundamental-operators" class="anchor"></a>Fundamental operators</h1>
+<div class="section level1">
+<h1 id="fundamental-operators">Fundamental operators<a class="anchor" aria-label="anchor" href="#fundamental-operators"></a>
+</h1>
 <p>The most common issue we’ve found is when a function that predicts survival probabilities equals 1 for some range of trait values in the IPM. This doesn’t cause any mathematical issues in many analyses, and so often goes unnoticed by authors publishing their IPMs (the author of this document included - example to follow shortly!). However, to our knowledge, no species becomes immortal regardless of their size, and so this will cause issues for any longevity-related questions. Additionally, a mathematical issue arises whenever one needs to compute the fundamental operator for a model with this.</p>
-<div id="overview-of-the-problem" class="section level2">
-<h2 class="hasAnchor">
-<a href="#overview-of-the-problem" class="anchor"></a>Overview of the problem</h2>
+<div class="section level2">
+<h2 id="overview-of-the-problem">Overview of the problem<a class="anchor" aria-label="anchor" href="#overview-of-the-problem"></a>
+</h2>
 <p>The fundamental operator, <span class="math inline">\(N\)</span>, can be thought of as the amount of time an individual will spend in state <span class="math inline">\(z'\)</span> given state <span class="math inline">\(z\)</span> before death. It is given by</p>
 <p><span class="math display">\[
 N = (I + P + P^2 + P^3 + ...) = (I - P)^{-1}
 \]</span></p>
 <p>This <em>Neumann series</em> corresponds to the geometric series <span class="math inline">\(1 + r + r^2 + r^3 + ... = (1-r)^{-1}\)</span> and is valid for any real number <span class="math inline">\(|r| &lt; 1\)</span>, and remains valid provided survival probabilities for individuals are less than 1. Clearly, this computation is no longer valid when an IPM’s survival model predicts survival probabilities that are equal to 1.</p>
 </div>
-<div id="diagnosis" class="section level2">
-<h2 class="hasAnchor">
-<a href="#diagnosis" class="anchor"></a>Diagnosis</h2>
+<div class="section level2">
+<h2 id="diagnosis">Diagnosis<a class="anchor" aria-label="anchor" href="#diagnosis"></a>
+</h2>
 <p>This most often manifests as negative values in the fundamental operator, which propagate through the rest of the analysis and return nonsense results. Below is a quick example of this manifesting in an IPM for <em>Lonicera maackii</em> when computing mean lifespan (<span class="math inline">\(\bar\eta(z_0) = eN\)</span>).</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/padrinoDB/Rpadrino">Rpadrino</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/padrinoDB/Rpadrino" class="external-link">Rpadrino</a></span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">pdb</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pdb</span><span class="op">)</span>
 
-<span class="va">problem_ipm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pdb_make_proto_ipm.html">pdb_make_proto_ipm</a></span><span class="op">(</span><span class="va">pdb</span>, <span class="st">"aaa341"</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
+<span class="va">problem_ipm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pdb_make_proto_ipm.html">pdb_make_proto_ipm</a></span><span class="op">(</span><span class="va">pdb</span>, <span class="st">"aaa341"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
   <span class="fu"><a href="../reference/pdb_make_ipm.html">pdb_make_ipm</a></span><span class="op">(</span><span class="op">)</span>
 
 <span class="va">P</span> <span class="op">&lt;-</span> <span class="va">problem_ipm</span><span class="op">$</span><span class="va">aaa341</span><span class="op">$</span><span class="va">sub_kernels</span><span class="op">$</span><span class="va">P</span>
-<span class="va">N</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/solve.html">solve</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diag.html">diag</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">P</span><span class="op">)</span><span class="op">)</span> <span class="op">-</span> <span class="va">P</span><span class="op">)</span>
+<span class="va">N</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/solve.html" class="external-link">solve</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">P</span><span class="op">)</span><span class="op">)</span> <span class="op">-</span> <span class="va">P</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/range.html">range</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html">colSums</a></span><span class="op">(</span><span class="va">N</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] -348825.70  -30555.21</code></pre>
+<span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colSums</a></span><span class="op">(</span><span class="va">N</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## [1] -348825.70  -30555.21</span></code></pre>
 <p>According to this, <em>Lonicera maackii</em> is expected to live between negative 348,800 and negative 30,555 years. This seems incorrect. Therefore, we should inspect what’s going on with the <span class="math inline">\(P\)</span> kernel, and more importantly, the functions that comprise it. We’ll use a couple functions from <code>Rpadrino</code> for that:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://levisc8.github.io/ipmr/reference/accessors.html">kernel_formulae</a></span><span class="op">(</span><span class="va">problem_ipm</span><span class="op">)</span></code></pre></div>
-<pre><code>## $aaa341
-## P: s * g
-## F: Ep * Fp * Fs * Fd</code></pre>
+<code class="sourceCode R"><span class="fu"><a href="https://levisc8.github.io/ipmr/reference/accessors.html" class="external-link">kernel_formulae</a></span><span class="op">(</span><span class="va">problem_ipm</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## $aaa341</span>
+<span class="co">## P: s * g</span>
+<span class="co">## F: Ep * Fp * Fs * Fd</span></code></pre>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://levisc8.github.io/ipmr/reference/accessors.html">vital_rate_exprs</a></span><span class="op">(</span><span class="va">problem_ipm</span><span class="op">)</span></code></pre></div>
-<pre><code>## $aaa341
-## s: 1/(1 + exp(-(si + ss1 * size_1 + ss2 * size_1^2)))
-## g_mean: gi + gs * size_1
-## g: stats::dnorm(size_2, g_mean, g_sd)
-## Fp: 1/(1 + exp(-(fpi + fps * size_1)))
-## Fs: exp(fi + fs * size_1)
-## Fd: stats::dnorm(size_2, fd_mean, fd_sd)</code></pre>
-<p>We can see that <code>P = s * g</code>, and since <code>g</code> is given by a probability density function, we are unlikely to find much going on there. Thus, we want to inspect the values for <code>s</code>. How do we do that? By default, <code>ipmr</code>, the engine that powers <code>Rpadrino</code>, does not return individual function values in IPM objects. Therefore, we’ll need to rebuild the IPM, and tell <code>ipmr</code> to give us those by setting <code>return_all_envs = TRUE</code>. Then we can ask for the vital rate functions using <code><a href="https://levisc8.github.io/ipmr/reference/accessors.html">vital_rate_funs()</a></code>.</p>
+<code class="sourceCode R"><span class="fu"><a href="https://levisc8.github.io/ipmr/reference/accessors.html" class="external-link">vital_rate_exprs</a></span><span class="op">(</span><span class="va">problem_ipm</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## $aaa341</span>
+<span class="co">## s: 1/(1 + exp(-(si + ss1 * size_1 + ss2 * size_1^2)))</span>
+<span class="co">## g_mean: gi + gs * size_1</span>
+<span class="co">## g: stats::dnorm(size_2, g_mean, g_sd)</span>
+<span class="co">## Fp: 1/(1 + exp(-(fpi + fps * size_1)))</span>
+<span class="co">## Fs: exp(fi + fs * size_1)</span>
+<span class="co">## Fd: stats::dnorm(size_2, fd_mean, fd_sd)</span></code></pre>
+<p>We can see that <code>P = s * g</code>, and since <code>g</code> is given by a probability density function, we are unlikely to find much going on there. Thus, we want to inspect the values for <code>s</code>. How do we do that? By default, <code>ipmr</code>, the engine that powers <code>Rpadrino</code>, does not return individual function values in IPM objects. Therefore, we’ll need to rebuild the IPM, and tell <code>ipmr</code> to give us those by setting <code>return_all_envs = TRUE</code>. Then we can ask for the vital rate functions using <code><a href="https://levisc8.github.io/ipmr/reference/accessors.html" class="external-link">vital_rate_funs()</a></code>.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">problem_ipm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pdb_make_proto_ipm.html">pdb_make_proto_ipm</a></span><span class="op">(</span><span class="va">pdb</span>, <span class="st">"aaa341"</span><span class="op">)</span> <span class="op"><a href="../reference/%&gt;%.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/pdb_make_ipm.html">pdb_make_ipm</a></span><span class="op">(</span>addl_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>aaa341 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>return_all_envs <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">problem_ipm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pdb_make_proto_ipm.html">pdb_make_proto_ipm</a></span><span class="op">(</span><span class="va">pdb</span>, <span class="st">"aaa341"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/pdb_make_ipm.html">pdb_make_ipm</a></span><span class="op">(</span>addl_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>aaa341 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>return_all_envs <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 
 
-<span class="va">vr_funs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://levisc8.github.io/ipmr/reference/accessors.html">vital_rate_funs</a></span><span class="op">(</span><span class="va">problem_ipm</span><span class="op">)</span>
+<span class="va">vr_funs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://levisc8.github.io/ipmr/reference/accessors.html" class="external-link">vital_rate_funs</a></span><span class="op">(</span><span class="va">problem_ipm</span><span class="op">)</span>
 
 <span class="va">vr_funs</span></code></pre></div>
-<pre><code>## $aaa341
-## $aaa341$P
-## s (not yet discretized): A 500 x 500 kernel with minimum value: 0.1063 and maximum value: 1
-## g_mean (not yet discretized): A 500 x 500 kernel with minimum value: 18.6208 and maximum value: 497.9516
-## g (not yet discretized): A 500 x 500 kernel with minimum value: 0 and maximum value: 0.0337
-## 
-## $aaa341$F
-## Fp (not yet discretized): A 500 x 500 kernel with minimum value: 0 and maximum value: 1
-## Fs (not yet discretized): A 500 x 500 kernel with minimum value: 30.2437 and maximum value: 4705.0552
-## Fd (not yet discretized): A 500 x 500 kernel with minimum value: 0 and maximum value: 0.3308</code></pre>
+<pre><code><span class="co">## $aaa341</span>
+<span class="co">## $aaa341$P</span>
+<span class="co">## s (not yet discretized): A 500 x 500 kernel with minimum value: 0.1063 and maximum value: 1</span>
+<span class="co">## g_mean (not yet discretized): A 500 x 500 kernel with minimum value: 18.6208 and maximum value: 497.9516</span>
+<span class="co">## g (not yet discretized): A 500 x 500 kernel with minimum value: 0 and maximum value: 0.0337</span>
+<span class="co">## </span>
+<span class="co">## $aaa341$F</span>
+<span class="co">## Fp (not yet discretized): A 500 x 500 kernel with minimum value: 0 and maximum value: 1</span>
+<span class="co">## Fs (not yet discretized): A 500 x 500 kernel with minimum value: 30.2437 and maximum value: 4705.0552</span>
+<span class="co">## Fd (not yet discretized): A 500 x 500 kernel with minimum value: 0 and maximum value: 0.3308</span></code></pre>
 <p>Ah ha! The maximum value of <code>s</code> is 1! This is problematic for us. How do we fix this?</p>
 </div>
-<div id="fixing-the-problem" class="section level2">
-<h2 class="hasAnchor">
-<a href="#fixing-the-problem" class="anchor"></a>Fixing the problem</h2>
-<p>The quickest way is to modify the survival function to be a parallel minimum of the original survival function (i.e. the one that the authors used) and some maximum survival value that we choose ourselves. For the purposes of this example, we’ll use 0.98 as the maximum survival probability. <code>Rpadrino</code> has two functions to help with this: <code>vital_rate_exprs&lt;-</code> and <code><a href="../reference/vital_rate_exprs.pdb_proto_ipm_list.html">pdb_new_fun_form()</a></code>. These are used together to insert a new functional form into a <code>proto_ipm</code> so that we can make changes to the IPM without having to think too much about how a <code>proto_ipm</code> is actually structured.</p>
+<div class="section level2">
+<h2 id="fixing-the-problem">Fixing the problem<a class="anchor" aria-label="anchor" href="#fixing-the-problem"></a>
+</h2>
+<p>The quickest way is to modify the survival function to be a parallel minimum of the original survival function (i.e. the one that the authors used) and some maximum survival value that we choose ourselves. For the purposes of this example, we’ll use 0.98 as the maximum survival probability. <code>Rpadrino</code> has two functions to help with this: <code>vital_rate_exprs&lt;-</code> and <code><a href="../reference/ipmr_generics.html">pdb_new_fun_form()</a></code>. These are used together to insert a new functional form into a <code>proto_ipm</code> so that we can make changes to the IPM without having to think too much about how a <code>proto_ipm</code> is actually structured.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">problem_proto</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pdb_make_proto_ipm.html">pdb_make_proto_ipm</a></span><span class="op">(</span><span class="va">pdb</span>, <span class="st">"aaa341"</span><span class="op">)</span>
 
-<span class="fu"><a href="https://levisc8.github.io/ipmr/reference/accessors.html">vital_rate_exprs</a></span><span class="op">(</span><span class="va">problem_proto</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vital_rate_exprs.pdb_proto_ipm_list.html">pdb_new_fun_form</a></span><span class="op">(</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
-    aaa341 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
-      s <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">pmin</a></span><span class="op">(</span><span class="fl">0.98</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html">plogis</a></span><span class="op">(</span><span class="va">si</span> <span class="op">+</span> <span class="va">ss1</span> <span class="op">*</span> <span class="va">size_1</span> <span class="op">+</span> <span class="va">ss2</span> <span class="op">*</span> <span class="va">size_1</span> <span class="op">^</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://levisc8.github.io/ipmr/reference/accessors.html" class="external-link">vital_rate_exprs</a></span><span class="op">(</span><span class="va">problem_proto</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ipmr_generics.html">pdb_new_fun_form</a></span><span class="op">(</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
+    aaa341 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
+      s <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">pmin</a></span><span class="op">(</span><span class="fl">0.98</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="va">si</span> <span class="op">+</span> <span class="va">ss1</span> <span class="op">*</span> <span class="va">size_1</span> <span class="op">+</span> <span class="va">ss2</span> <span class="op">*</span> <span class="va">size_1</span> <span class="op">^</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span>
     <span class="op">)</span>
   <span class="op">)</span>
 <span class="op">)</span>
 
 <span class="va">good_ipm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pdb_make_ipm.html">pdb_make_ipm</a></span><span class="op">(</span><span class="va">problem_proto</span>,
-                         addl_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>aaa341 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>return_all_envs <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+                         addl_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>aaa341 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>return_all_envs <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 
-<span class="fu"><a href="https://levisc8.github.io/ipmr/reference/accessors.html">vital_rate_funs</a></span><span class="op">(</span><span class="va">good_ipm</span><span class="op">)</span></code></pre></div>
-<pre><code>## $aaa341
-## $aaa341$P
-## s (not yet discretized): A 500 x 500 kernel with minimum value: 0.1063 and maximum value: 0.98
-## g_mean (not yet discretized): A 500 x 500 kernel with minimum value: 18.6208 and maximum value: 497.9516
-## g (not yet discretized): A 500 x 500 kernel with minimum value: 0 and maximum value: 0.0337
-## 
-## $aaa341$F
-## Fp (not yet discretized): A 500 x 500 kernel with minimum value: 0 and maximum value: 1
-## Fs (not yet discretized): A 500 x 500 kernel with minimum value: 30.2437 and maximum value: 4705.0552
-## Fd (not yet discretized): A 500 x 500 kernel with minimum value: 0 and maximum value: 0.3308</code></pre>
+<span class="fu"><a href="https://levisc8.github.io/ipmr/reference/accessors.html" class="external-link">vital_rate_funs</a></span><span class="op">(</span><span class="va">good_ipm</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## $aaa341</span>
+<span class="co">## $aaa341$P</span>
+<span class="co">## s (not yet discretized): A 500 x 500 kernel with minimum value: 0.1063 and maximum value: 0.98</span>
+<span class="co">## g_mean (not yet discretized): A 500 x 500 kernel with minimum value: 18.6208 and maximum value: 497.9516</span>
+<span class="co">## g (not yet discretized): A 500 x 500 kernel with minimum value: 0 and maximum value: 0.0337</span>
+<span class="co">## </span>
+<span class="co">## $aaa341$F</span>
+<span class="co">## Fp (not yet discretized): A 500 x 500 kernel with minimum value: 0 and maximum value: 1</span>
+<span class="co">## Fs (not yet discretized): A 500 x 500 kernel with minimum value: 30.2437 and maximum value: 4705.0552</span>
+<span class="co">## Fd (not yet discretized): A 500 x 500 kernel with minimum value: 0 and maximum value: 0.3308</span></code></pre>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">P</span> <span class="op">&lt;-</span> <span class="va">good_ipm</span><span class="op">$</span><span class="va">aaa341</span><span class="op">$</span><span class="va">sub_kernels</span><span class="op">$</span><span class="va">P</span>
-<span class="va">N</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/solve.html">solve</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diag.html">diag</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">P</span><span class="op">)</span><span class="op">)</span> <span class="op">-</span> <span class="va">P</span><span class="op">)</span>
+<span class="va">N</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/solve.html" class="external-link">solve</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">P</span><span class="op">)</span><span class="op">)</span> <span class="op">-</span> <span class="va">P</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/range.html">range</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html">colSums</a></span><span class="op">(</span><span class="va">N</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1]  5.462124 50.007606</code></pre>
+<span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colSums</a></span><span class="op">(</span><span class="va">N</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## [1]  5.462124 50.007606</span></code></pre>
 <p>These values are far more reasonable!</p>
 </div>
 </div>
@@ -217,11 +219,13 @@ N = (I + P + P^2 + P^3 + ...) = (I - P)^{-1}
 
 
       <footer><div class="copyright">
-  <p>Developed by <a href="https://github.com/levisc8">Sam Levin</a>, Aldo Compagnoni, Dylan Childs, Sanne Evers, Tomos Potter, Roberto Salguero-Gomez, Tiffany Knight.</p>
+  <p></p>
+<p>Developed by <a href="https://github.com/levisc8" class="external-link">Sam Levin</a>, Aldo Compagnoni, Dylan Childs, Sanne Evers, Tomos Potter, Roberto Salguero-Gomez, Tiffany Knight.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>
@@ -229,6 +233,8 @@ N = (I + P + P^2 + P^3 + ...) = (I - P)^{-1}
 
   
 
+
+  
 
   </body>
 </html>

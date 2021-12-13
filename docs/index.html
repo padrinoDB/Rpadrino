@@ -28,6 +28,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -40,7 +42,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">Rpadrino</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.2</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.3.9000</span>
       </span>
     </div>
 
@@ -76,7 +78,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/padrinoDB/Rpadrino/">
+  <a href="https://github.com/padrinoDB/Rpadrino/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -95,33 +97,33 @@
   <div class="contents col-md-9">
 
 
-<div id="rpadrino" class="section level2">
-<h2 class="hasAnchor">
-<a href="#rpadrino" class="anchor"></a>Rpadrino</h2>
+<div class="section level2">
+<h2 id="rpadrino">Rpadrino<a class="anchor" aria-label="anchor" href="#rpadrino"></a>
+</h2>
 <p><code>Rpadrino</code> is a package for interacting with the PADRINO Integral Projection Model database. Currently, an alpha release of PADRINO exists as a set of version controlled csv files hosted in a GitHub repository. The longer term plan is to migrate it to a set of static, version-controlled tables that are hosted on Zenodo (or similar). For now, you can access it by installing the <code>Rpadrino</code> <em>R</em> package from this repository (see below for instructions).</p>
 </div>
-<div id="installation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h2>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
 <p>CRAN version:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"Rpadrino"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"Rpadrino"</span><span class="op">)</span></code></pre></div>
 <p>Or the development version (may not be stable!):</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="st"><a href="https://remotes.r-lib.org">"remotes"</a></span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://remotes.r-lib.org" class="external-link">"remotes"</a></span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span>
 <span class="op">}</span>
 
-<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"padrinoDB/Rpadrino"</span><span class="op">)</span></code></pre></div>
+<span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"padrinoDB/Rpadrino"</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="scope" class="section level2">
-<h2 class="hasAnchor">
-<a href="#scope" class="anchor"></a>Scope</h2>
-<p>The goal of this package is basic data management, exploration, and porting PADRINO’s internal syntax to <a href="https://levisc8.github.io/ipmr/"><code>ipmr</code>’s</a> syntax. One can combine models from here with their own models for synthesis work, using the <code>proto_ipm</code> as a common data structure to power the analysis. It is not intended to provide a complete analysis toolbox - that will come in a separate package designed to work with <code>ipmr</code> and <code>Rpadrino</code> objects.</p>
+<div class="section level2">
+<h2 id="scope">Scope<a class="anchor" aria-label="anchor" href="#scope"></a>
+</h2>
+<p>The goal of this package is basic data management, exploration, and porting PADRINO’s internal syntax to <a href="https://levisc8.github.io/ipmr/" class="external-link"><code>ipmr</code>’s</a> syntax. One can combine models from here with their own models for synthesis work, using the <code>proto_ipm</code> as a common data structure to power the analysis. It is not intended to provide a complete analysis toolbox - that will come in a separate package designed to work with <code>ipmr</code> and <code>Rpadrino</code> objects.</p>
 </div>
-<div id="usage" class="section level2">
-<h2 class="hasAnchor">
-<a href="#usage" class="anchor"></a>Usage</h2>
+<div class="section level2">
+<h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
+</h2>
 <p>The data included in this package are quality checked (see below) and ready for use. This is not the complete database - that can be downloaded using the <code>pdb_download</code> function. See the table below for information on the number of models in each.</p>
 <table class="table">
 <thead><tr class="header">
@@ -170,37 +172,37 @@
 <p>Above are the current number of unique species, unique publications, and unique <code>ipm_id</code>s that are in PADRINO and <code>Rpadrino</code>’s internal dataset. Table 2 provides a breakdown of how these are distributed amongst taxonomic kingdoms in the <strong>full</strong> database (i.e. not the internal data set). All of the models included in both the internal data set and full database have been quality checked for accuracy. Quality checked means that for deterministic models, the asymptotic per-capita growth rate (<em>λ</em>) is within  ± 0.03 of the published point estimate value. For stochastic models, we check for approximately the same stochastic population growth rate (<em>λ</em><sub><em>s</em></sub>), but do not try to replicate the analysis, as this usually requires too many computing resources to be feasible.</p>
 <p>A small-ish copy of the Padrino Database is included as a package data set. You can download the full database as well. You can access it with the following code:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/padrinoDB/Rpadrino">Rpadrino</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/padrinoDB/Rpadrino" class="external-link">Rpadrino</a></span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"pdb"</span><span class="op">)</span> <span class="co"># Internal copy, contains a subset of plant species in PADRINO</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"pdb"</span><span class="op">)</span> <span class="co"># Internal copy, contains a subset of plant species in PADRINO</span>
 
 <span class="co"># Downloads the complete database. The models contained in here have </span>
 <span class="co"># been tested for accuracy/reasonable results.  </span>
-<span class="va">pdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/pdb_download.html">pdb_download</a></span><span class="op">(</span>save <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> </code></pre></div>
-<p>The next step is to identify the models we are interested in building. There are accessor functions that allow you to extract metadata columns from the <code>pdb</code> object, which may be helpful in this step. See <code><a href="reference/pdb_citations.html">?pdb_species_accepted</a></code> for a list of those. Additionally, the <a href="https://sam-levin.shinyapps.io/shiny_pdb/">shiny_pdb</a> allows for interactive exploration and subsetting of data.</p>
-<p>Once, we’ve identified the model(s) we want, we can build a list of <a href="https://levisc8.github.io/ipmr/articles/proto-ipms.html"><code>proto_ipm</code>’s</a>. This is an intermediate step between the database representation and a set of kernels. Once we have the list of <code>proto_ipm</code>’s, we can build an actual model. Below, we extract a specific study, and construct an IPM from the database object.</p>
+<span class="va">pdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/in_out.html">pdb_download</a></span><span class="op">(</span>save <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> </code></pre></div>
+<p>The next step is to identify the models we are interested in building. There are accessor functions that allow you to extract metadata columns from the <code>pdb</code> object, which may be helpful in this step. See <code><a href="reference/metadata_utils.html">?pdb_species_accepted</a></code> for a list of those. Additionally, the <a href="https://sam-levin.shinyapps.io/shiny_pdb/" class="external-link">shiny_pdb</a> allows for interactive exploration and subsetting of data.</p>
+<p>Once, we’ve identified the model(s) we want, we can build a list of <a href="https://levisc8.github.io/ipmr/articles/proto-ipms.html" class="external-link"><code>proto_ipm</code>’s</a>. This is an intermediate step between the database representation and a set of kernels. Once we have the list of <code>proto_ipm</code>’s, we can build an actual model. Below, we extract a specific study, and construct an IPM from the database object.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># We can construct a single IPM at a time, or make a list of many IPMs</span>
 
 <span class="va">proto_list</span>   <span class="op">&lt;-</span> <span class="fu"><a href="reference/pdb_make_proto_ipm.html">pdb_make_proto_ipm</a></span><span class="op">(</span><span class="va">pdb</span>, 
-                                   ipm_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"aaa310"</span>, <span class="st">"ddddd7"</span>, <span class="st">"aaaa17"</span><span class="op">)</span>,
+                                   ipm_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"aaa310"</span>, <span class="st">"ddddd7"</span>, <span class="st">"aaaa17"</span><span class="op">)</span>,
                                    det_stoch <span class="op">=</span> <span class="st">"det"</span><span class="op">)</span></code></pre></div>
 <p>Once the list of <code>proto_ipm</code>’s is generated, you can either append your own IPMs to it, or you can go ahead to the next chunk. Note that <code>pdb_make_ipm</code> will almost always work, but there may still be bugs lurking!</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ipm_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/pdb_make_ipm.html">pdb_make_ipm</a></span><span class="op">(</span><span class="va">proto_list</span><span class="op">)</span>
 
-<span class="va">lams</span>         <span class="op">&lt;-</span> <span class="fu"><a href="https://levisc8.github.io/ipmr/reference/lambda.html">lambda</a></span><span class="op">(</span><span class="va">ipm_list</span><span class="op">)</span>
-<span class="va">stable_dists</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://levisc8.github.io/ipmr/reference/eigenvectors.html">right_ev</a></span><span class="op">(</span><span class="va">ipm_list</span><span class="op">)</span>
-<span class="va">repro_vals</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://levisc8.github.io/ipmr/reference/eigenvectors.html">left_ev</a></span><span class="op">(</span><span class="va">ipm_list</span><span class="op">)</span></code></pre></div>
+<span class="va">lams</span>         <span class="op">&lt;-</span> <span class="fu"><a href="https://levisc8.github.io/ipmr/reference/lambda.html" class="external-link">lambda</a></span><span class="op">(</span><span class="va">ipm_list</span><span class="op">)</span>
+<span class="va">stable_dists</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://levisc8.github.io/ipmr/reference/eigenvectors.html" class="external-link">right_ev</a></span><span class="op">(</span><span class="va">ipm_list</span><span class="op">)</span>
+<span class="va">repro_vals</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://levisc8.github.io/ipmr/reference/eigenvectors.html" class="external-link">left_ev</a></span><span class="op">(</span><span class="va">ipm_list</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="finding-help" class="section level2">
-<h2 class="hasAnchor">
-<a href="#finding-help" class="anchor"></a>Finding help</h2>
+<div class="section level2">
+<h2 id="finding-help">Finding help<a class="anchor" aria-label="anchor" href="#finding-help"></a>
+</h2>
 <p>Functions are documented in the <em>Functions</em> tab and longer form documentation and examples are in the <em>Vignettes</em> tab.</p>
-<div id="contributing" class="section level3">
-<h3 class="hasAnchor">
-<a href="#contributing" class="anchor"></a>Contributing</h3>
-<p>Please note that the Rpadrino project is released with a <a href="https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p>
+<div class="section level3">
+<h3 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
+</h3>
+<p>Please note that the Rpadrino project is released with a <a href="https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html" class="external-link">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p>
 </div>
 </div>
 
@@ -208,34 +210,41 @@
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
-<h2>Links</h2>
+<h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=Rpadrino">https://​cloud.r-project.org/​package=Rpadrino</a>
-</li>
-<li>Browse source code at <br><a href="https://github.com/padrinoDB/Rpadrino/">https://​github.com/​padrinoDB/​Rpadrino/​</a>
-</li>
-<li>Report a bug at <br><a href="https://github.com/padrinoDB/Rpadrino/issues">https://​github.com/​padrinoDB/​Rpadrino/​issues</a>
-</li>
+<li><a href="https://cloud.r-project.org/package=Rpadrino" class="external-link">View on CRAN</a></li>
+<li><a href="https://github.com/padrinoDB/Rpadrino/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/padrinoDB/Rpadrino/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
+
 <div class="license">
-<h2>License</h2>
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li><a href="LICENSE.html">Full license</a></li>
-<li><small><a href="https://www.r-project.org/Licenses/GPL-3">GPL-3</a></small></li>
+<li><small><a href="https://www.r-project.org/Licenses/GPL-3" class="external-link">GPL-3</a></small></li>
 </ul>
 </div>
+
 <div class="community">
-<h2>Community</h2>
+<h2 data-toc-skip>Community</h2>
 <ul class="list-unstyled">
 <li><a href="CODE_OF_CONDUCT.html">Code of conduct</a></li>
 </ul>
 </div>
+
+<div class="citation">
+<h2 data-toc-skip>Citation</h2>
+<ul class="list-unstyled">
+<li><a href="authors.html#citation">Citing Rpadrino</a></li>
+</ul>
+</div>
+
 <div class="developers">
-<h2>Developers</h2>
+<h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
 <li>
-<a href="https://github.com/levisc8">Sam Levin</a> <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-3289-9925" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<a href="https://github.com/levisc8" class="external-link">Sam Levin</a> <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-3289-9925" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li>Aldo Compagnoni <br><small class="roles"> Author </small>  </li>
 <li>Dylan Childs <br><small class="roles"> Author </small>  </li>
 <li>Sanne Evers <br><small class="roles"> Author </small>  </li>
@@ -245,24 +254,27 @@
 </ul>
 </div>
 
-  <div class="dev-status">
-<h2>Dev status</h2>
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/padrinoDB/Rpadrino/actions"><img src="https://github.com/padrinODB/Rpadrino/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
-<li><a href="https://codecov.io/gh/padrinoDB/Rpadrino?branch=main"><img src="https://codecov.io/gh/padrinoDB/Rpadrino/branch/main/graph/badge.svg" alt="Codecov test coverage"></a></li>
-<li><a href="https://cran.r-project.org/package=Rpadrino"><img src="https://www.r-pkg.org/badges/version/Rpadrino" alt="CRAN status"></a></li>
+<li><a href="https://github.com/padrinoDB/Rpadrino/actions" class="external-link"><img src="https://github.com/padrinODB/Rpadrino/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://codecov.io/gh/padrinoDB/Rpadrino?branch=main" class="external-link"><img src="https://codecov.io/gh/padrinoDB/Rpadrino/branch/main/graph/badge.svg" alt="Codecov test coverage"></a></li>
+<li><a href="https://cran.r-project.org/package=Rpadrino" class="external-link"><img src="https://www.r-pkg.org/badges/version/Rpadrino" alt="CRAN status"></a></li>
 </ul>
 </div>
-</div>
+
+  </div>
 </div>
 
 
       <footer><div class="copyright">
-  <p>Developed by <a href="https://github.com/levisc8">Sam Levin</a>, Aldo Compagnoni, Dylan Childs, Sanne Evers, Tomos Potter, Roberto Salguero-Gomez, Tiffany Knight.</p>
+  <p></p>
+<p>Developed by <a href="https://github.com/levisc8" class="external-link">Sam Levin</a>, Aldo Compagnoni, Dylan Childs, Sanne Evers, Tomos Potter, Roberto Salguero-Gomez, Tiffany Knight.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>
@@ -270,6 +282,8 @@
 
   
 
+
+  
 
   </body>
 </html>
