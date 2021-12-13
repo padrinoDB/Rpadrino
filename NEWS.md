@@ -1,5 +1,10 @@
+# Rpadrino 0.0.4
+
+
+
 # Rpadrino 0.0.3
 
+- Fixed some issues from two of CRAN's Linux machines.
 
 # Rpadrino 0.0.2
 
