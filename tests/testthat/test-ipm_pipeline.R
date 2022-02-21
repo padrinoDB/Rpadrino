@@ -20,7 +20,8 @@ test_that("pdb_make_ipm is doing what it should do" ,{
 
   actuals <- lapply(lambda(ipms), function(x) unname(round(x, 2)))
 
-  # Won't test for stochastic models hitting targets because... they're stochastic
+  # Won't test for stochastic models hitting targets because... they're
+  # stochastic
   expect_equal(targets, actuals[2:3])
 
   expect_s3_class(ipms$aaaa16, "simple_di_stoch_param_ipm")

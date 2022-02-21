@@ -11,8 +11,9 @@
 #' @param ipm_id The ID of the model. The default (\code{NULL}) returns all
 #' values in the \code{pdb} object.
 #'
-#' @return A vector of the metadata. For \code{pdb_report}e file path to the
-#' rendered output, or to the \code{.rmd} file when \code{render_output = FALSE}.
+#' @return A named vector of the metadata. The names correspond to
+#' \code{ipm_ids}s. For \code{pdb_report}, the file path to the rendered output,
+#' or to the \code{.rmd} file when \code{render_output = FALSE}.
 #'
 #' @export
 
