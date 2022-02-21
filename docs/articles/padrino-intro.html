@@ -89,7 +89,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Rpadrino Introduction</h1>
             
-            <h4 data-toc-skip class="date">2021-12-13</h4>
+            <h4 data-toc-skip class="date">2022-02-21</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/padrinoDB/Rpadrino/blob/HEAD/vignettes/padrino-intro.Rmd" class="external-link"><code>vignettes/padrino-intro.Rmd</code></a></small>
       <div class="hidden name"><code>padrino-intro.Rmd</code></div>
@@ -98,14 +98,14 @@
 
     
     
-<div class="section level1">
-<h1 id="package-overview">Package Overview<a class="anchor" aria-label="anchor" href="#package-overview"></a>
-</h1>
+<div class="section level2">
+<h2 id="package-overview">Package Overview<a class="anchor" aria-label="anchor" href="#package-overview"></a>
+</h2>
 <p><code>Rpadrino</code> provides an interface to the PADRINO database. PADRINO houses metadata on published Integral Projection Models, and all the information needed to rebuild them. <code>Rpadrino</code> provides a set of functions that wrap around <a href="https://levisc8.github.io/ipmr/" class="external-link"><code>ipmr</code></a> so that you can rebuild these models using <em>R</em>. Additionally, there’s some data downloading and management functionality, as well as tools to help report and cite studies used in an analysis.</p>
 </div>
-<div class="section level1">
-<h1 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
-</h1>
+<div class="section level2">
+<h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
+</h2>
 <p>Below are some very brief examples of how to select data based on the Metadata table, rebuild those models, and conduct an analysis. The first step for any of this is to access PADRINO. For first time users, this will always mean downloading it. For returning users, you may save and re-load PADRINO, but this example will not make use of the saving/loading functionality provided in <code><a href="../reference/in_out.html">pdb_load()</a></code> and <code><a href="../reference/in_out.html">pdb_save()</a></code>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/padrinoDB/Rpadrino" class="external-link">Rpadrino</a></span><span class="op">)</span>
@@ -169,13 +169,13 @@
 <span class="co">## [1] "pdb_ipm" "list"</span></code></pre>
 <p>We’ve rebuilt our first set of IPMs! Next, we’ll explore how to extract a bit more information from these.</p>
 </div>
-<div class="section level1">
-<h1 id="more-complicated-analyses">More complicated analyses<a class="anchor" aria-label="anchor" href="#more-complicated-analyses"></a>
-</h1>
-<p>Often times, we’ll want more than just the deterministic population growth rates. We’ll explore how to run some more complicated analyses here. Specifically, we’ll compute the probability of surviving to age <span class="math inline">\(a\)</span>, <span class="math inline">\(l_a(z_0)\)</span> and the average per-capita fecundity at age <span class="math inline">\(a\)</span>, <span class="math inline">\(f_a(z_0)\)</span>. After that, we’ll compute mean and variance in lifespan (<span class="math inline">\(\bar\eta(z_0)\)</span> and <span class="math inline">\(\sigma_\eta^2 (z_0)\)</span>, respectively). Along the way, we’ll learn more about the structure of IPM objects in <code>Rpadrino</code> and <code>ipmr</code>.</p>
 <div class="section level2">
-<h2 id="the-dataset">The dataset<a class="anchor" aria-label="anchor" href="#the-dataset"></a>
+<h2 id="more-complicated-analyses">More complicated analyses<a class="anchor" aria-label="anchor" href="#more-complicated-analyses"></a>
 </h2>
+<p>Often times, we’ll want more than just the deterministic population growth rates. We’ll explore how to run some more complicated analyses here. Specifically, we’ll compute the probability of surviving to age <span class="math inline">\(a\)</span>, <span class="math inline">\(l_a(z_0)\)</span> and the average per-capita fecundity at age <span class="math inline">\(a\)</span>, <span class="math inline">\(f_a(z_0)\)</span>. After that, we’ll compute mean and variance in lifespan (<span class="math inline">\(\bar\eta(z_0)\)</span> and <span class="math inline">\(\sigma_\eta^2 (z_0)\)</span>, respectively). Along the way, we’ll learn more about the structure of IPM objects in <code>Rpadrino</code> and <code>ipmr</code>.</p>
+<div class="section level3">
+<h3 id="the-dataset">The dataset<a class="anchor" aria-label="anchor" href="#the-dataset"></a>
+</h3>
 <p>We’re going to use a subset of PADRINO IPMs to illustrate how to implement these calculations. We’ll select simple IPMs that are density-independent, deterministic, and from North America, so that things run a bit faster.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># This creates a table of the number of state variables per ipm_id. Since</span>
@@ -226,9 +226,9 @@
 <span class="co">## dddd32: 'Frankenstein IPM'</span></code></pre>
 <p>We now have 28 distinct <code>ipm_id</code>s to work with!</p>
 </div>
-<div class="section level2">
-<h2 id="age-specific-survival-and-fecundity">Age-specific survival and fecundity<a class="anchor" aria-label="anchor" href="#age-specific-survival-and-fecundity"></a>
-</h2>
+<div class="section level3">
+<h3 id="age-specific-survival-and-fecundity">Age-specific survival and fecundity<a class="anchor" aria-label="anchor" href="#age-specific-survival-and-fecundity"></a>
+</h3>
 <p>Age-specific calculations are straightforward once we’ve extracted sub-kernels. We can define functions that accept a single IPM object and then <code><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply()</a></code> them to do our computations. We’ll start with <span class="math inline">\(l_a(z_0)\)</span> and <span class="math inline">\(f_a(z_0)\)</span>. These are defined by the following equations:</p>
 <ol style="list-style-type: decimal">
 <li><p><span class="math inline">\(l_a(z_0) = eP^a\)</span>, and</p></li>
@@ -362,9 +362,9 @@
 <span class="op">}</span></code></pre></div>
 <p><img src="padrino-intro_files/figure-html/unnamed-chunk-11-1.png" width="768"><img src="padrino-intro_files/figure-html/unnamed-chunk-11-2.png" width="768"><img src="padrino-intro_files/figure-html/unnamed-chunk-11-3.png" width="768"><img src="padrino-intro_files/figure-html/unnamed-chunk-11-4.png" width="768"></p>
 </div>
-<div class="section level2">
-<h2 id="mean-and-variance-in-lifespan">Mean and variance in lifespan<a class="anchor" aria-label="anchor" href="#mean-and-variance-in-lifespan"></a>
-</h2>
+<div class="section level3">
+<h3 id="mean-and-variance-in-lifespan">Mean and variance in lifespan<a class="anchor" aria-label="anchor" href="#mean-and-variance-in-lifespan"></a>
+</h3>
 <p><span class="math inline">\(\bar\eta(z_0)\)</span> is given by the following equation: <span class="math inline">\(\bar\eta(z_0) = eN\)</span>, where <span class="math inline">\(N\)</span> is the fundamental operator. This can be thought of as the expected amount of time an individual with initial state <span class="math inline">\(z_0\)</span> spends in state <span class="math inline">\(z'\)</span> before death. It is computed as <span class="math inline">\((I - P)^{-1}\)</span>, where <span class="math inline">\(I\)</span> is an identity operator (in practice, it is an identity matrix with dimension equal to <span class="math inline">\(P\)</span>), and <span class="math inline">\(P\)</span> is the survival/growth kernel of the IPM. Thus, all we need are the <span class="math inline">\(P\)</span> kernels from each model.</p>
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">make_N</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">ipm</span><span class="op">)</span> <span class="op">{</span>
@@ -467,13 +467,13 @@
 <p><img src="padrino-intro_files/figure-html/unnamed-chunk-15-1.png" width="960"></p>
 </div>
 </div>
-<div class="section level1">
-<h1 id="correcting-issues-with-data">Correcting issues with data<a class="anchor" aria-label="anchor" href="#correcting-issues-with-data"></a>
-</h1>
-<p>We saw above that sometimes data in PADRINO can give values that make no sense. PADRINO is committed to providing IPMs <em>as they are published</em>, and does not take a stance on the technical correctness of these models. The analysis above provides an opportunity to quickly illustrate how to address some of these issues. There is a separate vignette with a more complete overview of known issues in PADRINO.</p>
 <div class="section level2">
-<h2 id="quick-solution">Quick solution<a class="anchor" aria-label="anchor" href="#quick-solution"></a>
+<h2 id="correcting-issues-with-data">Correcting issues with data<a class="anchor" aria-label="anchor" href="#correcting-issues-with-data"></a>
 </h2>
+<p>We saw above that sometimes data in PADRINO can give values that make no sense. PADRINO is committed to providing IPMs <em>as they are published</em>, and does not take a stance on the technical correctness of these models. The analysis above provides an opportunity to quickly illustrate how to address some of these issues. There is a separate vignette with a more complete overview of known issues in PADRINO.</p>
+<div class="section level3">
+<h3 id="quick-solution">Quick solution<a class="anchor" aria-label="anchor" href="#quick-solution"></a>
+</h3>
 <p>We’ll introduce two new functions - <code>vital_rate_exprs&lt;-</code> and <code><a href="../reference/ipmr_generics.html">pdb_new_fun_form()</a></code>. Since we’re computing all new survival values, we’ll have to modify the <code>proto_ipm</code> first, then re-build the IPM object (the species in question is <em>Lonicera maackii</em>).</p>
 <div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">lonicera_proto</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pdb_make_proto_ipm.html">pdb_make_proto_ipm</a></span><span class="op">(</span><span class="va">pdb</span>, <span class="st">"aaa341"</span><span class="op">)</span>
@@ -556,9 +556,9 @@
 <p>The results look a bit better for <em>Lonicera</em>, and are at least now mathematically correct. When updating functional forms in PADRINO, it is important to explore how assumptions like the maximum survival probability in the modified form affect results. This is left as an exercise to you!</p>
 </div>
 </div>
-<div class="section level1">
-<h1 id="further-reading">Further reading<a class="anchor" aria-label="anchor" href="#further-reading"></a>
-</h1>
+<div class="section level2">
+<h2 id="further-reading">Further reading<a class="anchor" aria-label="anchor" href="#further-reading"></a>
+</h2>
 <p>This is just a very brief overview of the analyses that are possible with <code>Rpadrino</code>. <a href="https://link.springer.com/content/pdf/10.1007/978-3-319-28893-2.pdf" class="external-link">Ellner, Childs &amp; Rees 2016</a> give a comprehensive overview of IPM theory and analyses. There are further vignettes in this package that describe data cleaning and how to use PADRINO with other databases.</p>
 </div>
   </div>
@@ -580,7 +580,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>

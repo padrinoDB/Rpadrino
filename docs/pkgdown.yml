@@ -1,11 +1,11 @@
 pandoc: 2.7.3
-pkgdown: 2.0.1
+pkgdown: 2.0.2
 pkgdown_sha: ~
 articles:
   data-cleaning: data-cleaning.html
   interop: interop.html
   padrino-intro: padrino-intro.html
-last_built: 2021-12-13T12:09Z
+last_built: 2022-02-21T22:26Z
 urls:
   reference: https://padrinoDB.github.io/Rpadrino/reference
   article: https://padrinoDB.github.io/Rpadrino/articles

@@ -97,27 +97,27 @@
 
     
     
-<div class="section level1">
-<h1 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
-</h1>
+<div class="section level2">
+<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+</h2>
 <p>PADRINO is pretty thoroughly checked in terms of reproducing published IPM behavior, but it is not strictly checked for the mathematical behavior of each IPM. Therefore, there are times where using IPMs from PADRINO in ways that the original authors did not use them may yield results that are either bizarre or biologically impossible. The purpose of this vignette is to show how to handle these so that these IPMs are still usable.</p>
 </div>
-<div class="section level1">
-<h1 id="fundamental-operators">Fundamental operators<a class="anchor" aria-label="anchor" href="#fundamental-operators"></a>
-</h1>
-<p>The most common issue we’ve found is when a function that predicts survival probabilities equals 1 for some range of trait values in the IPM. This doesn’t cause any mathematical issues in many analyses, and so often goes unnoticed by authors publishing their IPMs (the author of this document included - example to follow shortly!). However, to our knowledge, no species becomes immortal regardless of their size, and so this will cause issues for any longevity-related questions. Additionally, a mathematical issue arises whenever one needs to compute the fundamental operator for a model with this.</p>
 <div class="section level2">
-<h2 id="overview-of-the-problem">Overview of the problem<a class="anchor" aria-label="anchor" href="#overview-of-the-problem"></a>
+<h2 id="fundamental-operators">Fundamental operators<a class="anchor" aria-label="anchor" href="#fundamental-operators"></a>
 </h2>
+<p>The most common issue we’ve found is when a function that predicts survival probabilities equals 1 for some range of trait values in the IPM. This doesn’t cause any mathematical issues in many analyses, and so often goes unnoticed by authors publishing their IPMs (the author of this document included - example to follow shortly!). However, to our knowledge, no species becomes immortal regardless of their size, and so this will cause issues for any longevity-related questions. Additionally, a mathematical issue arises whenever one needs to compute the fundamental operator for a model with this.</p>
+<div class="section level3">
+<h3 id="overview-of-the-problem">Overview of the problem<a class="anchor" aria-label="anchor" href="#overview-of-the-problem"></a>
+</h3>
 <p>The fundamental operator, <span class="math inline">\(N\)</span>, can be thought of as the amount of time an individual will spend in state <span class="math inline">\(z'\)</span> given state <span class="math inline">\(z\)</span> before death. It is given by</p>
 <p><span class="math display">\[
 N = (I + P + P^2 + P^3 + ...) = (I - P)^{-1}
 \]</span></p>
 <p>This <em>Neumann series</em> corresponds to the geometric series <span class="math inline">\(1 + r + r^2 + r^3 + ... = (1-r)^{-1}\)</span> and is valid for any real number <span class="math inline">\(|r| &lt; 1\)</span>, and remains valid provided survival probabilities for individuals are less than 1. Clearly, this computation is no longer valid when an IPM’s survival model predicts survival probabilities that are equal to 1.</p>
 </div>
-<div class="section level2">
-<h2 id="diagnosis">Diagnosis<a class="anchor" aria-label="anchor" href="#diagnosis"></a>
-</h2>
+<div class="section level3">
+<h3 id="diagnosis">Diagnosis<a class="anchor" aria-label="anchor" href="#diagnosis"></a>
+</h3>
 <p>This most often manifests as negative values in the fundamental operator, which propagate through the rest of the analysis and return nonsense results. Below is a quick example of this manifesting in an IPM for <em>Lonicera maackii</em> when computing mean lifespan (<span class="math inline">\(\bar\eta(z_0) = eN\)</span>).</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/padrinoDB/Rpadrino" class="external-link">Rpadrino</a></span><span class="op">)</span>
@@ -168,9 +168,9 @@ N = (I + P + P^2 + P^3 + ...) = (I - P)^{-1}
 <span class="co">## Fd (not yet discretized): A 500 x 500 kernel with minimum value: 0 and maximum value: 0.3308</span></code></pre>
 <p>Ah ha! The maximum value of <code>s</code> is 1! This is problematic for us. How do we fix this?</p>
 </div>
-<div class="section level2">
-<h2 id="fixing-the-problem">Fixing the problem<a class="anchor" aria-label="anchor" href="#fixing-the-problem"></a>
-</h2>
+<div class="section level3">
+<h3 id="fixing-the-problem">Fixing the problem<a class="anchor" aria-label="anchor" href="#fixing-the-problem"></a>
+</h3>
 <p>The quickest way is to modify the survival function to be a parallel minimum of the original survival function (i.e. the one that the authors used) and some maximum survival value that we choose ourselves. For the purposes of this example, we’ll use 0.98 as the maximum survival probability. <code>Rpadrino</code> has two functions to help with this: <code>vital_rate_exprs&lt;-</code> and <code><a href="../reference/ipmr_generics.html">pdb_new_fun_form()</a></code>. These are used together to insert a new functional form into a <code>proto_ipm</code> so that we can make changes to the IPM without having to think too much about how a <code>proto_ipm</code> is actually structured.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">problem_proto</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pdb_make_proto_ipm.html">pdb_make_proto_ipm</a></span><span class="op">(</span><span class="va">pdb</span>, <span class="st">"aaa341"</span><span class="op">)</span>
@@ -225,7 +225,7 @@ N = (I + P + P^2 + P^3 + ...) = (I - P)^{-1}
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>
