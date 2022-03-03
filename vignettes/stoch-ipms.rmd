@@ -1,0 +1,377 @@
+---
+title: "Modifying Stochastic IPMs in PADRINO"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 3
+vignette: >
+  %\VignetteIndexEntry{Modifying Stochastic IPMs in PADRINO}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Modifying the environment of a PADRINO IPM
+
+Sometimes, we may want to modify the environmental sequence of a stochastic IPM stored in PADRINO. As of now, there is no single interace for doing this, and so you may need to write some code on your own. This vignette is meant to provide a bit of help with that. It will make use of `Rpadrino` and `ipmr` to modify `proto_ipm`s, and doesn't assume any prior knowledge of the data structure or of PADRINO itself (I don't think, anyway. Let me know if I'm incorrect via a [Github Issue](https://github.com/padrinoDB/Rpadrino/issues)).
+
+## Finding parameter-resampled IPMs
+
+These aren't explicitly marked in the Metadata table. However, we can find them by searching the `EnvironmentalVariables` table, specifically the `ipm_id` column.
+
+```{r, message = FALSE, warning = FALSE}
+library(Rpadrino)
+
+pdb <- pdb_download(FALSE)
+
+unique(pdb$EnvironmentalVariables$ipm_id)
+```
+
+For now, we'll just work with the two IPMs from Westerband et al. (2016):
+
+```{r}
+stoch_ids <- c("aaaa15", "aaaa16")
+
+```
+
+Ok, now we have the data we want to work with, we can check out various ways of modifying them to explore the questions we want to answer!
+
+# re-set environmental variables w/ pre-defined sequence of values
+
+First, we'll examine how to re-set IPMs to sample from a pre-determined sequence of environmental values. This is useful for exploring things like, for example, environmental autocorrelation and/or enhancing reproducibility of our subsequent analyses.
+
+This will require a few steps:
+
+1. Create `proto_ipm` objects from the PADRINO data.
+
+2. Remove the current stochastic environmental state expressions
+
+3. Replace them with something that will generate the values we want.
+
+## Create the proto_ipm's and find the stochastic parameter names
+
+First, we should investigate what's in each model by creating and printing the `proto_ipm`s.
+
+```{r}
+# Step 1 - create proto_ipms, and then figure out which parameters in the
+# vital rate expressions we need to work with.
+
+protos <- pdb_make_proto_ipm(pdb, stoch_ids)
+
+protos[[1]]
+
+
+```
+
+It seems that `j` and `A_max` are the two that we need to create sequences for. Let's double check the `EnvironmentalVariables` table to be sure:
+
+```{r eval = FALSE}
+pdb$EnvironmentalVariables[pdb$EnvironmentalVariables$ipm_id %in% stoch_ids, ]
+```
+
+```{r echo = FALSE}
+
+library(knitr)
+kable(pdb$EnvironmentalVariables[pdb$EnvironmentalVariables$ipm_id %in% stoch_ids, ],
+             caption = "EnvironmentalVariables Table, subsetted using 'stoch_ids'")
+
+```
+
+## Create new stochastic parameter values
+
+Next, we need to simulate values for `j` and `A_max`. This next chunk replicates what PADRINO is doing in a simulation, it just does the sampling ahead of time. In your own code, you'll want to replace it with, say, creating autocorrelated sequences of vectors, or a specific climate change scenario.
+
+```{r}
+
+use_j <- sample(1:5, size = 50, replace = TRUE)
+use_a <- runif(50, 5, 8)
+
+# The names of this data.frame need to be the same as the names of the variables
+# we're substituting in the IPM. Otherwise, the function we write in the next
+# block won't work!
+
+use_env_data <- data.frame(j = use_j, A_max = use_a)
+
+```
+
+
+## Write our sampling function
+
+We now have our values! But how to insert them and then run the model? We need to write a function that samples these values in the order we want, and then sets their names correctly. It should return a named list. For this example, we'll assume that above, we created them in the correct order, and that each row of the resulting `data.frame` corresponds to a time step. For now, don't worry about where `index` will come from - that will become clear shortly.
+
+```{r}
+sample_env <- function(env_data, index) {
+
+  as.list(env_data[index, ]) %>%
+    setNames(names(env_data))
+
+}
+
+```
+
+## Remove the current environmental variation
+
+We're ready to begin working with the actual `proto_ipm` objects! For now, we'll just modify the first one. The first step is to eliminate the current environmental information from the `proto_ipm`. That information is stored in the `env_state` column. By default, it is `NA` unless there is a continuous environmental variation, so we want to re-set it to that state before we insert our own information.
+
+```{r}
+
+# For this demonstration, we'll create copy in the 'protos' object and overwrite
+# that.
+
+protos$aaaa15_2 <- protos$aaaa15
+
+protos$aaaa15_2$env_state <- lapply(
+  protos$aaaa15_2$env_state, 
+  function(x) return(NA)
+)
+
+# In practice, you may just want to to overwrite the proto_ipm object in place.
+# We can still recover the object by re-building the proto_ipm list from the
+# intact version of the 'pdb' object.
+
+# protos$aaaa15$env_state <- lapply(
+#   protos$aaaa15$env_state, 
+#   function(x) return(NA)
+# )
+
+# If you want to do get rid of both at the same time, use a double-lapply:
+
+# protos <- lapply(protos, 
+#                  function(x) {
+#                    x$env_state <- lapply(x$env_state, 
+#                                          function(y) return(NA))
+#                    
+# })
+
+
+```
+
+## Insert our environmental variation
+
+Next, we're going to insert our environmantal information using `ipmr`'s [`define_env_state()`](https://levisc8.github.io/ipmr/reference/define_star.html). In the call to `sample_env()`, we set `index = t`. `t` is an internal variable that `ipmr` defines to track what timestep of the simulation it is currently on. This will sample from the correct row of `use_env_data`. We also supply the `use_env_data` object and `sample_env()` function in the `data_list` slot so that they can be found when the simulation runs.
+
+```{r}
+
+# Replace the environemntal set up with the one we just created using ipmrs'
+# define_env_state.
+
+protos$aaaa15_2 <- define_env_state(
+  protos$aaaa15_2,
+  env_vars = sample_env(use_env_data, index = t),
+  data_list = list(use_env_data = use_env_data,
+                   sample_env   = sample_env)
+)
+
+```
+
+## Rebuild the models
+
+We can rebuild the models now using `pdb_make_ipm()`:
+
+```{r, message = FALSE}
+
+ipms <- pdb_make_ipm(protos)
+
+lambda(ipms)
+
+```
+
+```{r echo = FALSE}
+cap_1 <- "Environmental covariate sequence from unaltered PADRINO data\n(first 10 iterations)"
+cap_2 <- "Environmental covariate sequence from custom function\n(first 10 iterations)"
+
+kable(head(ipms$aaaa15$env_seq, n = 10), 
+             caption = cap_1,
+             format = "html",
+             table.attr = "style='width:70%;'")
+
+```
+
+```{r echo = FALSE}
+kable(head(ipms$aaaa15_2$env_seq, n = 10),
+             caption = cap_2,
+             format = "html",
+             table.attr = "style='width:70%;'")
+
+```
+
+And finally, a quick check to verify that our pre-defined sequence is indeed the one that got used for `aaaa15_2`:
+
+```{r}
+
+all.equal(ipms$aaaa15_2$env_seq$j,     use_env_data$j) 
+all.equal(ipms$aaaa15_2$env_seq$A_max, use_env_data$A_max)
+
+```
+# Modifying parameter values
+
+This is a bit simpler, because we just need to make some alterations to a table, rather than creating new expressions. Unfortunately, we can't use the `parameters()<-` interface for environmental variation because that setter function does not modify the right place in the `proto_ipm` object. 
+
+## Identify parameter names
+
+The `env_variable` column of the `EnvironmentalVariables` usually provides a *very* brief summary of what these parameters are, but not always. In general, PADRINO notation in the `vr_expr_name` column mirrors the publication notation. So to understand the meaning of `A_max`,  we need to consult the original publication (Westerband, A. C., Horvitz, C. C. (2017). Photosynthetic rates influence the population dynamics of understory herbs in stochastic light environments. Ecology, 98 (2): 370-381). Upon doing this, we see that `A_max` corresponds to photosynthetic capacity. For this instance, we'll pretend that we want to set the lower limit of `A_max` to a smaller value, and the upper limit to a higher value. 
+
+```{r echo = FALSE}
+
+knitr::kable(pdb$EnvironmentalVariables[pdb$EnvironmentalVariables$ipm_id %in% stoch_ids, ],
+             caption = "EnvironmentalVariables table, subsetted using 'stoch_ids'")
+```
+
+We can see that `A_max` is given by a Uniform distribution with parameters `A_max_low` and `A_max_high`. These two, as their names imply, are the lower and upper limits for `A_max`, respectively. We can modify these just as we do any other `data.frame`. We'll create a copy of the `pdb` object to modify, but you can modify it in place and re-download an unaltered copy, or save the unaltered copy before altering it to preserve the original version. Again, we'll only modify `aaaa15`.
+
+```{r}
+
+pdb_2 <- pdb
+
+inds <- which(pdb_2$EnvironmentalVariables$vr_expr_name %in% paste0("a_max_",
+                                                                    c("low", 
+                                                                      "high")) &
+                pdb_2$EnvironmentalVariables$ipm_id == "aaaa15")
+
+pdb_2$EnvironmentalVariables$env_range[inds[1]] <- 3 # Bump min down two steps
+pdb_2$EnvironmentalVariables$env_range[inds[2]] <- 9 # Bump max up two steps
+
+# The rest is the usual building workflow: make a proto_ipm, then convert to
+# ipm.
+
+new_protos <- pdb_make_proto_ipm(pdb_2, "aaaa15")
+
+new_ipms   <- pdb_make_ipm(new_protos)
+
+lambda(new_ipms)
+
+```
+
+
+# Changing distributions
+
+What if we want to change the distribution that a certain environmental variable is sampled from? For example, rather than use a uniform distribution, we decide we want to sample it from a Gamma distribution. There are a couple steps we need to go through. They are: 
+
+1. Write a function that substitutes distribution names. We can find PADRINO's distribution naming convention in the "Abbreviation" column [here](https://github.com/padrinoDB/PADRINO/blob/main/metadata/digitization/dens_fun_dictionary.csv).
+
+2. Write a function to insert the new parameter values and names into the `EnvironmentalVariables` Table.
+
+3. Wrap 1-2 in a top-level function that we'll actually use. 
+
+4. Use it to modify `EnvironmentalVariables`, then rebuild the IPMs using `pdb_make_proto_ipm()` and `pdb_make_ipm()`.
+
+>NB: The functions we define in 1-3 will probably be incorporated into `Rpadrino` at some point in the near future, but further testing for stability is needed before they become part of the package. As such, use them at your own risk!
+
+The function in 1 will make use of `rlang` to safely modify function names and arguments. It is possible to do this with `gsub("Unif", "Gamma", pdb$EnvironmentalVariables$env_function[index])` (where index is the row number of the function you want to update), but could lead to unexpected results sometimes. 
+
+## Top-level function
+
+This is probably the most straightforward of the functions to write. We know that there two steps we have to implement that this wraps: substitution the functioal form of the distribution, and substituting the parameter values. Additionally, we're going to insert a subsetting capacity so that we can pass a larger database loop over a set of `ipm_id`s to rapidly update many models at once.
+
+```{r message = FALSE}
+
+library(rlang)
+
+sub_env_fun <- function(db,          # pdb object
+                        parameter,   # parameter created by the distribution
+                        new_fun,     # The new distribution
+                        new_pars,    # The parameters for the new distribution
+                        id = NULL) { # ipm_id to operate on
+  
+  if(!is.null(id)) {
+    
+    if(length(id) > 1L) stop("'id' should only have length 1!")
+    
+    db <- pdb_subset(db, id)
+  } 
+  
+  ev_tab <- db$EnvironmentalVariables %>%
+    sub_rng_fun(parameter, new_fun, new_pars) %>%
+    sub_rng_pars(parameter, new_pars)
+  
+  db$EnvironmentalVariables <- ev_tab
+  
+  return(db)
+}
+
+```
+
+
+## Substituting functions 
+
+The first substituting function we'll write is the one that substitutes the distribution we wish to use into the `env_function` column. This will use the names of the `new_pars` object as arguments in a call to the `new_fun` function. Don't worry about finding the correct `R` `r<distribution>` function here - we use PADRINO's syntax to modify these. 
+
+```{r}
+
+sub_rng_fun <- function(ev_tab, parameter, new_fun, new_pars) {
+
+  # Get the old function form
+  old_fun_ind <- which(ev_tab$vr_expr_name == parameter)
+
+  # Create a new function call, and insert new arguments
+  arg_nms     <- syms(names(new_pars))
+  new_fun     <- call2(new_fun, !!! syms(names(new_pars)))
+  
+  # Convert back to a string and insert into the table
+  ev_tab$env_function[old_fun_ind] <- expr_text(new_fun)
+  
+  return(ev_tab)
+}
+
+```
+
+There is a lot going on in this function, and most of it is beyond the scope of this vignette (if you're curious about the details, see the `Metaprogramming` topics [here](https://rlang.r-lib.org/index.html)). The key takeaway is that we take our new function, `"Gamma"` and convert it into a function call with arguments that are named after `new_pars`. Then we stick it back into the table, overwriting the old `"Unif"` function. 
+
+Adding a parameter value to the table is far less complicated. First, we remove the parameters associated with the old distribution. We have to do this because of the way that `Rpadrino` finds the parameters to functions in the `EnvironmentalVariables` table. The first lines of the function accomplish this. After that, we create a version of the `EnvironmentalVariables` table that contains our new parameters and add those back in. 
+
+```{r}
+
+sub_rng_pars <- function(ev_tab, parameter, new_pars) { 
+  
+  # Remove the existing parameters associated with the distribution
+  # that we've replaced.
+  
+  if(sum(ev_tab$env_variable == parameter) > 1) {
+    rm_ind <- ev_tab$env_variable == parameter & ev_tab$model_type == "Parameter"
+    ev_tab <- ev_tab[!rm_ind, ]
+  }
+  
+  
+  new_rows <- data.frame(
+    ipm_id       = rep(unique(ev_tab$ipm_id), length(new_pars)),
+    env_variable = rep(parameter, length(new_pars)),
+    vr_expr_name = names(new_pars),
+    env_range    = unlist(new_pars),
+    env_function = rep("NULL", length(new_pars)),
+    model_type   = "Parameter"
+  )
+  rownames(new_rows) <- NULL
+  
+  out <- rbind(ev_tab, new_rows)
+  return(out)
+}
+
+small_pdb <- pdb %>%
+  pdb_subset("aaaa15")
+
+new_pdb <- sub_env_fun(db = small_pdb, 
+                       id = NULL, 
+                       "A_max",
+                       "Gamma", 
+                       list(a_max_shape = 14, a_max_rate = 3.5))
+
+```
+
+```{r echo = FALSE}
+
+kable(new_pdb$EnvironmentalVariables,
+      caption = "New 'EnvironmentalVariables' table")
+```
+
+Notice that our new Gamma distribution parameters have found their way into the parameter table. We can now rebuild the model as using the same pipeline as above.
+
+```{r, message = FALSE}
+
+new_ipm <- new_pdb %>% 
+  pdb_make_proto_ipm() %>%
+  pdb_make_ipm()
+
+lambda(new_ipm)
+
+```
+
+It is probably ok to copy/paste the functions we defined above and apply to in your own analyses. However, as they are not yet incorporated into `Rpadrino`, I cannot promise that the results will be error free.

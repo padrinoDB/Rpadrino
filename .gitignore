@@ -13,3 +13,4 @@ paper/*.html
 README.html
 tests/testthat/Rplots.pdf
 build_artefacts/*
+collaborations/*
