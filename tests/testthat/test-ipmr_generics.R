@@ -214,8 +214,8 @@ test_that("getters and setters work as expected", {
   test_exprs <- exprs(
     s = exp(s_i + s_s * size_1) / (1 + exp(s_i + s_s * size_1)),
     mu_g = g_int + g_slope * size_1,
-    f_d_1 = stats::dunif(size_2, 0.15, 0.25),
-    f_d_2 = stats::dnorm(size_2, mu_f_d_2, sd_f_d_2)
+    f_d_1 = dunif(size_2, 0.15, 0.25),
+    f_d_2 = dnorm(size_2, mu_f_d_2, sd_f_d_2)
   )
 
   easterling_test <- pdb_exprs$aaa310[c("s", "mu_g", "f_d_1", "f_d_2")]

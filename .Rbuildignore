@@ -21,3 +21,4 @@
 ^build_artefacts/*$
 ^cran-comments\.md$
 ^vignettes/interop\.rmd$
+^collaborations/*$

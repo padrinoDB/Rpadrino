@@ -125,7 +125,9 @@ pdb_report(
   rmd_dest = getwd(),
   output_format = "html",
   render_output = TRUE,
-  map = TRUE
+  map = TRUE,
+  translate_eqs = FALSE,
+  block_eqs = FALSE
 )
 }
 \arguments{
@@ -147,6 +149,17 @@ The default is \code{getwd()}.}
 \item{render_output}{A logical - should the document be rendered for inspection?}
 
 \item{map}{Create a map of studies included in the \code{pdb} object?}
+
+\item{block_eqs}{If \code{report_eqs = TRUE}, should equations be reported
+in block format or as inline equations? This main difference for \code{"pdf"}
+formats is that equation numbering is done with \code{tag{}}. For
+non-\code{"pdf"} formats, the difference is that equations are centered.
+Numbering may yield strange results for non-\code{"pdf"} formats.}
+
+\item{report_eqs}{A logical - should the mathematical equations of the IPM(s)
+also be included in the report? These are translated from R to Latex by
+\code{\link[ipmr]{make_ipm_report_body}}. Currently, this is only available
+for IPMs that do not have parameter set indexed term.}
 }
 \value{
 A named vector of the metadata. The names correspond to

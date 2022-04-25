@@ -62,7 +62,7 @@ sig_mat <- function(...) {
     }
 
     out <- pdb[[1]][ , col][pdb[[1]]$ipm_id %in% ipm_id]
-    names(out) <- pdb[[1]][ , "ipm_id"]
+    names(out) <- pdb[[1]][ , "ipm_id"][pdb[[1]]$ipm_id %in% ipm_id]
 
     return(out)
   }
