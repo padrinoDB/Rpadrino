@@ -59,7 +59,7 @@
   if(!is.na(md_tab$remark)) {
 
     message("'ipm_id' ", id, " has the following notes that require your attention:\n",
-            .ipmr_strwrap(md_tab$remark, id))
+            .wrap_metadata_message(md_tab$remark, id))
 
   }
 
@@ -502,7 +502,7 @@
 
 #' @noRd
 
-.ipmr_strwrap <- function(x, ipm_id) {
+.wrap_metadata_message <- function(x, ipm_id) {
 
   strwrap(
     paste(ipm_id, ": ",
