@@ -1,6 +1,6 @@
 Package: Rpadrino
 Title: Interact with the 'PADRINO' IPM Database
-Version: 0.0.3.9000
+Version: 0.0.4
 Authors@R: c(
     person(given = "Sam",
            family = "Levin",
@@ -42,7 +42,7 @@ Description: 'PADRINO' houses textual representations of
   for more information on 'ipmr', the engine that powers model reconstruction
   <doi:10.1111/2041-210X.13683>.
 Depends: 
-  R (>= 3.3.0),
+  R (>= 3.4.0),
   ipmr (>= 0.0.4)
 Imports:
   ggplot2,

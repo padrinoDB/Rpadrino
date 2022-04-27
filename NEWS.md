@@ -1,6 +1,23 @@
 # Rpadrino 0.0.4
 
+This contains new features, and a couple changes for compatibility with `ipmr v0.0.5`. 
 
+## Features
+
+- Accessor functions for the Metadata table now have `ipm_id`s as names. This enables patterns for subsetting like this:
+
+```
+spps <- pdb_species_accepted(pdb)
+ids  <- names(spps)[spps %in% c("Carpobrotus_spp", "Geum_radiatum")]
+my_proto_ipms <- pdb_make_proto_ipm(pdb, ipm_id = ids)
+
+```
+
+- A new vignette on working with stochastic IPMs.
+
+- `pdb_report()` now contains equations for each IPM using `ipmr`'s `make_ipm_report_body()`. 
+
+    + NB: This is currently unavailable for [parameter set indexed IPMs](https://levisc8.github.io/ipmr/articles/index-notation.html).
 
 # Rpadrino 0.0.3
 
