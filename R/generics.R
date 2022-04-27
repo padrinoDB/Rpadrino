@@ -353,16 +353,21 @@ left_ev.pdb_ipm <- function(ipm, iterations = 100, tolerance = 1e-10, ...) {
 }
 
 #' @rdname ipmr_generics
+#' @param burn_in The proportion of iterations to discard as burn in when
+#' assessing convergence.
 #' @importFrom ipmr make_iter_kernel is_conv_to_asymptotic conv_plot
 #' @export
 
-is_conv_to_asymptotic.pdb_ipm <- function(ipm, tolerance = 1e-10) {
+is_conv_to_asymptotic.pdb_ipm <- function(ipm,
+                                          tolerance = 1e-10,
+                                          burn_in = 0.1) {
 
-  test_ind <- vapply(ipm, function(x, tol) {
-    all(ipmr::is_conv_to_asymptotic(x, tolerance = tol))
+  test_ind <- vapply(ipm, function(x, tol, burn_in) {
+    all(ipmr::is_conv_to_asymptotic(x, tolerance = tol, burn_in = burn_in))
   },
   logical(1L),
-  tol = tolerance)
+  tol     = tolerance,
+  burn_in = burn_in)
 
   if(!all(test_ind)) {
 

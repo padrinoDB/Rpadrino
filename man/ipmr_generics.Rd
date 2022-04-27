@@ -57,7 +57,7 @@
 
 \method{left_ev}{pdb_ipm}(ipm, iterations = 100, tolerance = 1e-10, ...)
 
-\method{is_conv_to_asymptotic}{pdb_ipm}(ipm, tolerance = 1e-10)
+\method{is_conv_to_asymptotic}{pdb_ipm}(ipm, tolerance = 1e-10, burn_in = 0.1)
 
 \method{conv_plot}{pdb_ipm}(ipm, iterations = NULL, log = FALSE, show_stable = TRUE, ...)
 
@@ -90,6 +90,9 @@ unique ones.}
 convergence. Default is 100.}
 
 \item{tolerance}{Tolerance to evaluate convergence to asymptotic dynamics.}
+
+\item{burn_in}{The proportion of iterations to discard as burn in when
+assessing convergence.}
 
 \item{log}{Log-transform lambdas for plotting?}
 

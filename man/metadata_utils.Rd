@@ -127,7 +127,8 @@ pdb_report(
   render_output = TRUE,
   map = TRUE,
   translate_eqs = FALSE,
-  block_eqs = FALSE
+  block_eqs = FALSE,
+  long_eq_length = 65
 )
 }
 \arguments{
@@ -146,20 +147,26 @@ The default is \code{getwd()}.}
 \item{output_format}{The output format to create. Options are "html", "pdf",
 "word", "odt", "rtf", or "md".}
 
-\item{render_output}{A logical - should the document be rendered for inspection?}
+\item{render_output}{A logical - should the document be rendered for
+inspection?}
 
 \item{map}{Create a map of studies included in the \code{pdb} object?}
 
-\item{block_eqs}{If \code{report_eqs = TRUE}, should equations be reported
-in block format or as inline equations? This main difference for \code{"pdf"}
+\item{translate_eqs}{A logical - should the mathematical equations of the IPM(s)
+also be included in the report? These are translated from R to Latex by
+\code{\link[ipmr]{make_ipm_report_body}}. Currently, this is only available
+for IPMs that do not have parameter set indexed terms.}
+
+\item{block_eqs}{If \code{report_eqs = TRUE}, should equations be reported in
+block format or as inline equations? This main difference for \code{"pdf"}
 formats is that equation numbering is done with \code{tag{}}. For
 non-\code{"pdf"} formats, the difference is that equations are centered.
 Numbering may yield strange results for non-\code{"pdf"} formats.}
 
-\item{report_eqs}{A logical - should the mathematical equations of the IPM(s)
-also be included in the report? These are translated from R to Latex by
-\code{\link[ipmr]{make_ipm_report_body}}. Currently, this is only available
-for IPMs that do not have parameter set indexed term.}
+\item{long_eq_length}{For longer equations, \code{make_ipm_report} tries to
+wrap these into multiple lines using \code{\\\\}. This parameter controls
+the number of characters per line. Default is 65. Ignored when
+\code{block_eqs = FALSE}.}
 }
 \value{
 A named vector of the metadata. The names correspond to
