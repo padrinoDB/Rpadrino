@@ -44,6 +44,9 @@
       <a href="../articles/data-cleaning.html">Data Cleaning and Troubleshooting</a>
     </li>
     <li>
+      <a href="../articles/pdb-msgs.html">Messages and Warnings in PADRINO</a>
+    </li>
+    <li>
       <a href="../articles/stoch-ipms.html">Stochastic IPMs</a>
     </li>
   </ul></li>
@@ -71,13 +74,13 @@
 
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.0.4" id="rpadrino-004">Rpadrino 0.0.4<a class="anchor" aria-label="anchor" href="#rpadrino-004"></a></h2>
-<p>This contains new features, and a couple changes for compatibility with <code>ipmr v0.0.5</code>.</p>
+<p>This contains new features, and a couple changes for compatibility with <code>ipmr 0.0.5</code>.</p>
 <div class="section level3">
 <h3 id="features-0-0-4">Features<a class="anchor" aria-label="anchor" href="#features-0-0-4"></a></h3>
 <ul><li>Accessor functions for the Metadata table now have <code>ipm_id</code>s as names. This enables patterns for subsetting like this:</li></ul><pre><code><span class="va">spps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/metadata_utils.html">pdb_species_accepted</a></span><span class="op">(</span><span class="va">pdb</span><span class="op">)</span>
 <span class="va">ids</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">spps</span><span class="op">)</span><span class="op">[</span><span class="va">spps</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Carpobrotus_spp"</span>, <span class="st">"Geum_radiatum"</span><span class="op">)</span><span class="op">]</span>
 <span class="va">my_proto_ipms</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pdb_make_proto_ipm.html">pdb_make_proto_ipm</a></span><span class="op">(</span><span class="va">pdb</span>, ipm_id <span class="op">=</span> <span class="va">ids</span><span class="op">)</span></code></pre>
-<ul><li><p>A new vignette on working with stochastic IPMs.</p></li>
+<ul><li><p>New vignettes on working with stochastic IPMs, and on the messages that are produced while building IPMs with <code><a href="../reference/pdb_make_proto_ipm.html">pdb_make_proto_ipm()</a></code> and <code><a href="../reference/pdb_make_ipm.html">pdb_make_ipm()</a></code>.</p></li>
 <li>
 <p><code><a href="../reference/metadata_utils.html">pdb_report()</a></code> now contains equations for each IPM using <code>ipmr</code>’s <code><a href="https://levisc8.github.io/ipmr/reference/ipm_report.html" class="external-link">make_ipm_report_body()</a></code>.</p>
 <ul><li>NB: This is currently unavailable for <a href="https://levisc8.github.io/ipmr/articles/index-notation.html" class="external-link">parameter set indexed IPMs</a>.</li></ul></li>

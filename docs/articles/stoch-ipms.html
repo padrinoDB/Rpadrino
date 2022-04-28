@@ -62,6 +62,9 @@
       <a href="../articles/data-cleaning.html">Data Cleaning and Troubleshooting</a>
     </li>
     <li>
+      <a href="../articles/pdb-msgs.html">Messages and Warnings in PADRINO</a>
+    </li>
+    <li>
       <a href="../articles/stoch-ipms.html">Stochastic IPMs</a>
     </li>
   </ul>
@@ -394,15 +397,15 @@
 <span class="fu"><a href="https://levisc8.github.io/ipmr/reference/lambda.html" class="external-link">lambda</a></span><span class="op">(</span><span class="va">ipms</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## $aaaa15</span>
 <span class="co">##     lambda </span>
-<span class="co">## -0.1033645 </span>
+<span class="co">## -0.1032688 </span>
 <span class="co">## </span>
 <span class="co">## $aaaa16</span>
 <span class="co">##    lambda </span>
-<span class="co">## 0.2841629 </span>
+<span class="co">## 0.2707996 </span>
 <span class="co">## </span>
 <span class="co">## $aaaa15_2</span>
 <span class="co">##     lambda </span>
-<span class="co">## -0.1032182</span></code></pre>
+<span class="co">## -0.1030253</span></code></pre>
 <table style="width:70%;" class="table">
 <caption>
 Environmental covariate sequence from unaltered PADRINO data (first 10 iterations)
@@ -418,42 +421,10 @@ A_max
 <tbody>
 <tr>
 <td style="text-align:right;">
-2
+5
 </td>
 <td style="text-align:right;">
-6.773457
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:right;">
-6.420958
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-5.349602
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-6.213941
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:right;">
-5.773714
+5.747051
 </td>
 </tr>
 <tr>
@@ -461,31 +432,15 @@ A_max
 5
 </td>
 <td style="text-align:right;">
-6.328715
+5.718077
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-3
+5
 </td>
 <td style="text-align:right;">
-6.606225
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:right;">
-6.440194
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:right;">
-6.234378
+5.212979
 </td>
 </tr>
 <tr>
@@ -493,7 +448,55 @@ A_max
 1
 </td>
 <td style="text-align:right;">
-6.311240
+5.496484
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+5.291685
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+6.310243
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+6.398265
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+5.962894
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+6.548474
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5.820157
 </td>
 </tr>
 </tbody>
@@ -516,39 +519,23 @@ A_max
 5
 </td>
 <td style="text-align:right;">
-5.700486
+5.213261
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-3
+4
 </td>
 <td style="text-align:right;">
-6.842485
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:right;">
-5.188252
+6.592512
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-3
+4
 </td>
 <td style="text-align:right;">
-7.862701
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:right;">
-7.544820
+7.071505
 </td>
 </tr>
 <tr>
@@ -556,15 +543,7 @@ A_max
 2
 </td>
 <td style="text-align:right;">
-5.525667
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-5.336299
+6.148400
 </td>
 </tr>
 <tr>
@@ -572,7 +551,7 @@ A_max
 3
 </td>
 <td style="text-align:right;">
-5.763474
+5.061207
 </td>
 </tr>
 <tr>
@@ -580,7 +559,15 @@ A_max
 3
 </td>
 <td style="text-align:right;">
-7.177952
+5.184537
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+6.122552
 </td>
 </tr>
 <tr>
@@ -588,7 +575,23 @@ A_max
 5
 </td>
 <td style="text-align:right;">
-5.075738
+6.585113
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+7.276816
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+6.852546
 </td>
 </tr>
 </tbody>
@@ -730,7 +733,7 @@ A_max
 <pre><code><span class="co">## log(lambda) is returned by default for stochastic models. Set 'log = FALSE' for lambda on linear scale.</span></code></pre>
 <pre><code><span class="co">## $aaaa15</span>
 <span class="co">##     lambda </span>
-<span class="co">## -0.1039589</span></code></pre>
+<span class="co">## -0.1031805</span></code></pre>
 </div>
 </div>
 <div class="section level2">
@@ -892,8 +895,8 @@ A_max
 
 <span class="fu"><a href="https://levisc8.github.io/ipmr/reference/lambda.html" class="external-link">lambda</a></span><span class="op">(</span><span class="va">new_ipm</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## $aaaa15</span>
-<span class="co">##     lambda </span>
-<span class="co">## -0.1024667</span></code></pre>
+<span class="co">##    lambda </span>
+<span class="co">## -0.102664</span></code></pre>
 <p>It is probably ok to copy/paste the functions we defined above and apply to in your own analyses. However, as they are not yet incorporated into <code>Rpadrino</code>, I cannot promise that the results will be error free.</p>
 </div>
 </div>
