@@ -43,7 +43,7 @@ Description: 'PADRINO' houses textual representations of
   <doi:10.1111/2041-210X.13683>.
 Depends: 
   R (>= 3.4.0),
-  ipmr (>= 0.0.4)
+  ipmr (>= 0.0.5)
 Imports:
   ggplot2,
   magrittr,
