@@ -1,0 +1,42 @@
+---
+title: "Messages and Warnings in PADRINO"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 3
+vignette: >
+  %\VignetteIndexEntry{Messages and Warnings in PADRINO}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}  
+---
+
+We try to digitize as much data as possible in as transparent a manner as possible. Therefore, `Rpadrino` and PADRINO try to be as noisy as possible about the underlying models, so that potential issues don't slip through unnoticed. This behavior may seem unnerving at first, but it is only in the interest of maximum transparency with respect to the underlying IPMs. This document describes in longer form what these messages mean, and where they originate from. 
+
+# Messages and warnings during `proto_ipm` construction from `ipmr`-level functions
+
+These messages appear after a call to `pdb_make_proto_ipm()`, and originate from `ipmr` functions. Usually, they are innocuous and can be ignored. These include:
+
+  - `Warning: Assuming that all kernels are implemented with the same 'int_rule'.` This means that, for one reason or another, `Rpadrino` couldn't find the specific integration rule for a specific sub-kernel in PADRINO. In turn, it assumes that all sub-kernels have the same integration rule. This is OK because the only integration rule is the midpoint rule (as of now). We are not aware of any IPMs that use different integration rules for different sub-kernels within the same IPM anyway, so this assumption seems reasonable.
+
+More will be added here as they appear in later versions of `ipmr`.
+
+# Messages and warnings during `proto_ipm` construction from `Rpadrino`-level functions
+
+These messages appear as a result of comments left by digitizers in PADRINO itself. Sometimes, these are issues the user must be aware of, and sometimes, they are comments for the digitization team. Examples of the former include:
+
+  - `Frankenstein IPM`. This is used to indicate a situation where parameter estimates are drawn from multiple sources of data that the authors did not necessarily collect themselves. For example, [Levin et al. (2019)]() used data collected from field sites to estimate survival, growth, and reproduction of _Lonicera maackii_, and then used data from the literature to estimate seed germination, viability, and establishment probability. We highlight this so that users who wish to consider, for example, seed vital rates as a function of climate, are careful to check the original publications and understand that the latitude/longitude and date ranges listed in PADRINO may not apply to all vital rates in the model.
+    
+  - `Same data as <reference>`, `Demographic data from <reference>`. These indicate that the underlying demographic data are taken from another reference, and used in a possibly modified IPM. Therefore, it would be good to check both publications to make sure the data meet your criteria for usage. 
+    
+  - There a lot of messages related to latitude/longitude coordinates and their precision. Use caution when using these models in contexts where exact geographic references are required! 
+    
+  - `'ipm_id' <xyz> has resampled parameters, resetting 'det_stoch' to 'stoch'...` These are models for which all parameter values are not known ahead of time, because some parameters are random variables drawn from known distributions. Therefore, they take a bit longer to build and run, because sub-kernels have to be re-built at every iteration using the new random parameter draws. It is essential that users get this information up front, because the default of 50 iterations is certainly insufficient to understand stochastic behavior. The number of iterations can be increased with the `addl_args` argument of `pdb_make_ipm()`. 
+    
+# Messages and warnings during IPM construction from `ipmr`-level functions 
+
+More will be added here shortly. In the meantime, email [Sam Levin](<mailto:levisc8@gmail.com>) if you encounter issues during IPM construction with `Rpadrino`.
+    
+# Messages and warnings during IPM construction from `Rpadrino`-level functions
+
+More will be added here shortly. In the meantime, email [Sam Levin](<mailto:levisc8@gmail.com>) if you encounter issues during IPM construction with `Rpadrino`.
