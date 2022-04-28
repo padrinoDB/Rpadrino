@@ -20,6 +20,8 @@ navbar:
           href: articles/padrino-intro.html
         - text: "Data Cleaning and Troubleshooting"
           href: articles/data-cleaning.html
+        - text: "Messages and Warnings in PADRINO"
+          href: articles/pdb-msgs.html
         - text: "Stochastic IPMs"
           href: articles/stoch-ipms.html
     - text: "News"

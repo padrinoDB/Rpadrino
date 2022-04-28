@@ -1,6 +1,6 @@
 # Rpadrino 0.0.4
 
-This contains new features, and a couple changes for compatibility with `ipmr v0.0.5`. 
+This contains new features, and a couple changes for compatibility with `ipmr 0.0.5`. 
 
 ## Features
 
@@ -13,7 +13,7 @@ my_proto_ipms <- pdb_make_proto_ipm(pdb, ipm_id = ids)
 
 ```
 
-- A new vignette on working with stochastic IPMs.
+- New vignettes on working with stochastic IPMs, and on the messages that are produced while building IPMs with `pdb_make_proto_ipm()` and `pdb_make_ipm()`.
 
 - `pdb_report()` now contains equations for each IPM using `ipmr`'s `make_ipm_report_body()`. 
 
