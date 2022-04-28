@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Rpadrino</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.3.9000</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.4</span>
       </span>
     </div>
 
@@ -92,7 +92,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Rpadrino Introduction</h1>
             
-            <h4 data-toc-skip class="date">2022-03-03</h4>
+            <h4 data-toc-skip class="date">2022-04-28</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/padrinoDB/Rpadrino/blob/HEAD/vignettes/padrino-intro.Rmd" class="external-link"><code>vignettes/padrino-intro.Rmd</code></a></small>
       <div class="hidden name"><code>padrino-intro.Rmd</code></div>
@@ -164,7 +164,7 @@
 <span class="co">## A simple, density independent, deterministic IPM with 2 sub-kernel(s) defined. </span>
 <span class="co">## Deterministic lambda = 1</span>
 <span class="co">## $aaa329</span>
-<span class="co">## A simple, density dependent, deterministic IPM with 100 sub-kernel(s) defined. </span>
+<span class="co">## A simple, density dependent, deterministic IPM with 1 sub-kernel(s) defined. </span>
 <span class="co">## Lambda for the final time step of the model is: 1.146 </span>
 <span class="co">## Call lambda(x, type_lambda = "all") for deterministic lambdas</span>
 <span class="co">## from each iteration.</span>
@@ -486,10 +486,10 @@
 <pre><code><span class="co">## $aaa341</span>
 <span class="co">## s: 1/(1 + exp(-(si + ss1 * size_1 + ss2 * size_1^2)))</span>
 <span class="co">## g_mean: gi + gs * size_1</span>
-<span class="co">## g: stats::dnorm(size_2, g_mean, g_sd)</span>
+<span class="co">## g: dnorm(size_2, g_mean, g_sd)</span>
 <span class="co">## Fp: 1/(1 + exp(-(fpi + fps * size_1)))</span>
 <span class="co">## Fs: exp(fi + fs * size_1)</span>
-<span class="co">## Fd: stats::dnorm(size_2, fd_mean, fd_sd)</span></code></pre>
+<span class="co">## Fd: dnorm(size_2, fd_mean, fd_sd)</span></code></pre>
 <p>We can see that the function <code>s</code> is the one we want to update. We’ll use the setter <code>vital_rate_exprs&lt;-</code> and <code><a href="../reference/ipmr_generics.html">pdb_new_fun_form()</a></code> to do this. These two functions combine with the following syntax:</p>
 <div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1"></a><span class="kw">vital_rate_exprs</span>(proto_ipms) &lt;-<span class="st"> </span><span class="kw">pdb_new_fun_form</span>(</span>
 <span id="cb43-2"><a href="#cb43-2"></a>  <span class="kw">list</span>(</span>
@@ -516,10 +516,10 @@
 <pre><code><span class="co">## $aaa341</span>
 <span class="co">## s: pmin(0.98, 1/(1 + exp(-(si + ss1 * size_1 + ss2 * size_1^2))))</span>
 <span class="co">## g_mean: gi + gs * size_1</span>
-<span class="co">## g: stats::dnorm(size_2, g_mean, g_sd)</span>
+<span class="co">## g: dnorm(size_2, g_mean, g_sd)</span>
 <span class="co">## Fp: 1/(1 + exp(-(fpi + fps * size_1)))</span>
 <span class="co">## Fs: exp(fi + fs * size_1)</span>
-<span class="co">## Fd: stats::dnorm(size_2, fd_mean, fd_sd)</span></code></pre>
+<span class="co">## Fd: dnorm(size_2, fd_mean, fd_sd)</span></code></pre>
 <p>Great! Let’s re-run the analysis above with our corrected model!</p>
 <div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Rebuild the IPM, then use our functions for mean, variance, and SD on it.</span>
@@ -583,7 +583,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer>
