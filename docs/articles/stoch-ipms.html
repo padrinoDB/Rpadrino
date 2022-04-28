@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Rpadrino</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.3.9000</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.4</span>
       </span>
     </div>
 
@@ -165,7 +165,7 @@
 <span class="co">## g_mu: g_0 + g_1 * leafarea_1 + g_2 * j + g_3 * A_max + g_4 * leafarea_1 * </span>
 <span class="co">##     j + g_5 * leafarea_1 * A_max + g_6 * j * A_max + g_7 * leafarea_1 * </span>
 <span class="co">##     j * A_max</span>
-<span class="co">## g: stats::dnorm(leafarea_2, g_mu, g_sd)</span>
+<span class="co">## g: dnorm(leafarea_2, g_mu, g_sd)</span>
 <span class="co">## f: r_p * r_o * n_f * n_s * s_s * sdl_s * sdl_size</span>
 <span class="co">## r_p: 1/(1 + exp(-(r_0 + r_1 * leafarea_1 + r_2 * j + r_3 * leafarea_1 * </span>
 <span class="co">##     j)))</span>
@@ -173,8 +173,8 @@
 <span class="co">## s_s: ifelse(j &lt; 6, s_sl, s_sh)</span>
 <span class="co">## sdl_s: ifelse(j &lt; 6, sdl_sl, sdl_sh)</span>
 <span class="co">## sdl_size: ifelse(j &lt; 6, sdl_m_l, sdl_m_h)</span>
-<span class="co">## sdl_m_l: stats::dnorm(leafarea_2, sdl_meanl, sdl_sdl)</span>
-<span class="co">## sdl_m_h: stats::dnorm(leafarea_2, sdl_meanh, sdl_sdh)</span>
+<span class="co">## sdl_m_l: dnorm(leafarea_2, sdl_meanl, sdl_sdl)</span>
+<span class="co">## sdl_m_h: dnorm(leafarea_2, sdl_meanh, sdl_sdh)</span>
 <span class="co">## </span>
 <span class="co">## Parameter names:</span>
 <span class="co">## </span>
@@ -393,13 +393,16 @@
 
 <span class="fu"><a href="https://levisc8.github.io/ipmr/reference/lambda.html" class="external-link">lambda</a></span><span class="op">(</span><span class="va">ipms</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## $aaaa15</span>
-<span class="co">## [1] -0.103523</span>
+<span class="co">##     lambda </span>
+<span class="co">## -0.1033645 </span>
 <span class="co">## </span>
 <span class="co">## $aaaa16</span>
-<span class="co">## [1] 0.2845152</span>
+<span class="co">##    lambda </span>
+<span class="co">## 0.2841629 </span>
 <span class="co">## </span>
 <span class="co">## $aaaa15_2</span>
-<span class="co">## [1] -0.1030615</span></code></pre>
+<span class="co">##     lambda </span>
+<span class="co">## -0.1032182</span></code></pre>
 <table style="width:70%;" class="table">
 <caption>
 Environmental covariate sequence from unaltered PADRINO data (first 10 iterations)
@@ -415,10 +418,42 @@ A_max
 <tbody>
 <tr>
 <td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+6.773457
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+6.420958
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+5.349602
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+6.213941
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
 3
 </td>
 <td style="text-align:right;">
-6.734806
+5.773714
 </td>
 </tr>
 <tr>
@@ -426,7 +461,7 @@ A_max
 5
 </td>
 <td style="text-align:right;">
-6.883324
+6.328715
 </td>
 </tr>
 <tr>
@@ -434,23 +469,7 @@ A_max
 3
 </td>
 <td style="text-align:right;">
-6.944833
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:right;">
-6.882089
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-5.247770
+6.606225
 </td>
 </tr>
 <tr>
@@ -458,7 +477,7 @@ A_max
 4
 </td>
 <td style="text-align:right;">
-5.621000
+6.440194
 </td>
 </tr>
 <tr>
@@ -466,31 +485,15 @@ A_max
 4
 </td>
 <td style="text-align:right;">
-5.007056
+6.234378
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-2
+1
 </td>
 <td style="text-align:right;">
-6.429168
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-5.106248
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:right;">
-6.257702
+6.311240
 </td>
 </tr>
 </tbody>
@@ -510,10 +513,42 @@ A_max
 <tbody>
 <tr>
 <td style="text-align:right;">
-4
+5
 </td>
 <td style="text-align:right;">
-6.457092
+5.700486
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+6.842485
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+5.188252
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+7.862701
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+7.544820
 </td>
 </tr>
 <tr>
@@ -521,23 +556,7 @@ A_max
 2
 </td>
 <td style="text-align:right;">
-6.078262
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-5.196816
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:right;">
-7.743520
+5.525667
 </td>
 </tr>
 <tr>
@@ -545,47 +564,31 @@ A_max
 1
 </td>
 <td style="text-align:right;">
-6.312716
+5.336299
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-1
+3
 </td>
 <td style="text-align:right;">
-5.952486
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-5.234388
+5.763474
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-4
+3
 </td>
 <td style="text-align:right;">
-7.331360
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-6.590235
+7.177952
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-2
+5
 </td>
 <td style="text-align:right;">
-5.022313
+5.075738
 </td>
 </tr>
 </tbody>
@@ -726,7 +729,8 @@ A_max
 <span class="fu"><a href="https://levisc8.github.io/ipmr/reference/lambda.html" class="external-link">lambda</a></span><span class="op">(</span><span class="va">new_ipms</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## log(lambda) is returned by default for stochastic models. Set 'log = FALSE' for lambda on linear scale.</span></code></pre>
 <pre><code><span class="co">## $aaaa15</span>
-<span class="co">## [1] -0.1034531</span></code></pre>
+<span class="co">##     lambda </span>
+<span class="co">## -0.1039589</span></code></pre>
 </div>
 </div>
 <div class="section level2">
@@ -888,7 +892,8 @@ A_max
 
 <span class="fu"><a href="https://levisc8.github.io/ipmr/reference/lambda.html" class="external-link">lambda</a></span><span class="op">(</span><span class="va">new_ipm</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## $aaaa15</span>
-<span class="co">## [1] -0.1019463</span></code></pre>
+<span class="co">##     lambda </span>
+<span class="co">## -0.1024667</span></code></pre>
 <p>It is probably ok to copy/paste the functions we defined above and apply to in your own analyses. However, as they are not yet incorporated into <code>Rpadrino</code>, I cannot promise that the results will be error free.</p>
 </div>
 </div>
@@ -911,7 +916,7 @@ A_max
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer>

@@ -18,7 +18,7 @@ some quantities of interest from pdb_proto_ipm_lists and pdb_ipms."><!-- mathjax
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Rpadrino</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.3.9000</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.4</span>
       </span>
     </div>
 
@@ -123,7 +123,7 @@ right_ev(ipm, iterations = 100, tolerance = 1e-10, ...)
 left_ev(ipm, iterations = 100, tolerance = 1e-10, ...)
 
 # S3 method for pdb_ipm
-is_conv_to_asymptotic(ipm, tolerance = 1e-10)
+is_conv_to_asymptotic(ipm, tolerance = 1e-10, burn_in = 0.1)
 
 # S3 method for pdb_ipm
 conv_plot(ipm, iterations = NULL, log = FALSE, show_stable = TRUE, ...)
@@ -166,6 +166,9 @@ unique ones.</p></dd>
 convergence. Default is 100.</p></dd>
 <dt>tolerance</dt>
 <dd><p>Tolerance to evaluate convergence to asymptotic dynamics.</p></dd>
+<dt>burn_in</dt>
+<dd><p>The proportion of iterations to discard as burn in when
+assessing convergence.</p></dd>
 <dt>log</dt>
 <dd><p>Log-transform lambdas for plotting?</p></dd>
 <dt>show_stable</dt>
@@ -301,7 +304,7 @@ and <code><a href="https://levisc8.github.io/ipmr/reference/check_convergence.ht
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer></div>

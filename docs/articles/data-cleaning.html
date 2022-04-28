@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Rpadrino</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.3.9000</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.4</span>
       </span>
     </div>
 
@@ -146,10 +146,10 @@ N = (I + P + P^2 + P^3 + ...) = (I - P)^{-1}
 <pre><code><span class="co">## $aaa341</span>
 <span class="co">## s: 1/(1 + exp(-(si + ss1 * size_1 + ss2 * size_1^2)))</span>
 <span class="co">## g_mean: gi + gs * size_1</span>
-<span class="co">## g: stats::dnorm(size_2, g_mean, g_sd)</span>
+<span class="co">## g: dnorm(size_2, g_mean, g_sd)</span>
 <span class="co">## Fp: 1/(1 + exp(-(fpi + fps * size_1)))</span>
 <span class="co">## Fs: exp(fi + fs * size_1)</span>
-<span class="co">## Fd: stats::dnorm(size_2, fd_mean, fd_sd)</span></code></pre>
+<span class="co">## Fd: dnorm(size_2, fd_mean, fd_sd)</span></code></pre>
 <p>We can see that <code>P = s * g</code>, and since <code>g</code> is given by a probability density function, we are unlikely to find much going on there. Thus, we want to inspect the values for <code>s</code>. How do we do that? By default, <code>ipmr</code>, the engine that powers <code>Rpadrino</code>, does not return individual function values in IPM objects. Therefore, we’ll need to rebuild the IPM, and tell <code>ipmr</code> to give us those by setting <code>return_all_envs = TRUE</code>. Then we can ask for the vital rate functions using <code><a href="https://levisc8.github.io/ipmr/reference/accessors.html" class="external-link">vital_rate_funs()</a></code>.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">problem_ipm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pdb_make_proto_ipm.html">pdb_make_proto_ipm</a></span><span class="op">(</span><span class="va">pdb</span>, <span class="st">"aaa341"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
@@ -228,7 +228,7 @@ N = (I + P + P^2 + P^3 + ...) = (I - P)^{-1}
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer>
