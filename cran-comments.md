@@ -11,7 +11,7 @@ Additional information on this submission:
 
 ## R CMD check results
 
-0 errors | 0 warnings | 1 note on all platforms
+0 errors | 0 warnings | 1 note on Windows platforms
 
 Found the following possibly invalid DOIS: ...
 
