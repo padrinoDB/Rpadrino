@@ -4,6 +4,7 @@
 coverage](https://codecov.io/gh/padrinoDB/Rpadrino/branch/main/graph/badge.svg)](https://codecov.io/gh/padrinoDB/Rpadrino?branch=main)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/Rpadrino)](https://cran.r-project.org/package=Rpadrino)
+[![DOI](https://zenodo.org/badge/124245125.svg)](https://zenodo.org/badge/latestdoi/124245125)
 
 ## Rpadrino
 
@@ -65,11 +66,14 @@ taxonomic kingdoms in the **full** database (i.e. not the internal data
 set). All of the models included in both the internal data set and full
 database have been quality checked for accuracy. Quality checked means
 that for deterministic models, the asymptotic per-capita growth rate
-(*λ*) is within  ± 0.03 of the published point estimate value. For
-stochastic models, we check for approximately the same stochastic
-population growth rate (*λ*<sub>*s*</sub>), but do not try to replicate
-the analysis, as this usually requires too many computing resources to
-be feasible.
+(![\\lambda](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%5Clambda "\lambda"))
+is within
+![\\pm 0.03](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%5Cpm%200.03 "\pm 0.03")
+of the published point estimate value. For stochastic models, we check
+for approximately the same stochastic population growth rate
+(![\\lambda_s](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%5Clambda_s "\lambda_s")),
+but do not try to replicate the analysis, as this usually requires too
+many computing resources to be feasible.
 
 A small-ish copy of the Padrino Database is included as a package data
 set. You can download the full database as well. You can access it with

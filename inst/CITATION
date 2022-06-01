@@ -1,0 +1,15 @@
+citHeader("To cite Rpadrino in publications use:")
+
+citEntry(
+  entry    = "Article",
+  title    = "Rpadrino: an R package to access and use PADRINO, an open access database of Integral Projection Models",
+  author   = "Levin SC, Evers S, Potter T, Guerrero MP, Childs DZ, Compagnoni A, Knight TM & Salguero-Gomez R ",
+  journal  = "Methods in Ecology and Evolution",
+  year     = "2022",
+  volume   = ,
+  number   = ,
+  pages    = ,
+  url      = "https://doi.org/10.1111/2041-210X.13910",
+  textVersion = paste("Levin SC, Evers S, Potter T, Guerrero MP, Childs DZ, Compagnoni A, Knight TM & Salguero-Gomez R (2022). Rpadrino: an R package to access and use PADRINO, an open access database of Integral Projection Models. Methods in Ecology and Evolution. DOI: https://doi.org/10.1111/2041-210X.13910"
+  )
+)
