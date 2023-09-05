@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Rpadrino</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.4.9000</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.5</span>
       </span>
     </div>
 
@@ -90,12 +90,12 @@
 
       
 
-      </header><script src="pdb-msgs_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Messages and Warnings in PADRINO</h1>
             
-            <h4 data-toc-skip class="date">2022-05-02</h4>
+            <h4 data-toc-skip class="date">2023-09-05</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/padrinoDB/Rpadrino/blob/HEAD/vignettes/pdb-msgs.Rmd" class="external-link"><code>vignettes/pdb-msgs.Rmd</code></a></small>
       <div class="hidden name"><code>pdb-msgs.Rmd</code></div>
@@ -104,37 +104,90 @@
 
     
     
-<p>We try to digitize as much data as possible in as transparent a manner as possible. Therefore, <code>Rpadrino</code> and PADRINO try to be as noisy as possible about the underlying models, so that potential issues don’t slip through unnoticed. This behavior may seem unnerving at first, but it is only in the interest of maximum transparency with respect to the underlying IPMs. This document describes in longer form what these messages mean, and where they originate from.</p>
+<p>We try to digitize as much data as possible in as transparent a
+manner as possible. Therefore, <code>Rpadrino</code> and PADRINO try to
+be as noisy as possible about the underlying models, so that potential
+issues don’t slip through unnoticed. This behavior may seem unnerving at
+first, but it is only in the interest of maximum transparency with
+respect to the underlying IPMs. This document describes in longer form
+what these messages mean, and where they originate from.</p>
 <div class="section level2">
-<h2 id="messages-and-warnings-during-proto_ipm-construction-from-ipmr-level-functions">Messages and warnings during <code>proto_ipm</code> construction from <code>ipmr</code>-level functions<a class="anchor" aria-label="anchor" href="#messages-and-warnings-during-proto_ipm-construction-from-ipmr-level-functions"></a>
+<h2 id="messages-and-warnings-during-proto_ipm-construction-from-ipmr-level-functions">Messages and warnings during <code>proto_ipm</code> construction
+from <code>ipmr</code>-level functions<a class="anchor" aria-label="anchor" href="#messages-and-warnings-during-proto_ipm-construction-from-ipmr-level-functions"></a>
 </h2>
-<p>These messages appear after a call to <code><a href="../reference/pdb_make_proto_ipm.html">pdb_make_proto_ipm()</a></code>, and originate from <code>ipmr</code> functions. Usually, they are innocuous and can be ignored. These include:</p>
+<p>These messages appear after a call to
+<code><a href="../reference/pdb_make_proto_ipm.html">pdb_make_proto_ipm()</a></code>, and originate from <code>ipmr</code>
+functions. Usually, they are innocuous and can be ignored. These
+include:</p>
 <ul>
 <li>
-<code>Warning: Assuming that all kernels are implemented with the same 'int_rule'.</code> This means that, for one reason or another, <code>Rpadrino</code> couldn’t find the specific integration rule for a specific sub-kernel in PADRINO. In turn, it assumes that all sub-kernels have the same integration rule. This is OK because the only integration rule is the midpoint rule (as of now). We are not aware of any IPMs that use different integration rules for different sub-kernels within the same IPM anyway, so this assumption seems reasonable.</li>
+<code>Warning: Assuming that all kernels are implemented with the same 'int_rule'.</code>
+This means that, for one reason or another, <code>Rpadrino</code>
+couldn’t find the specific integration rule for a specific sub-kernel in
+PADRINO. In turn, it assumes that all sub-kernels have the same
+integration rule. This is OK because the only integration rule is the
+midpoint rule (as of now). We are not aware of any IPMs that use
+different integration rules for different sub-kernels within the same
+IPM anyway, so this assumption seems reasonable.</li>
 </ul>
-<p>More will be added here as they appear in later versions of <code>ipmr</code>.</p>
+<p>More will be added here as they appear in later versions of
+<code>ipmr</code>.</p>
 </div>
 <div class="section level2">
-<h2 id="messages-and-warnings-during-proto_ipm-construction-from-rpadrino-level-functions">Messages and warnings during <code>proto_ipm</code> construction from <code>Rpadrino</code>-level functions<a class="anchor" aria-label="anchor" href="#messages-and-warnings-during-proto_ipm-construction-from-rpadrino-level-functions"></a>
+<h2 id="messages-and-warnings-during-proto_ipm-construction-from-rpadrino-level-functions">Messages and warnings during <code>proto_ipm</code> construction
+from <code>Rpadrino</code>-level functions<a class="anchor" aria-label="anchor" href="#messages-and-warnings-during-proto_ipm-construction-from-rpadrino-level-functions"></a>
 </h2>
-<p>These messages appear as a result of comments left by digitizers in PADRINO itself. Sometimes, these are issues the user must be aware of, and sometimes, they are comments for the digitization team. Examples of the former include:</p>
+<p>These messages appear as a result of comments left by digitizers in
+PADRINO itself. Sometimes, these are issues the user must be aware of,
+and sometimes, they are comments for the digitization team. Examples of
+the former include:</p>
 <ul>
-<li><p><code>Frankenstein IPM</code>. This is used to indicate a situation where parameter estimates are drawn from multiple sources of data that the authors did not necessarily collect themselves. For example, <a href="https://doi.org/10.1002/ecy.2681" class="external-link">Levin et al. (2019)</a> used data collected from field sites to estimate survival, growth, and reproduction of <em>Lonicera maackii</em>, and then used data from the literature to estimate seed germination, viability, and establishment probability. We highlight this so that users who wish to consider, for example, seed vital rates as a function of climate, are careful to check the original publications and understand that the latitude/longitude and date ranges listed in PADRINO may not apply to all vital rates in the model.</p></li>
-<li><p><code>Same data as &lt;reference&gt;</code>, <code>Demographic data from &lt;reference&gt;</code>. These indicate that the underlying demographic data are taken from another reference, and used in a possibly modified IPM. Therefore, it would be good to check both publications to make sure the data meet your criteria for usage.</p></li>
-<li><p>There a lot of messages related to latitude/longitude coordinates and their precision. Use caution when using these models in contexts where exact geographic references are required!</p></li>
-<li><p><code>'ipm_id' &lt;xyz&gt; has resampled parameters, resetting 'det_stoch' to 'stoch'...</code> These are models for which all parameter values are not known ahead of time, because some parameters are random variables drawn from known distributions. Therefore, they take a bit longer to build and run, because sub-kernels have to be re-built at every iteration using the new random parameter draws. It is essential that users get this information up front, because the default of 50 iterations is certainly insufficient to understand stochastic behavior. The number of iterations can be increased with the <code>addl_args</code> argument of <code><a href="../reference/pdb_make_ipm.html">pdb_make_ipm()</a></code>.</p></li>
+<li><p><code>Frankenstein IPM</code>. This is used to indicate a
+situation where parameter estimates are drawn from multiple sources of
+data that the authors did not necessarily collect themselves. For
+example, <a href="https://doi.org/10.1002/ecy.2681" class="external-link">Levin et
+al. (2019)</a> used data collected from field sites to estimate
+survival, growth, and reproduction of <em>Lonicera maackii</em>, and
+then used data from the literature to estimate seed germination,
+viability, and establishment probability. We highlight this so that
+users who wish to consider, for example, seed vital rates as a function
+of climate, are careful to check the original publications and
+understand that the latitude/longitude and date ranges listed in PADRINO
+may not apply to all vital rates in the model.</p></li>
+<li><p><code>Same data as &lt;reference&gt;</code>,
+<code>Demographic data from &lt;reference&gt;</code>. These indicate
+that the underlying demographic data are taken from another reference,
+and used in a possibly modified IPM. Therefore, it would be good to
+check both publications to make sure the data meet your criteria for
+usage.</p></li>
+<li><p>There a lot of messages related to latitude/longitude coordinates
+and their precision. Use caution when using these models in contexts
+where exact geographic references are required!</p></li>
+<li><p><code>'ipm_id' &lt;xyz&gt; has resampled parameters, resetting 'det_stoch' to 'stoch'...</code>
+These are models for which all parameter values are not known ahead of
+time, because some parameters are random variables drawn from known
+distributions. Therefore, they take a bit longer to build and run,
+because sub-kernels have to be re-built at every iteration using the new
+random parameter draws. It is essential that users get this information
+up front, because the default of 50 iterations is certainly insufficient
+to understand stochastic behavior. The number of iterations can be
+increased with the <code>addl_args</code> argument of
+<code><a href="../reference/pdb_make_ipm.html">pdb_make_ipm()</a></code>.</p></li>
 </ul>
 </div>
 <div class="section level2">
-<h2 id="messages-and-warnings-during-ipm-construction-from-ipmr-level-functions">Messages and warnings during IPM construction from <code>ipmr</code>-level functions<a class="anchor" aria-label="anchor" href="#messages-and-warnings-during-ipm-construction-from-ipmr-level-functions"></a>
+<h2 id="messages-and-warnings-during-ipm-construction-from-ipmr-level-functions">Messages and warnings during IPM construction from
+<code>ipmr</code>-level functions<a class="anchor" aria-label="anchor" href="#messages-and-warnings-during-ipm-construction-from-ipmr-level-functions"></a>
 </h2>
-<p>More will be added here shortly. In the meantime, email <a href="mailto:levisc8@gmail.com">Sam Levin</a> if you encounter issues during IPM construction with <code>Rpadrino</code>.</p>
+<p>More will be added here shortly. In the meantime, email <a href="mailto:levisc8@gmail.com">Sam Levin</a> if you encounter issues
+during IPM construction with <code>Rpadrino</code>.</p>
 </div>
 <div class="section level2">
-<h2 id="messages-and-warnings-during-ipm-construction-from-rpadrino-level-functions">Messages and warnings during IPM construction from <code>Rpadrino</code>-level functions<a class="anchor" aria-label="anchor" href="#messages-and-warnings-during-ipm-construction-from-rpadrino-level-functions"></a>
+<h2 id="messages-and-warnings-during-ipm-construction-from-rpadrino-level-functions">Messages and warnings during IPM construction from
+<code>Rpadrino</code>-level functions<a class="anchor" aria-label="anchor" href="#messages-and-warnings-during-ipm-construction-from-rpadrino-level-functions"></a>
 </h2>
-<p>More will be added here shortly. In the meantime, email <a href="mailto:levisc8@gmail.com">Sam Levin</a> if you encounter issues during IPM construction with <code>Rpadrino</code>.</p>
+<p>More will be added here shortly. In the meantime, email <a href="mailto:levisc8@gmail.com">Sam Levin</a> if you encounter issues
+during IPM construction with <code>Rpadrino</code>.</p>
 </div>
   </div>
 
@@ -155,7 +208,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

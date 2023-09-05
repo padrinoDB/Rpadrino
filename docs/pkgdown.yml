@@ -1,5 +1,5 @@
-pandoc: 2.7.3
-pkgdown: 2.0.3
+pandoc: 2.19.2
+pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
   data-cleaning: data-cleaning.html
@@ -7,7 +7,7 @@ articles:
   padrino-intro: padrino-intro.html
   pdb-msgs: pdb-msgs.html
   stoch-ipms: stoch-ipms.html
-last_built: 2022-05-02T17:38Z
+last_built: 2023-09-05T23:34Z
 urls:
   reference: https://padrinoDB.github.io/Rpadrino/reference
   article: https://padrinoDB.github.io/Rpadrino/articles

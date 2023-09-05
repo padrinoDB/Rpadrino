@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Rpadrino</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.4.9000</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.5</span>
       </span>
     </div>
 
@@ -78,27 +78,36 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">pdb_download</span><span class="op">(</span>save <span class="op">=</span> <span class="cn">TRUE</span>, destination <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>
-
-<span class="fu">pdb_save</span><span class="op">(</span><span class="va">pdb</span>, destination <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>
-
-<span class="fu">pdb_load</span><span class="op">(</span><span class="va">path</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">pdb_download</span><span class="op">(</span>save <span class="op">=</span> <span class="cn">TRUE</span>, destination <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">pdb_save</span><span class="op">(</span><span class="va">pdb</span>, destination <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">pdb_load</span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>save</dt>
 <dd><p>Write the PDB object to a folder of text files?</p></dd>
+
+
 <dt>destination</dt>
 <dd><p>Where to write the <code>pdb</code> object to.</p></dd>
+
+
 <dt>pdb</dt>
 <dd><p>A <code>pdb</code> object.</p></dd>
+
+
 <dt>path</dt>
 <dd><p>The directory where the PADRINO tables are stored</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p><code>pdb_download</code> and <code>pdb_load</code> return <code>pdb</code> objects.
+    
+
+<p><code>pdb_download</code> and <code>pdb_load</code> return <code>pdb</code> objects.
 <code>pdb_save</code> returns a <code>pdb</code> object invisibly.</p>
     </div>
     <div id="details">
@@ -106,7 +115,8 @@
     <p>This does not currently support versioning because there is only
 one version. <code>destination</code> should be a folder name. When <code>save = TRUE</code>,
 a set of 12 text files will be saved in the <code>destination</code> folder. The files
-are tab-delimited.</p>
+are tab-delimited. If you are not connected to the internet, <code>pdb_download</code>
+will load the internal <code>pdb</code> data object and return that instead.</p>
     </div>
 
   </div>
@@ -121,7 +131,7 @@ are tab-delimited.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>
