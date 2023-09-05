@@ -32,5 +32,6 @@ Download PADRINO from Github.
 This does not currently support versioning because there is only
 one version. \code{destination} should be a folder name. When \code{save = TRUE},
 a set of 12 text files will be saved in the \code{destination} folder. The files
-are tab-delimited.
+are tab-delimited. If you are not connected to the internet, \code{pdb_download}
+will load the internal \code{pdb} data object and return that instead.
 }

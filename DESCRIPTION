@@ -1,6 +1,6 @@
 Package: Rpadrino
 Title: Interact with the 'PADRINO' IPM Database
-Version: 0.0.4.9000
+Version: 0.0.5
 Authors@R: c(
     person(given = "Sam",
            family = "Levin",
@@ -45,6 +45,7 @@ Depends:
   R (>= 3.4.0),
   ipmr (>= 0.0.5)
 Imports:
+  curl,
   ggplot2,
   magrittr,
   mvtnorm,
@@ -54,12 +55,13 @@ Imports:
   tools,
   truncdist,
   utils
+SystemRequirements: libcurl: libcurl-devel (rpm) or libcurl4-openssl-dev (deb).
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
 BugReports: https://github.com/padrinoDB/Rpadrino/issues
 URL: https://github.com/padrinoDB/Rpadrino, https://padrinoDB.github.io/Rpadrino/
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.2
 Suggests: 
     covr,
     knitr,

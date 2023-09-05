@@ -1,4 +1,4 @@
-This is a submission of Rpadrino 0.0.4. It patches the package for compatitility with a dependency: ipmr, which was just updated on CRAN today. Unfortunately, the current version of Rpadrino is incompatible with the latest version of ipmr, so I need to submit this immediately to minimize disruption. The last submission was in December, 2021.
+This is a submission of Rpadrino 0.0.5. It contains an update that checks for internet before downloading a resource, and fails predictably and informatively if there is no internet connection. This is in response to a message from CRAN maintainers earlier this week that this update was required for the package to stay on CRAN.
 
 Additional information on this submission:
 
@@ -11,10 +11,5 @@ Additional information on this submission:
 
 ## R CMD check results
 
-0 errors | 0 warnings | 1 note on Windows platforms
-
-Found the following possibly invalid DOIS: ...
-
-Per an email from Uwe Ligges regarding a submission of ipmr yesterday, I understand it is ok to ignore these.
-
+0 errors | 0 warnings | 0 notes
 

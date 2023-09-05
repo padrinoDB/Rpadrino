@@ -1,5 +1,6 @@
-# Rpadrino 0.0.4.9000
+# Rpadrino 0.0.5
 
+This contains an update to keep `RPadrino` on CRAN. Namely, it checks for internet before trying to download `PADRINO`, and returns the internal `pdb` object if there is not internet available. This adds [`curl`](https://jeroen.r-universe.dev/curl) as a dependency.
 
 # Rpadrino 0.0.4
 

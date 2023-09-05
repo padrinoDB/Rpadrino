@@ -9,15 +9,30 @@
 #' @details This does not currently support versioning because there is only
 #' one version. \code{destination} should be a folder name. When \code{save = TRUE},
 #' a set of 12 text files will be saved in the \code{destination} folder. The files
-#' are tab-delimited.
+#' are tab-delimited. If you are not connected to the internet, \code{pdb_download}
+#' will load the internal \code{pdb} data object and return that instead.
 #'
 #' @return \code{pdb_download} and \code{pdb_load} return \code{pdb} objects.
 #' \code{pdb_save} returns a \code{pdb} object invisibly.
 #'
-#' @importFrom utils read.table write.table
+#' @importFrom utils read.table write.table data
+#' @importFrom rlang caller_env
+#' @importFrom curl has_internet
 #' @export
 
 pdb_download <- function(save = TRUE, destination = NULL) {
+
+  if(!curl::has_internet()) {
+
+    message("Must be connected to the internet to download PADRINO!\n",
+            "Loading internal dataset instead.")
+
+    utils::data("pdb", envir = rlang::caller_env())
+    pdb <- get("pdb", envir = rlang::caller_env(),
+               inherits = FALSE)
+    return(pdb)
+
+  }
 
   if(save && is.null(destination)) {
 
@@ -55,7 +70,6 @@ pdb_download <- function(save = TRUE, destination = NULL) {
                                   encoding         = "UTF-8",
                                   quote            = "\"",
                                   header           = TRUE)
-
 
     names(out)[i] <- tab_nms[i]
   }
