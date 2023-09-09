@@ -13,7 +13,7 @@ vignette: >
 
 # Package Overview
 
-`Rpadrino` provides an interface to the PADRINO database. PADRINO houses metadata on published Integral Projection Models, and all the information needed to rebuild them. `Rpadrino` provides a set of functions that wrap around [`ipmr`](https://levisc8.github.io/ipmr/) so that you can rebuild these models using _R_. Additionally, there's some data downloading and management functionality, as well as tools to help report and cite studies used in an analysis.
+`Rpadrino` provides an interface to the PADRINO database. PADRINO houses metadata on published Integral Projection Models, and all the information needed to rebuild them. `Rpadrino` provides a set of functions that wrap around [`ipmr`](https://padrinoDB.github.io/ipmr/) so that you can rebuild these models using _R_. Additionally, there's some data downloading and management functionality, as well as tools to help report and cite studies used in an analysis.
 
 # Usage
 

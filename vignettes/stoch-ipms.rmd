@@ -147,7 +147,7 @@ protos$aaaa15_2$env_state <- lapply(
 
 ## Insert our environmental variation
 
-Next, we're going to insert our environmantal information using `ipmr`'s [`define_env_state()`](https://levisc8.github.io/ipmr/reference/define_star.html). In the call to `sample_env()`, we set `index = t`. `t` is an internal variable that `ipmr` defines to track what timestep of the simulation it is currently on. This will sample from the correct row of `use_env_data`. We also supply the `use_env_data` object and `sample_env()` function in the `data_list` slot so that they can be found when the simulation runs.
+Next, we're going to insert our environmantal information using `ipmr`'s [`define_env_state()`](https://padrinoDB.github.io/ipmr/reference/define_star.html). In the call to `sample_env()`, we set `index = t`. `t` is an internal variable that `ipmr` defines to track what timestep of the simulation it is currently on. This will sample from the correct row of `use_env_data`. We also supply the `use_env_data` object and `sample_env()` function in the `data_list` slot so that they can be found when the simulation runs.
 
 ```{r}
 

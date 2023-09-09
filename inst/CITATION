@@ -1,15 +1,44 @@
 citHeader("To cite Rpadrino in publications use:")
 
-citEntry(
-  entry    = "Article",
+bibentry(
+  bibtype  = "Article",
   title    = "Rpadrino: an R package to access and use PADRINO, an open access database of Integral Projection Models",
-  author   = "Levin SC, Evers S, Potter T, Guerrero MP, Childs DZ, Compagnoni A, Knight TM & Salguero-Gomez R ",
+  author   = c(
+    person(given = "Sam",
+           family = "Levin",
+           role = c("aut", "cre"),
+           email = "levisc8@gmail.com",
+           comment = c(ORCID = "0000-0002-3289-9925")),
+    person(given = "Aldo",
+           family = "Compagnoni",
+           email = "aldo.compagnoni@idiv.de",
+           role = "aut"),
+    person(given = "Dylan",
+           family = "Childs",
+           email = "d.childs@sheffield.ac.uk",
+           role = "aut"),
+    person(given = "Sanne",
+           family = "Evers",
+           email = "sanne.evers@idiv.de",
+           role = "aut"),
+    person(given = "Tomos",
+           family = "Potter",
+           email = "tomos.potter@zoo.ox.ac.uk",
+           role = "aut"),
+    person(given = "Roberto",
+           family = "Salguero-Gomez",
+           email = "rob.salguero@zoo.ox.ac.uk",
+           role = "aut"),
+    person(given = "Tiffany",
+           family = "Knight",
+           email = "tiffany.knight@idiv.de",
+           role = "aut")),
   journal  = "Methods in Ecology and Evolution",
   year     = "2022",
   volume   = "",
   number   = "",
   pages    = "",
-  url      = "https://doi.org/10.1111/2041-210X.13910",
+  doi      = "https://doi.org/10.1111/2041-210X.13910",
   textVersion = paste("Levin SC, Evers S, Potter T, Guerrero MP, Childs DZ, Compagnoni A, Knight TM & Salguero-Gomez R (2022). Rpadrino: an R package to access and use PADRINO, an open access database of Integral Projection Models. Methods in Ecology and Evolution. DOI: https://doi.org/10.1111/2041-210X.13910"
   )
 )
