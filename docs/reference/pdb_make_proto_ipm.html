@@ -18,7 +18,7 @@ Padrino Database tables."><!-- mathjax --><script src="https://cdnjs.cloudflare.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Rpadrino</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.4.9000</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.5</span>
       </span>
     </div>
 
@@ -80,28 +80,37 @@ Padrino Database tables.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">pdb_make_proto_ipm</span><span class="op">(</span><span class="va">pdb</span>, ipm_id <span class="op">=</span> <span class="cn">NULL</span>, det_stoch <span class="op">=</span> <span class="st">"det"</span>, kern_param <span class="op">=</span> <span class="st">"kern"</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">pdb_make_proto_ipm</span><span class="op">(</span><span class="va">pdb</span>, ipm_id <span class="op">=</span> <span class="cn">NULL</span>, det_stoch <span class="op">=</span> <span class="st">"det"</span>, kern_param <span class="op">=</span> <span class="st">"kern"</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>pdb</dt>
 <dd><p>A <code>pdb</code> object.</p></dd>
+
+
 <dt>ipm_id</dt>
 <dd><p>Optionally, one or more <code>ipm_id</code>'s to build. If empty,
 all models contained in the <code>pdb</code> object will be processed into
 <code>proto_ipm</code>'s.</p></dd>
+
+
 <dt>det_stoch</dt>
 <dd><p>A vector containing either <code>"det"</code> or <code>"stoch"</code>.
 This determines whether we want to construct a deterministic or stochastic
 model. Default is <code>"det"</code>. See details</p></dd>
+
+
 <dt>kern_param</dt>
 <dd><p>If <code>det_stoch = "stoch"</code>, then whether or not to construct
 a kernel resampled model, or a parameter resampled model. See details.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A list containing one or more <code>proto_ipms</code>. Names of the list
+    
+
+<p>A list containing one or more <code>proto_ipms</code>. Names of the list
 will correspond to <code>ipm_id</code>s.</p>
     </div>
     <div id="details">
@@ -141,7 +150,7 @@ for inference on stochastic population dynamics using Integral Projection Models
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

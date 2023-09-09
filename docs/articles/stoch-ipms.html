@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Rpadrino</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.4.9000</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.5</span>
       </span>
     </div>
 
@@ -90,7 +90,7 @@
 
       
 
-      </header><script src="stoch-ipms_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Modifying Stochastic IPMs in PADRINO</h1>
@@ -106,121 +106,153 @@
 <div class="section level2">
 <h2 id="modifying-the-environment-of-a-padrino-ipm">Modifying the environment of a PADRINO IPM<a class="anchor" aria-label="anchor" href="#modifying-the-environment-of-a-padrino-ipm"></a>
 </h2>
-<p>Sometimes, we may want to modify the environmental sequence of a stochastic IPM stored in PADRINO. As of now, there is no single interace for doing this, and so you may need to write some code on your own. This vignette is meant to provide a bit of help with that. It will make use of <code>Rpadrino</code> and <code>ipmr</code> to modify <code>proto_ipm</code>s, and doesn’t assume any prior knowledge of the data structure or of PADRINO itself (I don’t think, anyway. Let me know if I’m incorrect via a <a href="https://github.com/padrinoDB/Rpadrino/issues" class="external-link">Github Issue</a>).</p>
+<p>Sometimes, we may want to modify the environmental sequence of a
+stochastic IPM stored in PADRINO. As of now, there is no single interace
+for doing this, and so you may need to write some code on your own. This
+vignette is meant to provide a bit of help with that. It will make use
+of <code>Rpadrino</code> and <code>ipmr</code> to modify
+<code>proto_ipm</code>s, and doesn’t assume any prior knowledge of the
+data structure or of PADRINO itself (I don’t think, anyway. Let me know
+if I’m incorrect via a <a href="https://github.com/padrinoDB/Rpadrino/issues" class="external-link">Github
+Issue</a>).</p>
 <div class="section level3">
 <h3 id="finding-parameter-resampled-ipms">Finding parameter-resampled IPMs<a class="anchor" aria-label="anchor" href="#finding-parameter-resampled-ipms"></a>
 </h3>
-<p>These aren’t explicitly marked in the Metadata table. However, we can find them by searching the <code>EnvironmentalVariables</code> table, specifically the <code>ipm_id</code> column.</p>
+<p>These aren’t explicitly marked in the Metadata table. However, we can
+find them by searching the <code>EnvironmentalVariables</code> table,
+specifically the <code>ipm_id</code> column.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/padrinoDB/Rpadrino" class="external-link">Rpadrino</a></span><span class="op">)</span>
-
-<span class="va">pdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/in_out.html">pdb_download</a></span><span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">pdb</span><span class="op">$</span><span class="va">EnvironmentalVariables</span><span class="op">$</span><span class="va">ipm_id</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## [1] "aaaa15" "aaaa16" "aaaa21" "aaaa54" "aaaa59"</span></code></pre>
-<p>For now, we’ll just work with the two IPMs from Westerband et al. (2016):</p>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/padrinoDB/Rpadrino" class="external-link">Rpadrino</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">pdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/in_out.html">pdb_download</a></span><span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">pdb</span><span class="op">$</span><span class="va">EnvironmentalVariables</span><span class="op">$</span><span class="va">ipm_id</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] "aaaa15" "aaaa16" "aaaa21" "aaaa54" "aaaa59"</span></span></code></pre>
+<p>For now, we’ll just work with the two IPMs from Westerband et
+al. (2016):</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">stoch_ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"aaaa15"</span>, <span class="st">"aaaa16"</span><span class="op">)</span></code></pre></div>
-<p>Ok, now we have the data we want to work with, we can check out various ways of modifying them to explore the questions we want to answer!</p>
+<code class="sourceCode R"><span><span class="va">stoch_ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"aaaa15"</span>, <span class="st">"aaaa16"</span><span class="op">)</span></span></code></pre></div>
+<p>Ok, now we have the data we want to work with, we can check out
+various ways of modifying them to explore the questions we want to
+answer!</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="re-set-environmental-variables-w-pre-defined-sequence-of-values">re-set environmental variables w/ pre-defined sequence of values<a class="anchor" aria-label="anchor" href="#re-set-environmental-variables-w-pre-defined-sequence-of-values"></a>
+<h2 id="re-set-environmental-variables-w-pre-defined-sequence-of-values">re-set environmental variables w/ pre-defined sequence of
+values<a class="anchor" aria-label="anchor" href="#re-set-environmental-variables-w-pre-defined-sequence-of-values"></a>
 </h2>
-<p>First, we’ll examine how to re-set IPMs to sample from a pre-determined sequence of environmental values. This is useful for exploring things like, for example, environmental autocorrelation and/or enhancing reproducibility of our subsequent analyses.</p>
+<p>First, we’ll examine how to re-set IPMs to sample from a
+pre-determined sequence of environmental values. This is useful for
+exploring things like, for example, environmental autocorrelation and/or
+enhancing reproducibility of our subsequent analyses.</p>
 <p>This will require a few steps:</p>
 <ol style="list-style-type: decimal">
-<li><p>Create <code>proto_ipm</code> objects from the PADRINO data.</p></li>
-<li><p>Remove the current stochastic environmental state expressions</p></li>
-<li><p>Replace them with something that will generate the values we want.</p></li>
+<li><p>Create <code>proto_ipm</code> objects from the PADRINO
+data.</p></li>
+<li><p>Remove the current stochastic environmental state
+expressions</p></li>
+<li><p>Replace them with something that will generate the values we
+want.</p></li>
 </ol>
 <div class="section level3">
 <h3 id="create-the-proto_ipms-and-find-the-stochastic-parameter-names">Create the proto_ipm’s and find the stochastic parameter names<a class="anchor" aria-label="anchor" href="#create-the-proto_ipms-and-find-the-stochastic-parameter-names"></a>
 </h3>
-<p>First, we should investigate what’s in each model by creating and printing the <code>proto_ipm</code>s.</p>
+<p>First, we should investigate what’s in each model by creating and
+printing the <code>proto_ipm</code>s.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Step 1 - create proto_ipms, and then figure out which parameters in the</span>
-<span class="co"># vital rate expressions we need to work with.</span>
-
-<span class="va">protos</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pdb_make_proto_ipm.html">pdb_make_proto_ipm</a></span><span class="op">(</span><span class="va">pdb</span>, <span class="va">stoch_ids</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## 'ipm_id' aaaa15 has resampled parameters, resetting 'det_stoch' to 'stoch' and </span>
-<span class="co">## 'kern_param' to 'param'!</span>
-<span class="co">## Default number of iterations for 'pdb_make_ipm' will be 50. Modify this behavior </span>
-<span class="co">## with the 'addl_args' argument of 'pdb_make_ipm'.</span></code></pre>
-<pre><code><span class="co">## 'ipm_id' aaaa16 has resampled parameters, resetting 'det_stoch' to 'stoch' and </span>
-<span class="co">## 'kern_param' to 'param'!</span>
-<span class="co">## Default number of iterations for 'pdb_make_ipm' will be 50. Modify this behavior </span>
-<span class="co">## with the 'addl_args' argument of 'pdb_make_ipm'.</span></code></pre>
+<code class="sourceCode R"><span><span class="co"># Step 1 - create proto_ipms, and then figure out which parameters in the</span></span>
+<span><span class="co"># vital rate expressions we need to work with.</span></span>
+<span></span>
+<span><span class="va">protos</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pdb_make_proto_ipm.html">pdb_make_proto_ipm</a></span><span class="op">(</span><span class="va">pdb</span>, <span class="va">stoch_ids</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## 'ipm_id' aaaa15 has resampled parameters, resetting 'det_stoch' to 'stoch' and </span></span>
+<span><span class="co">## 'kern_param' to 'param'!</span></span>
+<span><span class="co">## Default number of iterations for 'pdb_make_ipm' will be 50. Modify this behavior </span></span>
+<span><span class="co">## with the 'addl_args' argument of 'pdb_make_ipm'.</span></span></code></pre>
+<pre><code><span><span class="co">## 'ipm_id' aaaa16 has resampled parameters, resetting 'det_stoch' to 'stoch' and </span></span>
+<span><span class="co">## 'kern_param' to 'param'!</span></span>
+<span><span class="co">## Default number of iterations for 'pdb_make_ipm' will be 50. Modify this behavior </span></span>
+<span><span class="co">## with the 'addl_args' argument of 'pdb_make_ipm'.</span></span></code></pre>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">protos</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></code></pre></div>
-<pre><code><span class="co">## A simple, density independent, stochastic, parameter-resampled proto_ipm with 2 kernels defined:</span>
-<span class="co">##  P, F </span>
-<span class="co">## </span>
-<span class="co">## Kernel formulae:</span>
-<span class="co">## </span>
-<span class="co">## P: s * g</span>
-<span class="co">## F: f</span>
-<span class="co">## </span>
-<span class="co">## Vital rates:</span>
-<span class="co">## </span>
-<span class="co">## s: 1/(1 + exp(-(s_0 + s_1 * leafarea_1 + s_2 * j + s_3 * leafarea_1 * </span>
-<span class="co">##     j)))</span>
-<span class="co">## g_mu: g_0 + g_1 * leafarea_1 + g_2 * j + g_3 * A_max + g_4 * leafarea_1 * </span>
-<span class="co">##     j + g_5 * leafarea_1 * A_max + g_6 * j * A_max + g_7 * leafarea_1 * </span>
-<span class="co">##     j * A_max</span>
-<span class="co">## g: dnorm(leafarea_2, g_mu, g_sd)</span>
-<span class="co">## f: r_p * r_o * n_f * n_s * s_s * sdl_s * sdl_size</span>
-<span class="co">## r_p: 1/(1 + exp(-(r_0 + r_1 * leafarea_1 + r_2 * j + r_3 * leafarea_1 * </span>
-<span class="co">##     j)))</span>
-<span class="co">## r_o: exp(i_0 + i_1 * leafarea_1 + i_2 * j + i_3 * leafarea_1 * j)</span>
-<span class="co">## s_s: ifelse(j &lt; 6, s_sl, s_sh)</span>
-<span class="co">## sdl_s: ifelse(j &lt; 6, sdl_sl, sdl_sh)</span>
-<span class="co">## sdl_size: ifelse(j &lt; 6, sdl_m_l, sdl_m_h)</span>
-<span class="co">## sdl_m_l: dnorm(leafarea_2, sdl_meanl, sdl_sdl)</span>
-<span class="co">## sdl_m_h: dnorm(leafarea_2, sdl_meanh, sdl_sdh)</span>
-<span class="co">## </span>
-<span class="co">## Parameter names:</span>
-<span class="co">## </span>
-<span class="co">##  [1] "s_0"       "s_1"       "s_2"       "s_3"       "g_0"       "g_1"      </span>
-<span class="co">##  [7] "g_2"       "g_3"       "g_4"       "g_5"       "g_6"       "g_7"      </span>
-<span class="co">## [13] "g_sd"      "r_0"       "r_1"       "r_2"       "r_3"       "i_0"      </span>
-<span class="co">## [19] "i_1"       "i_2"       "i_3"       "n_f"       "n_s"       "s_sl"     </span>
-<span class="co">## [25] "s_sh"      "sdl_sl"    "sdl_sh"    "sdl_meanl" "sdl_meanh" "sdl_sdl"  </span>
-<span class="co">## [31] "sdl_sdh"  </span>
-<span class="co">## </span>
-<span class="co">## All parameters in vital rate expressions found in 'data_list':  FALSE</span>
-<span class="co">## Did not test parameters in 'define_env_state()'.</span>
-<span class="co">## </span>
-<span class="co">## Items in vital rate expressions not found in 'data_list':</span>
-<span class="co">## </span>
-<span class="co">## *P*</span>
-<span class="co">## j</span>
-<span class="co">## A_max </span>
-<span class="co">## </span>
-<span class="co">## *F*</span>
-<span class="co">## j </span>
-<span class="co">## </span>
-<span class="co">## This may be because 'define_domains()' has not yet been called.</span>
-<span class="co">##  If it has been called, then double check the model definition and 'data_list'.</span>
-<span class="co">## </span>
-<span class="co">## </span>
-<span class="co">## Domains for state variables:</span>
-<span class="co">## </span>
-<span class="co">## leafarea: lower_bound = 0.57, upper_bound = 11.9, n_meshpoints = 50</span>
-<span class="co">## </span>
-<span class="co">## Population states defined:</span>
-<span class="co">## </span>
-<span class="co">## n_leafarea: Pre-defined population state.</span>
-<span class="co">## </span>
-<span class="co">## Internally generated model iteration procedure:</span>
-<span class="co">## </span>
-<span class="co">## n_leafarea_t_1: right_mult(kernel = P, vectr = n_leafarea_t) + right_mult(kernel = F, </span>
-<span class="co">##     vectr = n_leafarea_t)</span></code></pre>
-<p>It seems that <code>j</code> and <code>A_max</code> are the two that we need to create sequences for. Let’s double check the <code>EnvironmentalVariables</code> table to be sure:</p>
+<code class="sourceCode R"><span><span class="va">protos</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
+<pre><code><span><span class="co">## A simple, density independent, stochastic, parameter-resampled proto_ipm with 2 kernels defined:</span></span>
+<span><span class="co">##  P, F </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Kernel formulae:</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## P: s * g</span></span>
+<span><span class="co">## F: f</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Vital rates:</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## s: 1/(1 + exp(-(s_0 + s_1 * leafarea_1 + s_2 * j + s_3 * leafarea_1 * </span></span>
+<span><span class="co">##     j)))</span></span>
+<span><span class="co">## g_mu: g_0 + g_1 * leafarea_1 + g_2 * j + g_3 * A_max + g_4 * leafarea_1 * </span></span>
+<span><span class="co">##     j + g_5 * leafarea_1 * A_max + g_6 * j * A_max + g_7 * leafarea_1 * </span></span>
+<span><span class="co">##     j * A_max</span></span>
+<span><span class="co">## g: dnorm(leafarea_2, g_mu, g_sd)</span></span>
+<span><span class="co">## f: r_p * r_o * n_f * n_s * s_s * sdl_s * sdl_size</span></span>
+<span><span class="co">## r_p: 1/(1 + exp(-(r_0 + r_1 * leafarea_1 + r_2 * j + r_3 * leafarea_1 * </span></span>
+<span><span class="co">##     j)))</span></span>
+<span><span class="co">## r_o: exp(i_0 + i_1 * leafarea_1 + i_2 * j + i_3 * leafarea_1 * j)</span></span>
+<span><span class="co">## s_s: ifelse(j &lt; 6, s_sl, s_sh)</span></span>
+<span><span class="co">## sdl_s: ifelse(j &lt; 6, sdl_sl, sdl_sh)</span></span>
+<span><span class="co">## sdl_size: ifelse(j &lt; 6, sdl_m_l, sdl_m_h)</span></span>
+<span><span class="co">## sdl_m_l: dnorm(leafarea_2, sdl_meanl, sdl_sdl)</span></span>
+<span><span class="co">## sdl_m_h: dnorm(leafarea_2, sdl_meanh, sdl_sdh)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Parameter names:</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  [1] "s_0"       "s_1"       "s_2"       "s_3"       "g_0"       "g_1"      </span></span>
+<span><span class="co">##  [7] "g_2"       "g_3"       "g_4"       "g_5"       "g_6"       "g_7"      </span></span>
+<span><span class="co">## [13] "g_sd"      "r_0"       "r_1"       "r_2"       "r_3"       "i_0"      </span></span>
+<span><span class="co">## [19] "i_1"       "i_2"       "i_3"       "n_f"       "n_s"       "s_sl"     </span></span>
+<span><span class="co">## [25] "s_sh"      "sdl_sl"    "sdl_sh"    "sdl_meanl" "sdl_meanh" "sdl_sdl"  </span></span>
+<span><span class="co">## [31] "sdl_sdh"  </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## All parameters in vital rate expressions found in 'data_list':  FALSE</span></span>
+<span><span class="co">## Did not test parameters in 'define_env_state()'.</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Items in vital rate expressions not found in 'data_list':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## *P*</span></span>
+<span><span class="co">## j</span></span>
+<span><span class="co">## A_max </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## *F*</span></span>
+<span><span class="co">## j </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## This may be because 'define_domains()' has not yet been called.</span></span>
+<span><span class="co">##  If it has been called, then double check the model definition and 'data_list'.</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Domains for state variables:</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## leafarea: lower_bound = 0.57, upper_bound = 11.9, n_meshpoints = 50</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Population states defined:</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## n_leafarea: Pre-defined population state.</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Internally generated model iteration procedure:</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## n_leafarea_t_1: right_mult(kernel = P, vectr = n_leafarea_t) + right_mult(kernel = F, </span></span>
+<span><span class="co">##     vectr = n_leafarea_t)</span></span></code></pre>
+<p>It seems that <code>j</code> and <code>A_max</code> are the two that
+we need to create sequences for. Let’s double check the
+<code>EnvironmentalVariables</code> table to be sure:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">pdb</span><span class="op">$</span><span class="va">EnvironmentalVariables</span><span class="op">[</span><span class="va">pdb</span><span class="op">$</span><span class="va">EnvironmentalVariables</span><span class="op">$</span><span class="va">ipm_id</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">stoch_ids</span>, <span class="op">]</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">pdb</span><span class="op">$</span><span class="va">EnvironmentalVariables</span><span class="op">[</span><span class="va">pdb</span><span class="op">$</span><span class="va">EnvironmentalVariables</span><span class="op">$</span><span class="va">ipm_id</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">stoch_ids</span>, <span class="op">]</span></span></code></pre></div>
 <table class="table">
-<caption>EnvironmentalVariables Table, subsetted using ‘stoch_ids’</caption>
+<caption>EnvironmentalVariables Table, subsetted using
+‘stoch_ids’</caption>
+<colgroup>
+<col width="8%">
+<col width="15%">
+<col width="15%">
+<col width="12%">
+<col width="33%">
+<col width="14%">
+</colgroup>
 <thead><tr class="header">
 <th align="left">ipm_id</th>
 <th align="left">env_variable</th>
@@ -316,99 +348,125 @@
 <div class="section level3">
 <h3 id="create-new-stochastic-parameter-values">Create new stochastic parameter values<a class="anchor" aria-label="anchor" href="#create-new-stochastic-parameter-values"></a>
 </h3>
-<p>Next, we need to simulate values for <code>j</code> and <code>A_max</code>. This next chunk replicates what PADRINO is doing in a simulation, it just does the sampling ahead of time. In your own code, you’ll want to replace it with, say, creating autocorrelated sequences of vectors, or a specific climate change scenario.</p>
+<p>Next, we need to simulate values for <code>j</code> and
+<code>A_max</code>. This next chunk replicates what PADRINO is doing in
+a simulation, it just does the sampling ahead of time. In your own code,
+you’ll want to replace it with, say, creating autocorrelated sequences
+of vectors, or a specific climate change scenario.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">use_j</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, size <span class="op">=</span> <span class="fl">50</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="va">use_a</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">5</span>, <span class="fl">8</span><span class="op">)</span>
-
-<span class="co"># The names of this data.frame need to be the same as the names of the variables</span>
-<span class="co"># we're substituting in the IPM. Otherwise, the function we write in the next</span>
-<span class="co"># block won't work!</span>
-
-<span class="va">use_env_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>j <span class="op">=</span> <span class="va">use_j</span>, A_max <span class="op">=</span> <span class="va">use_a</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">use_j</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, size <span class="op">=</span> <span class="fl">50</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">use_a</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">5</span>, <span class="fl">8</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># The names of this data.frame need to be the same as the names of the variables</span></span>
+<span><span class="co"># we're substituting in the IPM. Otherwise, the function we write in the next</span></span>
+<span><span class="co"># block won't work!</span></span>
+<span></span>
+<span><span class="va">use_env_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>j <span class="op">=</span> <span class="va">use_j</span>, A_max <span class="op">=</span> <span class="va">use_a</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="write-our-sampling-function">Write our sampling function<a class="anchor" aria-label="anchor" href="#write-our-sampling-function"></a>
 </h3>
-<p>We now have our values! But how to insert them and then run the model? We need to write a function that samples these values in the order we want, and then sets their names correctly. It should return a named list. For this example, we’ll assume that above, we created them in the correct order, and that each row of the resulting <code>data.frame</code> corresponds to a time step. For now, don’t worry about where <code>index</code> will come from - that will become clear shortly.</p>
+<p>We now have our values! But how to insert them and then run the
+model? We need to write a function that samples these values in the
+order we want, and then sets their names correctly. It should return a
+named list. For this example, we’ll assume that above, we created them
+in the correct order, and that each row of the resulting
+<code>data.frame</code> corresponds to a time step. For now, don’t worry
+about where <code>index</code> will come from - that will become clear
+shortly.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">sample_env</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">env_data</span>, <span class="va">index</span><span class="op">)</span> <span class="op">{</span>
-
-  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">as.list</a></span><span class="op">(</span><span class="va">env_data</span><span class="op">[</span><span class="va">index</span>, <span class="op">]</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">env_data</span><span class="op">)</span><span class="op">)</span>
-
-<span class="op">}</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">sample_env</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">env_data</span>, <span class="va">index</span><span class="op">)</span> <span class="op">{</span></span>
+<span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">as.list</a></span><span class="op">(</span><span class="va">env_data</span><span class="op">[</span><span class="va">index</span>, <span class="op">]</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">env_data</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="op">}</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="remove-the-current-environmental-variation">Remove the current environmental variation<a class="anchor" aria-label="anchor" href="#remove-the-current-environmental-variation"></a>
 </h3>
-<p>We’re ready to begin working with the actual <code>proto_ipm</code> objects! For now, we’ll just modify the first one. The first step is to eliminate the current environmental information from the <code>proto_ipm</code>. That information is stored in the <code>env_state</code> column. By default, it is <code>NA</code> unless there is a continuous environmental variation, so we want to re-set it to that state before we insert our own information.</p>
+<p>We’re ready to begin working with the actual <code>proto_ipm</code>
+objects! For now, we’ll just modify the first one. The first step is to
+eliminate the current environmental information from the
+<code>proto_ipm</code>. That information is stored in the
+<code>env_state</code> column. By default, it is <code>NA</code> unless
+there is a continuous environmental variation, so we want to re-set it
+to that state before we insert our own information.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># For this demonstration, we'll create copy in the 'protos' object and overwrite</span>
-<span class="co"># that.</span>
-
-<span class="va">protos</span><span class="op">$</span><span class="va">aaaa15_2</span> <span class="op">&lt;-</span> <span class="va">protos</span><span class="op">$</span><span class="va">aaaa15</span>
-
-<span class="va">protos</span><span class="op">$</span><span class="va">aaaa15_2</span><span class="op">$</span><span class="va">env_state</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span>
-  <span class="va">protos</span><span class="op">$</span><span class="va">aaaa15_2</span><span class="op">$</span><span class="va">env_state</span>, 
-  <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="cn">NA</span><span class="op">)</span>
-<span class="op">)</span>
-
-<span class="co"># In practice, you may just want to to overwrite the proto_ipm object in place.</span>
-<span class="co"># We can still recover the object by re-building the proto_ipm list from the</span>
-<span class="co"># intact version of the 'pdb' object.</span>
-
-<span class="co"># protos$aaaa15$env_state &lt;- lapply(</span>
-<span class="co">#   protos$aaaa15$env_state, </span>
-<span class="co">#   function(x) return(NA)</span>
-<span class="co"># )</span>
-
-<span class="co"># If you want to do get rid of both at the same time, use a double-lapply:</span>
-
-<span class="co"># protos &lt;- lapply(protos, </span>
-<span class="co">#                  function(x) {</span>
-<span class="co">#                    x$env_state &lt;- lapply(x$env_state, </span>
-<span class="co">#                                          function(y) return(NA))</span>
-<span class="co">#                    </span>
-<span class="co"># })</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># For this demonstration, we'll create copy in the 'protos' object and overwrite</span></span>
+<span><span class="co"># that.</span></span>
+<span></span>
+<span><span class="va">protos</span><span class="op">$</span><span class="va">aaaa15_2</span> <span class="op">&lt;-</span> <span class="va">protos</span><span class="op">$</span><span class="va">aaaa15</span></span>
+<span></span>
+<span><span class="va">protos</span><span class="op">$</span><span class="va">aaaa15_2</span><span class="op">$</span><span class="va">env_state</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span></span>
+<span>  <span class="va">protos</span><span class="op">$</span><span class="va">aaaa15_2</span><span class="op">$</span><span class="va">env_state</span>, </span>
+<span>  <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="cn">NA</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># In practice, you may just want to to overwrite the proto_ipm object in place.</span></span>
+<span><span class="co"># We can still recover the object by re-building the proto_ipm list from the</span></span>
+<span><span class="co"># intact version of the 'pdb' object.</span></span>
+<span></span>
+<span><span class="co"># protos$aaaa15$env_state &lt;- lapply(</span></span>
+<span><span class="co">#   protos$aaaa15$env_state, </span></span>
+<span><span class="co">#   function(x) return(NA)</span></span>
+<span><span class="co"># )</span></span>
+<span></span>
+<span><span class="co"># If you want to do get rid of both at the same time, use a double-lapply:</span></span>
+<span></span>
+<span><span class="co"># protos &lt;- lapply(protos, </span></span>
+<span><span class="co">#                  function(x) {</span></span>
+<span><span class="co">#                    x$env_state &lt;- lapply(x$env_state, </span></span>
+<span><span class="co">#                                          function(y) return(NA))</span></span>
+<span><span class="co">#                    </span></span>
+<span><span class="co"># })</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="insert-our-environmental-variation">Insert our environmental variation<a class="anchor" aria-label="anchor" href="#insert-our-environmental-variation"></a>
 </h3>
-<p>Next, we’re going to insert our environmantal information using <code>ipmr</code>’s <a href="https://levisc8.github.io/ipmr/reference/define_star.html" class="external-link"><code>define_env_state()</code></a>. In the call to <code>sample_env()</code>, we set <code>index = t</code>. <code>t</code> is an internal variable that <code>ipmr</code> defines to track what timestep of the simulation it is currently on. This will sample from the correct row of <code>use_env_data</code>. We also supply the <code>use_env_data</code> object and <code>sample_env()</code> function in the <code>data_list</code> slot so that they can be found when the simulation runs.</p>
+<p>Next, we’re going to insert our environmantal information using
+<code>ipmr</code>’s <a href="https://levisc8.github.io/ipmr/reference/define_star.html" class="external-link"><code>define_env_state()</code></a>.
+In the call to <code>sample_env()</code>, we set <code>index = t</code>.
+<code>t</code> is an internal variable that <code>ipmr</code> defines to
+track what timestep of the simulation it is currently on. This will
+sample from the correct row of <code>use_env_data</code>. We also supply
+the <code>use_env_data</code> object and <code>sample_env()</code>
+function in the <code>data_list</code> slot so that they can be found
+when the simulation runs.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Replace the environemntal set up with the one we just created using ipmrs'</span>
-<span class="co"># define_env_state.</span>
-
-<span class="va">protos</span><span class="op">$</span><span class="va">aaaa15_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://levisc8.github.io/ipmr/reference/define_star.html" class="external-link">define_env_state</a></span><span class="op">(</span>
-  <span class="va">protos</span><span class="op">$</span><span class="va">aaaa15_2</span>,
-  env_vars <span class="op">=</span> <span class="fu">sample_env</span><span class="op">(</span><span class="va">use_env_data</span>, index <span class="op">=</span> <span class="va">t</span><span class="op">)</span>,
-  data_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>use_env_data <span class="op">=</span> <span class="va">use_env_data</span>,
-                   sample_env   <span class="op">=</span> <span class="va">sample_env</span><span class="op">)</span>
-<span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Replace the environemntal set up with the one we just created using ipmrs'</span></span>
+<span><span class="co"># define_env_state.</span></span>
+<span></span>
+<span><span class="va">protos</span><span class="op">$</span><span class="va">aaaa15_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://levisc8.github.io/ipmr/reference/define_star.html" class="external-link">define_env_state</a></span><span class="op">(</span></span>
+<span>  <span class="va">protos</span><span class="op">$</span><span class="va">aaaa15_2</span>,</span>
+<span>  env_vars <span class="op">=</span> <span class="fu">sample_env</span><span class="op">(</span><span class="va">use_env_data</span>, index <span class="op">=</span> <span class="va">t</span><span class="op">)</span>,</span>
+<span>  data_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>use_env_data <span class="op">=</span> <span class="va">use_env_data</span>,</span>
+<span>                   sample_env   <span class="op">=</span> <span class="va">sample_env</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="rebuild-the-models">Rebuild the models<a class="anchor" aria-label="anchor" href="#rebuild-the-models"></a>
 </h3>
 <p>We can rebuild the models now using <code><a href="../reference/pdb_make_ipm.html">pdb_make_ipm()</a></code>:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ipms</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pdb_make_ipm.html">pdb_make_ipm</a></span><span class="op">(</span><span class="va">protos</span><span class="op">)</span>
-
-<span class="fu"><a href="https://levisc8.github.io/ipmr/reference/lambda.html" class="external-link">lambda</a></span><span class="op">(</span><span class="va">ipms</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## $aaaa15</span>
-<span class="co">##     lambda </span>
-<span class="co">## -0.1029694 </span>
-<span class="co">## </span>
-<span class="co">## $aaaa16</span>
-<span class="co">##    lambda </span>
-<span class="co">## 0.2730637 </span>
-<span class="co">## </span>
-<span class="co">## $aaaa15_2</span>
-<span class="co">##     lambda </span>
-<span class="co">## -0.1034236</span></code></pre>
+<code class="sourceCode R"><span><span class="va">ipms</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pdb_make_ipm.html">pdb_make_ipm</a></span><span class="op">(</span><span class="va">protos</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://levisc8.github.io/ipmr/reference/lambda.html" class="external-link">lambda</a></span><span class="op">(</span><span class="va">ipms</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## $aaaa15</span></span>
+<span><span class="co">##     lambda </span></span>
+<span><span class="co">## -0.1031576 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## $aaaa16</span></span>
+<span><span class="co">##    lambda </span></span>
+<span><span class="co">## 0.2796479 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## $aaaa15_2</span></span>
+<span><span class="co">##     lambda </span></span>
+<span><span class="co">## -0.1034785</span></span></code></pre>
 <table style="width:70%;" class="table">
 <caption>
-Environmental covariate sequence from unaltered PADRINO data (first 10 iterations)
+Environmental covariate sequence from unaltered PADRINO data (first 10
+iterations)
 </caption>
 <thead><tr>
 <th style="text-align:right;">
@@ -421,34 +479,10 @@ A_max
 <tbody>
 <tr>
 <td style="text-align:right;">
-5
+2
 </td>
 <td style="text-align:right;">
-5.327687
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-6.599286
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:right;">
-5.293593
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-6.180307
+5.762092
 </td>
 </tr>
 <tr>
@@ -456,7 +490,15 @@ A_max
 2
 </td>
 <td style="text-align:right;">
-6.246389
+6.767926
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+6.716460
 </td>
 </tr>
 <tr>
@@ -464,15 +506,7 @@ A_max
 4
 </td>
 <td style="text-align:right;">
-5.211391
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:right;">
-6.404023
+6.566825
 </td>
 </tr>
 <tr>
@@ -480,15 +514,23 @@ A_max
 3
 </td>
 <td style="text-align:right;">
-6.615793
+5.812691
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-2
+4
 </td>
 <td style="text-align:right;">
-6.152322
+6.118679
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+5.086790
 </td>
 </tr>
 <tr>
@@ -496,14 +538,31 @@ A_max
 5
 </td>
 <td style="text-align:right;">
-5.452772
+6.005182
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+5.139939
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+6.746094
 </td>
 </tr>
 </tbody>
 </table>
 <table style="width:70%;" class="table">
 <caption>
-Environmental covariate sequence from custom function (first 10 iterations)
+Environmental covariate sequence from custom function (first 10
+iterations)
 </caption>
 <thead><tr>
 <th style="text-align:right;">
@@ -516,10 +575,18 @@ A_max
 <tbody>
 <tr>
 <td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+6.326800
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
 5
 </td>
 <td style="text-align:right;">
-6.231076
+6.005297
 </td>
 </tr>
 <tr>
@@ -527,31 +594,7 @@ A_max
 2
 </td>
 <td style="text-align:right;">
-7.378787
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:right;">
-6.659785
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:right;">
-5.277051
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-7.198366
+6.903077
 </td>
 </tr>
 <tr>
@@ -559,31 +602,7 @@ A_max
 4
 </td>
 <td style="text-align:right;">
-5.316939
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-6.647386
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:right;">
-5.031647
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-7.511555
+5.497079
 </td>
 </tr>
 <tr>
@@ -591,30 +610,96 @@ A_max
 1
 </td>
 <td style="text-align:right;">
-6.451946
+6.027610
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+5.466917
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5.847190
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+7.977720
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+6.132026
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+6.828996
 </td>
 </tr>
 </tbody>
 </table>
-<p>And finally, a quick check to verify that our pre-defined sequence is indeed the one that got used for <code>aaaa15_2</code>:</p>
+<p>And finally, a quick check to verify that our pre-defined sequence is
+indeed the one that got used for <code>aaaa15_2</code>:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">ipms</span><span class="op">$</span><span class="va">aaaa15_2</span><span class="op">$</span><span class="va">env_seq</span><span class="op">$</span><span class="va">j</span>,     <span class="va">use_env_data</span><span class="op">$</span><span class="va">j</span><span class="op">)</span> </code></pre></div>
-<pre><code><span class="co">## [1] TRUE</span></code></pre>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">ipms</span><span class="op">$</span><span class="va">aaaa15_2</span><span class="op">$</span><span class="va">env_seq</span><span class="op">$</span><span class="va">j</span>,     <span class="va">use_env_data</span><span class="op">$</span><span class="va">j</span><span class="op">)</span> </span></code></pre></div>
+<pre><code><span><span class="co">## [1] TRUE</span></span></code></pre>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">ipms</span><span class="op">$</span><span class="va">aaaa15_2</span><span class="op">$</span><span class="va">env_seq</span><span class="op">$</span><span class="va">A_max</span>, <span class="va">use_env_data</span><span class="op">$</span><span class="va">A_max</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## [1] TRUE</span></code></pre>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">ipms</span><span class="op">$</span><span class="va">aaaa15_2</span><span class="op">$</span><span class="va">env_seq</span><span class="op">$</span><span class="va">A_max</span>, <span class="va">use_env_data</span><span class="op">$</span><span class="va">A_max</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] TRUE</span></span></code></pre>
 </div>
 </div>
 <div class="section level2">
 <h2 id="modifying-parameter-values">Modifying parameter values<a class="anchor" aria-label="anchor" href="#modifying-parameter-values"></a>
 </h2>
-<p>This is a bit simpler, because we just need to make some alterations to a table, rather than creating new expressions. Unfortunately, we can’t use the <code>parameters()&lt;-</code> interface for environmental variation because that setter function does not modify the right place in the <code>proto_ipm</code> object.</p>
+<p>This is a bit simpler, because we just need to make some alterations
+to a table, rather than creating new expressions. Unfortunately, we
+can’t use the <code>parameters()&lt;-</code> interface for environmental
+variation because that setter function does not modify the right place
+in the <code>proto_ipm</code> object.</p>
 <div class="section level3">
 <h3 id="identify-parameter-names">Identify parameter names<a class="anchor" aria-label="anchor" href="#identify-parameter-names"></a>
 </h3>
-<p>The <code>env_variable</code> column of the <code>EnvironmentalVariables</code> usually provides a <em>very</em> brief summary of what these parameters are, but not always. In general, PADRINO notation in the <code>vr_expr_name</code> column mirrors the publication notation. So to understand the meaning of <code>A_max</code>, we need to consult the original publication (Westerband, A. C., Horvitz, C. C. (2017). Photosynthetic rates influence the population dynamics of understory herbs in stochastic light environments. Ecology, 98 (2): 370-381). Upon doing this, we see that <code>A_max</code> corresponds to photosynthetic capacity. For this instance, we’ll pretend that we want to set the lower limit of <code>A_max</code> to a smaller value, and the upper limit to a higher value.</p>
+<p>The <code>env_variable</code> column of the
+<code>EnvironmentalVariables</code> usually provides a <em>very</em>
+brief summary of what these parameters are, but not always. In general,
+PADRINO notation in the <code>vr_expr_name</code> column mirrors the
+publication notation. So to understand the meaning of
+<code>A_max</code>, we need to consult the original publication
+(Westerband, A. C., Horvitz, C. C. (2017). Photosynthetic rates
+influence the population dynamics of understory herbs in stochastic
+light environments. Ecology, 98 (2): 370-381). Upon doing this, we see
+that <code>A_max</code> corresponds to photosynthetic capacity. For this
+instance, we’ll pretend that we want to set the lower limit of
+<code>A_max</code> to a smaller value, and the upper limit to a higher
+value.</p>
 <table class="table">
-<caption>EnvironmentalVariables table, subsetted using ‘stoch_ids’</caption>
+<caption>EnvironmentalVariables table, subsetted using
+‘stoch_ids’</caption>
+<colgroup>
+<col width="8%">
+<col width="15%">
+<col width="15%">
+<col width="12%">
+<col width="33%">
+<col width="14%">
+</colgroup>
 <thead><tr class="header">
 <th align="left">ipm_id</th>
 <th align="left">env_variable</th>
@@ -706,136 +791,191 @@ A_max
 </tr>
 </tbody>
 </table>
-<p>We can see that <code>A_max</code> is given by a Uniform distribution with parameters <code>A_max_low</code> and <code>A_max_high</code>. These two, as their names imply, are the lower and upper limits for <code>A_max</code>, respectively. We can modify these just as we do any other <code>data.frame</code>. We’ll create a copy of the <code>pdb</code> object to modify, but you can modify it in place and re-download an unaltered copy, or save the unaltered copy before altering it to preserve the original version. Again, we’ll only modify <code>aaaa15</code>.</p>
+<p>We can see that <code>A_max</code> is given by a Uniform distribution
+with parameters <code>A_max_low</code> and <code>A_max_high</code>.
+These two, as their names imply, are the lower and upper limits for
+<code>A_max</code>, respectively. We can modify these just as we do any
+other <code>data.frame</code>. We’ll create a copy of the
+<code>pdb</code> object to modify, but you can modify it in place and
+re-download an unaltered copy, or save the unaltered copy before
+altering it to preserve the original version. Again, we’ll only modify
+<code>aaaa15</code>.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">pdb_2</span> <span class="op">&lt;-</span> <span class="va">pdb</span>
-
-<span class="va">inds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">pdb_2</span><span class="op">$</span><span class="va">EnvironmentalVariables</span><span class="op">$</span><span class="va">vr_expr_name</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"a_max_"</span>,
-                                                                    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"low"</span>, 
-                                                                      <span class="st">"high"</span><span class="op">)</span><span class="op">)</span> <span class="op">&amp;</span>
-                <span class="va">pdb_2</span><span class="op">$</span><span class="va">EnvironmentalVariables</span><span class="op">$</span><span class="va">ipm_id</span> <span class="op">==</span> <span class="st">"aaaa15"</span><span class="op">)</span>
-
-<span class="va">pdb_2</span><span class="op">$</span><span class="va">EnvironmentalVariables</span><span class="op">$</span><span class="va">env_range</span><span class="op">[</span><span class="va">inds</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">3</span> <span class="co"># Bump min down two steps</span>
-<span class="va">pdb_2</span><span class="op">$</span><span class="va">EnvironmentalVariables</span><span class="op">$</span><span class="va">env_range</span><span class="op">[</span><span class="va">inds</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">9</span> <span class="co"># Bump max up two steps</span>
-
-<span class="co"># The rest is the usual building workflow: make a proto_ipm, then convert to</span>
-<span class="co"># ipm.</span>
-
-<span class="va">new_protos</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pdb_make_proto_ipm.html">pdb_make_proto_ipm</a></span><span class="op">(</span><span class="va">pdb_2</span>, <span class="st">"aaaa15"</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## 'ipm_id' aaaa15 has resampled parameters, resetting 'det_stoch' to 'stoch' and </span>
-<span class="co">## 'kern_param' to 'param'!</span>
-<span class="co">## Default number of iterations for 'pdb_make_ipm' will be 50. Modify this behavior </span>
-<span class="co">## with the 'addl_args' argument of 'pdb_make_ipm'.</span></code></pre>
+<code class="sourceCode R"><span><span class="va">pdb_2</span> <span class="op">&lt;-</span> <span class="va">pdb</span></span>
+<span></span>
+<span><span class="va">inds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">pdb_2</span><span class="op">$</span><span class="va">EnvironmentalVariables</span><span class="op">$</span><span class="va">vr_expr_name</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"a_max_"</span>,</span>
+<span>                                                                    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"low"</span>, </span>
+<span>                                                                      <span class="st">"high"</span><span class="op">)</span><span class="op">)</span> <span class="op">&amp;</span></span>
+<span>                <span class="va">pdb_2</span><span class="op">$</span><span class="va">EnvironmentalVariables</span><span class="op">$</span><span class="va">ipm_id</span> <span class="op">==</span> <span class="st">"aaaa15"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">pdb_2</span><span class="op">$</span><span class="va">EnvironmentalVariables</span><span class="op">$</span><span class="va">env_range</span><span class="op">[</span><span class="va">inds</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">3</span> <span class="co"># Bump min down two steps</span></span>
+<span><span class="va">pdb_2</span><span class="op">$</span><span class="va">EnvironmentalVariables</span><span class="op">$</span><span class="va">env_range</span><span class="op">[</span><span class="va">inds</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">9</span> <span class="co"># Bump max up two steps</span></span>
+<span></span>
+<span><span class="co"># The rest is the usual building workflow: make a proto_ipm, then convert to</span></span>
+<span><span class="co"># ipm.</span></span>
+<span></span>
+<span><span class="va">new_protos</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pdb_make_proto_ipm.html">pdb_make_proto_ipm</a></span><span class="op">(</span><span class="va">pdb_2</span>, <span class="st">"aaaa15"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## 'ipm_id' aaaa15 has resampled parameters, resetting 'det_stoch' to 'stoch' and </span></span>
+<span><span class="co">## 'kern_param' to 'param'!</span></span>
+<span><span class="co">## Default number of iterations for 'pdb_make_ipm' will be 50. Modify this behavior </span></span>
+<span><span class="co">## with the 'addl_args' argument of 'pdb_make_ipm'.</span></span></code></pre>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">new_ipms</span>   <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pdb_make_ipm.html">pdb_make_ipm</a></span><span class="op">(</span><span class="va">new_protos</span><span class="op">)</span>
-
-<span class="fu"><a href="https://levisc8.github.io/ipmr/reference/lambda.html" class="external-link">lambda</a></span><span class="op">(</span><span class="va">new_ipms</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## log(lambda) is returned by default for stochastic models. Set 'log = FALSE' for lambda on linear scale.</span></code></pre>
-<pre><code><span class="co">## $aaaa15</span>
-<span class="co">##     lambda </span>
-<span class="co">## -0.1033602</span></code></pre>
+<code class="sourceCode R"><span><span class="va">new_ipms</span>   <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pdb_make_ipm.html">pdb_make_ipm</a></span><span class="op">(</span><span class="va">new_protos</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://levisc8.github.io/ipmr/reference/lambda.html" class="external-link">lambda</a></span><span class="op">(</span><span class="va">new_ipms</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## log(lambda) is returned by default for stochastic models. Set 'log = FALSE' for lambda on linear scale.</span></span></code></pre>
+<pre><code><span><span class="co">## $aaaa15</span></span>
+<span><span class="co">##     lambda </span></span>
+<span><span class="co">## -0.1027472</span></span></code></pre>
 </div>
 </div>
 <div class="section level2">
 <h2 id="changing-distributions">Changing distributions<a class="anchor" aria-label="anchor" href="#changing-distributions"></a>
 </h2>
-<p>What if we want to change the distribution that a certain environmental variable is sampled from? For example, rather than use a uniform distribution, we decide we want to sample it from a Gamma distribution. There are a couple steps we need to go through. They are:</p>
+<p>What if we want to change the distribution that a certain
+environmental variable is sampled from? For example, rather than use a
+uniform distribution, we decide we want to sample it from a Gamma
+distribution. There are a couple steps we need to go through. They
+are:</p>
 <ol style="list-style-type: decimal">
-<li><p>Write a function that substitutes distribution names. We can find PADRINO’s distribution naming convention in the “Abbreviation” column <a href="https://github.com/padrinoDB/PADRINO/blob/main/metadata/digitization/dens_fun_dictionary.csv" class="external-link">here</a>.</p></li>
-<li><p>Write a function to insert the new parameter values and names into the <code>EnvironmentalVariables</code> Table.</p></li>
-<li><p>Wrap 1-2 in a top-level function that we’ll actually use.</p></li>
-<li><p>Use it to modify <code>EnvironmentalVariables</code>, then rebuild the IPMs using <code><a href="../reference/pdb_make_proto_ipm.html">pdb_make_proto_ipm()</a></code> and <code><a href="../reference/pdb_make_ipm.html">pdb_make_ipm()</a></code>.</p></li>
+<li><p>Write a function that substitutes distribution names. We can find
+PADRINO’s distribution naming convention in the “Abbreviation” column <a href="https://github.com/padrinoDB/PADRINO/blob/main/metadata/digitization/dens_fun_dictionary.csv" class="external-link">here</a>.</p></li>
+<li><p>Write a function to insert the new parameter values and names
+into the <code>EnvironmentalVariables</code> Table.</p></li>
+<li><p>Wrap 1-2 in a top-level function that we’ll actually
+use.</p></li>
+<li><p>Use it to modify <code>EnvironmentalVariables</code>, then
+rebuild the IPMs using <code><a href="../reference/pdb_make_proto_ipm.html">pdb_make_proto_ipm()</a></code> and
+<code><a href="../reference/pdb_make_ipm.html">pdb_make_ipm()</a></code>.</p></li>
 </ol>
 <blockquote>
-<p>NB: The functions we define in 1-3 will probably be incorporated into <code>Rpadrino</code> at some point in the near future, but further testing for stability is needed before they become part of the package. As such, use them at your own risk!</p>
+<p>NB: The functions we define in 1-3 will probably be incorporated into
+<code>Rpadrino</code> at some point in the near future, but further
+testing for stability is needed before they become part of the package.
+As such, use them at your own risk!</p>
 </blockquote>
-<p>The function in 1 will make use of <code>rlang</code> to safely modify function names and arguments. It is possible to do this with <code>gsub("Unif", "Gamma", pdb$EnvironmentalVariables$env_function[index])</code> (where index is the row number of the function you want to update), but could lead to unexpected results sometimes.</p>
+<p>The function in 1 will make use of <code>rlang</code> to safely
+modify function names and arguments. It is possible to do this with
+<code>gsub("Unif", "Gamma", pdb$EnvironmentalVariables$env_function[index])</code>
+(where index is the row number of the function you want to update), but
+could lead to unexpected results sometimes.</p>
 <div class="section level3">
 <h3 id="top-level-function">Top-level function<a class="anchor" aria-label="anchor" href="#top-level-function"></a>
 </h3>
-<p>This is probably the most straightforward of the functions to write. We know that there two steps we have to implement that this wraps: substitution the functioal form of the distribution, and substituting the parameter values. Additionally, we’re going to insert a subsetting capacity so that we can pass a larger database loop over a set of <code>ipm_id</code>s to rapidly update many models at once.</p>
+<p>This is probably the most straightforward of the functions to write.
+We know that there two steps we have to implement that this wraps:
+substitution the functioal form of the distribution, and substituting
+the parameter values. Additionally, we’re going to insert a subsetting
+capacity so that we can pass a larger database loop over a set of
+<code>ipm_id</code>s to rapidly update many models at once.</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rlang.r-lib.org" class="external-link">rlang</a></span><span class="op">)</span>
-
-<span class="va">sub_env_fun</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">db</span>,          <span class="co"># pdb object</span>
-                        <span class="va">parameter</span>,   <span class="co"># parameter created by the distribution</span>
-                        <span class="va">new_fun</span>,     <span class="co"># The new distribution</span>
-                        <span class="va">new_pars</span>,    <span class="co"># The parameters for the new distribution</span>
-                        <span class="va">id</span> <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="op">{</span> <span class="co"># ipm_id to operate on</span>
-  
-  <span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-    
-    <span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">1L</span><span class="op">)</span> <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"'id' should only have length 1!"</span><span class="op">)</span>
-    
-    <span class="va">db</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pdb_subset.html">pdb_subset</a></span><span class="op">(</span><span class="va">db</span>, <span class="va">id</span><span class="op">)</span>
-  <span class="op">}</span> 
-  
-  <span class="va">ev_tab</span> <span class="op">&lt;-</span> <span class="va">db</span><span class="op">$</span><span class="va">EnvironmentalVariables</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
-    <span class="fu">sub_rng_fun</span><span class="op">(</span><span class="va">parameter</span>, <span class="va">new_fun</span>, <span class="va">new_pars</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
-    <span class="fu">sub_rng_pars</span><span class="op">(</span><span class="va">parameter</span>, <span class="va">new_pars</span><span class="op">)</span>
-  
-  <span class="va">db</span><span class="op">$</span><span class="va">EnvironmentalVariables</span> <span class="op">&lt;-</span> <span class="va">ev_tab</span>
-  
-  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">db</span><span class="op">)</span>
-<span class="op">}</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rlang.r-lib.org" class="external-link">rlang</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">sub_env_fun</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">db</span>,          <span class="co"># pdb object</span></span>
+<span>                        <span class="va">parameter</span>,   <span class="co"># parameter created by the distribution</span></span>
+<span>                        <span class="va">new_fun</span>,     <span class="co"># The new distribution</span></span>
+<span>                        <span class="va">new_pars</span>,    <span class="co"># The parameters for the new distribution</span></span>
+<span>                        <span class="va">id</span> <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="op">{</span> <span class="co"># ipm_id to operate on</span></span>
+<span>  </span>
+<span>  <span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    </span>
+<span>    <span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">1L</span><span class="op">)</span> <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"'id' should only have length 1!"</span><span class="op">)</span></span>
+<span>    </span>
+<span>    <span class="va">db</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pdb_subset.html">pdb_subset</a></span><span class="op">(</span><span class="va">db</span>, <span class="va">id</span><span class="op">)</span></span>
+<span>  <span class="op">}</span> </span>
+<span>  </span>
+<span>  <span class="va">ev_tab</span> <span class="op">&lt;-</span> <span class="va">db</span><span class="op">$</span><span class="va">EnvironmentalVariables</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu">sub_rng_fun</span><span class="op">(</span><span class="va">parameter</span>, <span class="va">new_fun</span>, <span class="va">new_pars</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu">sub_rng_pars</span><span class="op">(</span><span class="va">parameter</span>, <span class="va">new_pars</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="va">db</span><span class="op">$</span><span class="va">EnvironmentalVariables</span> <span class="op">&lt;-</span> <span class="va">ev_tab</span></span>
+<span>  </span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">db</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="substituting-functions">Substituting functions<a class="anchor" aria-label="anchor" href="#substituting-functions"></a>
 </h3>
-<p>The first substituting function we’ll write is the one that substitutes the distribution we wish to use into the <code>env_function</code> column. This will use the names of the <code>new_pars</code> object as arguments in a call to the <code>new_fun</code> function. Don’t worry about finding the correct <code>R</code> <code>r&lt;distribution&gt;</code> function here - we use PADRINO’s syntax to modify these.</p>
+<p>The first substituting function we’ll write is the one that
+substitutes the distribution we wish to use into the
+<code>env_function</code> column. This will use the names of the
+<code>new_pars</code> object as arguments in a call to the
+<code>new_fun</code> function. Don’t worry about finding the correct
+<code>R</code> <code>r&lt;distribution&gt;</code> function here - we use
+PADRINO’s syntax to modify these.</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">sub_rng_fun</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">ev_tab</span>, <span class="va">parameter</span>, <span class="va">new_fun</span>, <span class="va">new_pars</span><span class="op">)</span> <span class="op">{</span>
-
-  <span class="co"># Get the old function form</span>
-  <span class="va">old_fun_ind</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">ev_tab</span><span class="op">$</span><span class="va">vr_expr_name</span> <span class="op">==</span> <span class="va">parameter</span><span class="op">)</span>
-
-  <span class="co"># Create a new function call, and insert new arguments</span>
-  <span class="va">arg_nms</span>     <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tidyeval.html">syms</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">new_pars</span><span class="op">)</span><span class="op">)</span>
-  <span class="va">new_fun</span>     <span class="op">&lt;-</span> <span class="fu"><a href="https://rlang.r-lib.org/reference/call2.html" class="external-link">call2</a></span><span class="op">(</span><span class="va">new_fun</span>, <span class="op">!</span><span class="op">!</span><span class="op">!</span> <span class="fu"><a href="../reference/tidyeval.html">syms</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">new_pars</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-  
-  <span class="co"># Convert back to a string and insert into the table</span>
-  <span class="va">ev_tab</span><span class="op">$</span><span class="va">env_function</span><span class="op">[</span><span class="va">old_fun_ind</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rlang.r-lib.org/reference/expr_label.html" class="external-link">expr_text</a></span><span class="op">(</span><span class="va">new_fun</span><span class="op">)</span>
-  
-  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">ev_tab</span><span class="op">)</span>
-<span class="op">}</span></code></pre></div>
-<p>There is a lot going on in this function, and most of it is beyond the scope of this vignette (if you’re curious about the details, see the <code>Metaprogramming</code> topics <a href="https://rlang.r-lib.org/index.html" class="external-link">here</a>). The key takeaway is that we take our new function, <code>"Gamma"</code> and convert it into a function call with arguments that are named after <code>new_pars</code>. Then we stick it back into the table, overwriting the old <code>"Unif"</code> function.</p>
-<p>Adding a parameter value to the table is far less complicated. First, we remove the parameters associated with the old distribution. We have to do this because of the way that <code>Rpadrino</code> finds the parameters to functions in the <code>EnvironmentalVariables</code> table. The first lines of the function accomplish this. After that, we create a version of the <code>EnvironmentalVariables</code> table that contains our new parameters and add those back in.</p>
+<code class="sourceCode R"><span><span class="va">sub_rng_fun</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">ev_tab</span>, <span class="va">parameter</span>, <span class="va">new_fun</span>, <span class="va">new_pars</span><span class="op">)</span> <span class="op">{</span></span>
+<span></span>
+<span>  <span class="co"># Get the old function form</span></span>
+<span>  <span class="va">old_fun_ind</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">ev_tab</span><span class="op">$</span><span class="va">vr_expr_name</span> <span class="op">==</span> <span class="va">parameter</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="co"># Create a new function call, and insert new arguments</span></span>
+<span>  <span class="va">arg_nms</span>     <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tidyeval.html">syms</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">new_pars</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">new_fun</span>     <span class="op">&lt;-</span> <span class="fu"><a href="https://rlang.r-lib.org/reference/call2.html" class="external-link">call2</a></span><span class="op">(</span><span class="va">new_fun</span>, <span class="op">!</span><span class="op">!</span><span class="op">!</span> <span class="fu"><a href="../reference/tidyeval.html">syms</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">new_pars</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="co"># Convert back to a string and insert into the table</span></span>
+<span>  <span class="va">ev_tab</span><span class="op">$</span><span class="va">env_function</span><span class="op">[</span><span class="va">old_fun_ind</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rlang.r-lib.org/reference/expr_label.html" class="external-link">expr_text</a></span><span class="op">(</span><span class="va">new_fun</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">ev_tab</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+<p>There is a lot going on in this function, and most of it is beyond
+the scope of this vignette (if you’re curious about the details, see the
+<code>Metaprogramming</code> topics <a href="https://rlang.r-lib.org/index.html" class="external-link">here</a>). The key takeaway is
+that we take our new function, <code>"Gamma"</code> and convert it into
+a function call with arguments that are named after
+<code>new_pars</code>. Then we stick it back into the table, overwriting
+the old <code>"Unif"</code> function.</p>
+<p>Adding a parameter value to the table is far less complicated. First,
+we remove the parameters associated with the old distribution. We have
+to do this because of the way that <code>Rpadrino</code> finds the
+parameters to functions in the <code>EnvironmentalVariables</code>
+table. The first lines of the function accomplish this. After that, we
+create a version of the <code>EnvironmentalVariables</code> table that
+contains our new parameters and add those back in.</p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">sub_rng_pars</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">ev_tab</span>, <span class="va">parameter</span>, <span class="va">new_pars</span><span class="op">)</span> <span class="op">{</span> 
-  
-  <span class="co"># Remove the existing parameters associated with the distribution</span>
-  <span class="co"># that we've replaced.</span>
-  
-  <span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">ev_tab</span><span class="op">$</span><span class="va">env_variable</span> <span class="op">==</span> <span class="va">parameter</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span>
-    <span class="va">rm_ind</span> <span class="op">&lt;-</span> <span class="va">ev_tab</span><span class="op">$</span><span class="va">env_variable</span> <span class="op">==</span> <span class="va">parameter</span> <span class="op">&amp;</span> <span class="va">ev_tab</span><span class="op">$</span><span class="va">model_type</span> <span class="op">==</span> <span class="st">"Parameter"</span>
-    <span class="va">ev_tab</span> <span class="op">&lt;-</span> <span class="va">ev_tab</span><span class="op">[</span><span class="op">!</span><span class="va">rm_ind</span>, <span class="op">]</span>
-  <span class="op">}</span>
-  
-  
-  <span class="va">new_rows</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>
-    ipm_id       <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">ev_tab</span><span class="op">$</span><span class="va">ipm_id</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">new_pars</span><span class="op">)</span><span class="op">)</span>,
-    env_variable <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">parameter</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">new_pars</span><span class="op">)</span><span class="op">)</span>,
-    vr_expr_name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">new_pars</span><span class="op">)</span>,
-    env_range    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">new_pars</span><span class="op">)</span>,
-    env_function <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"NULL"</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">new_pars</span><span class="op">)</span><span class="op">)</span>,
-    model_type   <span class="op">=</span> <span class="st">"Parameter"</span>
-  <span class="op">)</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">new_rows</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="cn">NULL</span>
-  
-  <span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">ev_tab</span>, <span class="va">new_rows</span><span class="op">)</span>
-  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span>
-<span class="op">}</span>
-
-<span class="va">small_pdb</span> <span class="op">&lt;-</span> <span class="va">pdb</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/pdb_subset.html">pdb_subset</a></span><span class="op">(</span><span class="st">"aaaa15"</span><span class="op">)</span>
-
-<span class="va">new_pdb</span> <span class="op">&lt;-</span> <span class="fu">sub_env_fun</span><span class="op">(</span>db <span class="op">=</span> <span class="va">small_pdb</span>, 
-                       id <span class="op">=</span> <span class="cn">NULL</span>, 
-                       <span class="st">"A_max"</span>,
-                       <span class="st">"Gamma"</span>, 
-                       <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>a_max_shape <span class="op">=</span> <span class="fl">14</span>, a_max_rate <span class="op">=</span> <span class="fl">3.5</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">sub_rng_pars</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">ev_tab</span>, <span class="va">parameter</span>, <span class="va">new_pars</span><span class="op">)</span> <span class="op">{</span> </span>
+<span>  </span>
+<span>  <span class="co"># Remove the existing parameters associated with the distribution</span></span>
+<span>  <span class="co"># that we've replaced.</span></span>
+<span>  </span>
+<span>  <span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">ev_tab</span><span class="op">$</span><span class="va">env_variable</span> <span class="op">==</span> <span class="va">parameter</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">rm_ind</span> <span class="op">&lt;-</span> <span class="va">ev_tab</span><span class="op">$</span><span class="va">env_variable</span> <span class="op">==</span> <span class="va">parameter</span> <span class="op">&amp;</span> <span class="va">ev_tab</span><span class="op">$</span><span class="va">model_type</span> <span class="op">==</span> <span class="st">"Parameter"</span></span>
+<span>    <span class="va">ev_tab</span> <span class="op">&lt;-</span> <span class="va">ev_tab</span><span class="op">[</span><span class="op">!</span><span class="va">rm_ind</span>, <span class="op">]</span></span>
+<span>  <span class="op">}</span></span>
+<span>  </span>
+<span>  </span>
+<span>  <span class="va">new_rows</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>    ipm_id       <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">ev_tab</span><span class="op">$</span><span class="va">ipm_id</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">new_pars</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    env_variable <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">parameter</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">new_pars</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    vr_expr_name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">new_pars</span><span class="op">)</span>,</span>
+<span>    env_range    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">new_pars</span><span class="op">)</span>,</span>
+<span>    env_function <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"NULL"</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">new_pars</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    model_type   <span class="op">=</span> <span class="st">"Parameter"</span></span>
+<span>  <span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">new_rows</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span>
+<span>  </span>
+<span>  <span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">ev_tab</span>, <span class="va">new_rows</span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">small_pdb</span> <span class="op">&lt;-</span> <span class="va">pdb</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/pdb_subset.html">pdb_subset</a></span><span class="op">(</span><span class="st">"aaaa15"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">new_pdb</span> <span class="op">&lt;-</span> <span class="fu">sub_env_fun</span><span class="op">(</span>db <span class="op">=</span> <span class="va">small_pdb</span>, </span>
+<span>                       id <span class="op">=</span> <span class="cn">NULL</span>, </span>
+<span>                       <span class="st">"A_max"</span>,</span>
+<span>                       <span class="st">"Gamma"</span>, </span>
+<span>                       <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>a_max_shape <span class="op">=</span> <span class="fl">14</span>, a_max_rate <span class="op">=</span> <span class="fl">3.5</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <caption>New ‘EnvironmentalVariables’ table</caption>
+<colgroup>
+<col width="8%">
+<col width="15%">
+<col width="15%">
+<col width="11%">
+<col width="36%">
+<col width="13%">
+</colgroup>
 <thead><tr class="header">
 <th align="left">ipm_id</th>
 <th align="left">env_variable</th>
@@ -887,17 +1027,22 @@ A_max
 </tr>
 </tbody>
 </table>
-<p>Notice that our new Gamma distribution parameters have found their way into the parameter table. We can now rebuild the model as using the same pipeline as above.</p>
+<p>Notice that our new Gamma distribution parameters have found their
+way into the parameter table. We can now rebuild the model as using the
+same pipeline as above.</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">new_ipm</span> <span class="op">&lt;-</span> <span class="va">new_pdb</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> 
-  <span class="fu"><a href="../reference/pdb_make_proto_ipm.html">pdb_make_proto_ipm</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/pdb_make_ipm.html">pdb_make_ipm</a></span><span class="op">(</span><span class="op">)</span>
-
-<span class="fu"><a href="https://levisc8.github.io/ipmr/reference/lambda.html" class="external-link">lambda</a></span><span class="op">(</span><span class="va">new_ipm</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## $aaaa15</span>
-<span class="co">##     lambda </span>
-<span class="co">## -0.1019429</span></code></pre>
-<p>It is probably ok to copy/paste the functions we defined above and apply to in your own analyses. However, as they are not yet incorporated into <code>Rpadrino</code>, I cannot promise that the results will be error free.</p>
+<code class="sourceCode R"><span><span class="va">new_ipm</span> <span class="op">&lt;-</span> <span class="va">new_pdb</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="../reference/pdb_make_proto_ipm.html">pdb_make_proto_ipm</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/pdb_make_ipm.html">pdb_make_ipm</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://levisc8.github.io/ipmr/reference/lambda.html" class="external-link">lambda</a></span><span class="op">(</span><span class="va">new_ipm</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## $aaaa15</span></span>
+<span><span class="co">##     lambda </span></span>
+<span><span class="co">## -0.1024344</span></span></code></pre>
+<p>It is probably ok to copy/paste the functions we defined above and
+apply to in your own analyses. However, as they are not yet incorporated
+into <code>Rpadrino</code>, I cannot promise that the results will be
+error free.</p>
 </div>
 </div>
   </div>
@@ -919,7 +1064,7 @@ A_max
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

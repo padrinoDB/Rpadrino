@@ -18,7 +18,7 @@ some quantities of interest from pdb_proto_ipm_lists and pdb_ipms."><!-- mathjax
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Rpadrino</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.4.9000</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.5</span>
       </span>
     </div>
 
@@ -157,30 +157,50 @@ kernel_formulae(object, kernel) &lt;- value
     <dl><dt>object</dt>
 <dd><p>An object produced by <code>pdb_make_proto_ipm</code> or
 <code>pdb_make_ipm</code>.</p></dd>
+
+
 <dt>ipm</dt>
 <dd><p>A <code>pdb_ipm</code>.</p></dd>
+
+
 <dt>full_mesh</dt>
 <dd><p>Logical. Return the complete set of meshpoints or only the
 unique ones.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Usage depends on the function - see Details and Examples.</p></dd>
+
+
 <dt>iterations</dt>
 <dd><p>The number of times to iterate the model to reach
 convergence. Default is 100.</p></dd>
+
+
 <dt>tolerance</dt>
 <dd><p>Tolerance to evaluate convergence to asymptotic dynamics.</p></dd>
+
+
 <dt>burn_in</dt>
 <dd><p>The proportion of iterations to discard as burn in when
 assessing convergence.</p></dd>
+
+
 <dt>log</dt>
 <dd><p>Log-transform lambdas for plotting?</p></dd>
+
+
 <dt>show_stable</dt>
 <dd><p>Show horizontal line denoting stable population growth?</p></dd>
+
+
 <dt>name_ps</dt>
 <dd><p>For <code>pdb_ipm</code> objects that contain <code>age_x_size</code> IPMs,
 a named list. The names of the list should be the <code>ipm_id</code>s that are
 <code>age_x_size</code> models, and the values in the list should be the the name
 of the survival/growth kernels.</p></dd>
+
+
 <dt>f_forms</dt>
 <dd><p>For <code>pdb_ipm</code> objects that contain <code>age_x_size</code> IPMs,
 a named list. The names of the list should be the <code>ipm_id</code>s that are
@@ -188,20 +208,33 @@ a named list. The names of the list should be the <code>ipm_id</code>s that are
 of the fecundity kernels. If multiple sub-kernels contribute to fecundity, we
 can also supply a string specifying how they are combined (e.g.
 <code>f_forms = "F + C"</code>).</p></dd>
+
+
 <dt>value</dt>
 <dd><p>The value to insert. See details and Examples.</p></dd>
+
+
 <dt>kernel</dt>
 <dd><p>Ignored, present for compatibility with <code>ipmr</code>.</p></dd>
+
+
 <dt>vital_rate</dt>
 <dd><p>Ignored, present for compatibility with <code>ipmr</code>.</p></dd>
+
+
 <dt>x</dt>
 <dd><p>A <code>pdb_ipm</code> object.</p></dd>
+
+
 <dt>i</dt>
 <dd><p>The index to extract</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Most of these return named lists where names correspond to
+    
+
+<p>Most of these return named lists where names correspond to
 <code>ipm_ids</code>. The exception is <code>pdb_new_fun_form</code>, which returns a list
 of expressions. It is only intended for setting new expressions with
 <code>vital_rate_exprs&lt;-</code>.</p>
@@ -245,54 +278,54 @@ and <code><a href="https://levisc8.github.io/ipmr/reference/check_convergence.ht
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pdb</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">my_pdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="pdb_make_proto_ipm.html">pdb_make_proto_ipm</a></span><span class="op">(</span><span class="va">pdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"aaaa17"</span>, <span class="st">"aaa310"</span><span class="op">)</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pdb</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">my_pdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="pdb_make_proto_ipm.html">pdb_make_proto_ipm</a></span><span class="op">(</span><span class="va">pdb</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"aaaa17"</span>, <span class="st">"aaa310"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 'ipm_id' aaa310 has the following notes that require your attention:</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> aaa310: 'Geo and time info retrieved from COMPADRE (v.X.X.X.4)'</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># These values will be appended to the parameter list for each IPM, as they</span></span>
-<span class="r-in"><span class="co"># aren't currently present in them.</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu"><a href="https://levisc8.github.io/ipmr/reference/accessors.html" class="external-link">parameters</a></span><span class="op">(</span><span class="va">my_pdb</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span class="r-in">  aaa310 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span class="r-in">    g_slope_2 <span class="op">=</span> <span class="fl">0.0001</span>,</span>
-<span class="r-in">    establishment_prob <span class="op">=</span> <span class="fl">0.02</span></span>
-<span class="r-in">  <span class="op">)</span>,</span>
-<span class="r-in">  aaaa17 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span class="r-in">    g_var <span class="op">=</span> <span class="fl">4.2</span>,</span>
-<span class="r-in">    germ_prob <span class="op">=</span> <span class="fl">0.3</span></span>
-<span class="r-in">  <span class="op">)</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># We can overwrite a parameter value with a new one as well. Old values aren't</span></span>
-<span class="r-in"><span class="co"># saved anywhere except in the pdb object, so be careful!</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu"><a href="https://levisc8.github.io/ipmr/reference/accessors.html" class="external-link">parameters</a></span><span class="op">(</span><span class="va">my_pdb</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span class="r-in">  aaa310 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span class="r-in">    s_s    <span class="op">=</span> <span class="fl">0.93</span>, <span class="co"># old value is 0.92</span></span>
-<span class="r-in">    gvar_i <span class="op">=</span> <span class="fl">0.13</span> <span class="co"># old value is 0.127</span></span>
-<span class="r-in">  <span class="op">)</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu"><a href="https://levisc8.github.io/ipmr/reference/accessors.html" class="external-link">vital_rate_exprs</a></span><span class="op">(</span><span class="va">my_pdb</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu">pdb_new_fun_form</span><span class="op">(</span></span>
-<span class="r-in">    <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span class="r-in">      aaa310 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mu_g <span class="op">=</span> <span class="va">g_int</span> <span class="op">+</span> <span class="va">g_slope</span> <span class="op">*</span> <span class="va">size_1</span> <span class="op">+</span> <span class="va">g_slope_2</span> <span class="op">*</span> <span class="va">size_1</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>,</span>
-<span class="r-in">      aaaa17 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>sigmax2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">g_var</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">cfv1</span> <span class="op">+</span> <span class="va">cfv2</span> <span class="op">*</span> <span class="va">size_1</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">     <span class="op">)</span></span>
-<span class="r-in">   <span class="op">)</span></span>
-<span class="r-in"> <span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"> <span class="fu"><a href="https://levisc8.github.io/ipmr/reference/accessors.html" class="external-link">kernel_formulae</a></span><span class="op">(</span><span class="va">my_pdb</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu">pdb_new_fun_form</span><span class="op">(</span></span>
-<span class="r-in">   <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span class="r-in">     aaaa17 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">recr_size</span> <span class="op">*</span> <span class="va">yearling_s</span> <span class="op">*</span> <span class="va">germ_prob</span> <span class="op">*</span> <span class="va">d_size</span><span class="op">)</span>,</span>
-<span class="r-in">     aaa310 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>F <span class="op">=</span> <span class="va">f_n</span> <span class="op">*</span> <span class="va">f_d</span> <span class="op">*</span> <span class="va">establishment_prob</span><span class="op">)</span></span>
-<span class="r-in">   <span class="op">)</span></span>
-<span class="r-in"> <span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"> <span class="va">my_ipms</span>    <span class="op">&lt;-</span> <span class="fu"><a href="pdb_make_ipm.html">pdb_make_ipm</a></span><span class="op">(</span><span class="va">my_pdb</span><span class="op">)</span></span>
-<span class="r-in"> <span class="va">iter_kerns</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://levisc8.github.io/ipmr/reference/make_iter_kernel.html" class="external-link">make_iter_kernel</a></span><span class="op">(</span><span class="va">my_ipms</span>, aaaa17 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">F_yr</span>, <span class="va">Y</span>, <span class="va">P_yr</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># These values will be appended to the parameter list for each IPM, as they</span></span></span>
+<span class="r-in"><span><span class="co"># aren't currently present in them.</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://levisc8.github.io/ipmr/reference/accessors.html" class="external-link">parameters</a></span><span class="op">(</span><span class="va">my_pdb</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  aaa310 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    g_slope_2 <span class="op">=</span> <span class="fl">0.0001</span>,</span></span>
+<span class="r-in"><span>    establishment_prob <span class="op">=</span> <span class="fl">0.02</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span>,</span></span>
+<span class="r-in"><span>  aaaa17 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    g_var <span class="op">=</span> <span class="fl">4.2</span>,</span></span>
+<span class="r-in"><span>    germ_prob <span class="op">=</span> <span class="fl">0.3</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># We can overwrite a parameter value with a new one as well. Old values aren't</span></span></span>
+<span class="r-in"><span><span class="co"># saved anywhere except in the pdb object, so be careful!</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://levisc8.github.io/ipmr/reference/accessors.html" class="external-link">parameters</a></span><span class="op">(</span><span class="va">my_pdb</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  aaa310 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    s_s    <span class="op">=</span> <span class="fl">0.93</span>, <span class="co"># old value is 0.92</span></span></span>
+<span class="r-in"><span>    gvar_i <span class="op">=</span> <span class="fl">0.13</span> <span class="co"># old value is 0.127</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://levisc8.github.io/ipmr/reference/accessors.html" class="external-link">vital_rate_exprs</a></span><span class="op">(</span><span class="va">my_pdb</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu">pdb_new_fun_form</span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>      aaa310 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mu_g <span class="op">=</span> <span class="va">g_int</span> <span class="op">+</span> <span class="va">g_slope</span> <span class="op">*</span> <span class="va">size_1</span> <span class="op">+</span> <span class="va">g_slope_2</span> <span class="op">*</span> <span class="va">size_1</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>      aaaa17 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>sigmax2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">g_var</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">cfv1</span> <span class="op">+</span> <span class="va">cfv2</span> <span class="op">*</span> <span class="va">size_1</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>     <span class="op">)</span></span></span>
+<span class="r-in"><span>   <span class="op">)</span></span></span>
+<span class="r-in"><span> <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span> <span class="fu"><a href="https://levisc8.github.io/ipmr/reference/accessors.html" class="external-link">kernel_formulae</a></span><span class="op">(</span><span class="va">my_pdb</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu">pdb_new_fun_form</span><span class="op">(</span></span></span>
+<span class="r-in"><span>   <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>     aaaa17 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">recr_size</span> <span class="op">*</span> <span class="va">yearling_s</span> <span class="op">*</span> <span class="va">germ_prob</span> <span class="op">*</span> <span class="va">d_size</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>     aaa310 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>F <span class="op">=</span> <span class="va">f_n</span> <span class="op">*</span> <span class="va">f_d</span> <span class="op">*</span> <span class="va">establishment_prob</span><span class="op">)</span></span></span>
+<span class="r-in"><span>   <span class="op">)</span></span></span>
+<span class="r-in"><span> <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span> <span class="va">my_ipms</span>    <span class="op">&lt;-</span> <span class="fu"><a href="pdb_make_ipm.html">pdb_make_ipm</a></span><span class="op">(</span><span class="va">my_pdb</span><span class="op">)</span></span></span>
+<span class="r-in"><span> <span class="va">iter_kerns</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://levisc8.github.io/ipmr/reference/make_iter_kernel.html" class="external-link">make_iter_kernel</a></span><span class="op">(</span><span class="va">my_ipms</span>, aaaa17 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">F_yr</span>, <span class="va">Y</span>, <span class="va">P_yr</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -307,7 +340,7 @@ and <code><a href="https://levisc8.github.io/ipmr/reference/check_convergence.ht
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>
