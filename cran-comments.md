@@ -1,4 +1,4 @@
-This is a submission of Rpadrino 0.0.5. It contains an update that checks for internet before downloading a resource, and fails predictably and informatively if there is no internet connection. This is in response to a message from CRAN maintainers earlier this week that this update was required for the package to stay on CRAN.
+This is a resubmission of Rpadrino 0.0.5. It contains an update that checks for internet before downloading a resource, and fails predictably and informatively if there is no internet connection. This is in response to a message from CRAN maintainers earlier this week that this update was required for the package to stay on CRAN. Furthermore, it updates the CITATION to use bibentry() and fixes a couple broken links in documentation.
 
 Additional information on this submission:
 
